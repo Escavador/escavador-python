@@ -1,0 +1,5 @@
+.env
+.lock
+.toml
+.idea/
+__pycache__

@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "escavador-python"
+version = "0.1.0"
+description = "A library to  interact with Escavador API"
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+requests = "^2.27.1"
+asyncio = "^3.4.3"
+aiohttp = "^3.8.1"
+aiodns = "^3.0.0"
+cchardet = "^2.1.7"
+python-dotenv = "^0.19.2"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
