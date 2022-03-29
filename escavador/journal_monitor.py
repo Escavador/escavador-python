@@ -7,7 +7,7 @@ class JournalMonitor(object):
     def __init__(self):
         self.methods = Method()
 
-    def get_monitor_journal(self, monitor_id):
+    def get_monitor_journals(self, monitor_id):
         """
         Return the journals from a monitor
         :param monitor_id: the monitor ID
@@ -84,3 +84,26 @@ class JournalMonitor(object):
         """
 
         return self.methods.delete("/monitoramentos/{}".format(monitor_id))
+
+    def get_monitor_results(self, monitor_id):
+        """
+        Return all the captured words or lawsuit by the informed monitor
+        :param monitor_id: the monitor id
+        :return: json containing all the content captured by the monitor
+        """
+
+        return self.methods.get("/monitoramentos/{}/aparicoes".format(monitor_id))
+
+    def test_monitor_callback(self, callback_url, **kwargs):
+        """
+        Test if the user callback url can receive the API callbacks from the monitor result
+        :param callback_url: the url that the callback will be sent
+        :keyword arguments:
+            **tipo**(``string``) -- type of the callback object (movimentacao, diario)
+        :return: json containing a mock monitor result
+        """
+        data = {
+            'callback_url': callback_url,
+            'tipo': kwargs.get('tipo')
+        }
+        return self.methods.post("/monitoramentos/testcallback", data=data)

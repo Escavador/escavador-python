@@ -18,7 +18,7 @@ class Api(object):
 
     async def request(self, method, url, **kwargs):
         url = self.base_url + url
-        data = kwargs.get('data')
+        data = {key: value for key, value in kwargs.get('data').items() if value is not None}
         async with aiohttp.ClientSession() as session:
             async with session.request(method=method,url=url,headers=self.headers(),data=data) as response:
                 return await response.json()
