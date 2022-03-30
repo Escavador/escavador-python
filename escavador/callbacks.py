@@ -1,21 +1,18 @@
-from escavador.method import Method
+from escavador.endpoint import Endpoint
 
 
-class Callbacks(object):
-
-    def __init__(self):
-        self.methods = Method
+class Callbacks(Endpoint):
 
     def get_callbacks(self, **kwargs):
         """
         :keyword Arguments:
-            **data_maxima*(``date``) -- the max date of the callback \n
-            **data_maxima**(``date``) -- the min date of the callback \n
-            **evento**(``string``) -- the event related to the callback \n
-            **item_tipo**(``string``) -- the type of the callback item. e.g: busca_assincrona, monitoramento_tribunal, monitoramento_diario
-            **item_id**(``int``) -- the id of the callback item, required if the item_tipo was sent
-        :param kwargs:
-        :return: json containing all the user's callbacks, based on the sent filters
+            **data_maxima*(``date``) -- a data máxima do callback
+            **data_maxima**(``date``) -- a data mínima do callback
+            **evento**(``string``) -- o evento do callback
+            **item_tipo**(``string``) -- o tipo do item do callback e.g: busca_assincrona, monitoramento_tribunal
+            , monitoramento_diario
+            **item_id**(``int``) -- o id do item do callback, obrigatório se o item_tipo foi enviado
+        :return: json
         """
 
         data = {
