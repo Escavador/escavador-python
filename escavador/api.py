@@ -1,5 +1,6 @@
-import aiohttp
 import os
+import aiohttp
+from urllib import parse
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -17,10 +18,10 @@ class Api(object):
         }
 
     async def request(self, method, url, **kwargs):
-        url = self.base_url + url
+        url = parse.urljoin(self.base_url, url)
         data = kwargs.get('data')
         if data is not None:
             data = {key: value for key, value in kwargs.get('data').items() if value is not None}
         async with aiohttp.ClientSession() as session:
-            async with session.request(method=method,url=url,headers=self.headers(), data=data) as response:
+            async with session.request(method=method, url=url, headers=self.headers(), data=data) as response:
                 return await response.json()
