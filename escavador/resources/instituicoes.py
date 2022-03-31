@@ -28,7 +28,7 @@ class Instituicao(Endpoint):
         }
         return self.methods.get(f"instituicoes/{id_instituicao}/processos", data=data)
 
-    def get_institution_persons(self, id_instituicao, **kwargs):
+    def get_pessoas_instituicao(self, id_instituicao, **kwargs):
         """
         Retorna as pessoas de uma instituição
         :argument id_instituicao: o ID da instituição
