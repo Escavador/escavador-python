@@ -1,9 +1,9 @@
 from escavador.resources.endpoint import Endpoint
 
 
-class Pessoas(Endpoint):
+class Pessoa(Endpoint):
 
-    def get_pessoa(self, id_pessoa):
+    def get(self, id_pessoa):
         """
         Retorna dados relacionados a uma pessoa pelo seu identificador.
         :param id_pessoa: o ID da pessoa

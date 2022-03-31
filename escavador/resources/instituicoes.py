@@ -3,7 +3,7 @@ from escavador.resources.endpoint import Endpoint
 
 class Instituicao(Endpoint):
 
-    def get_instituicao(self, id_instituicao):
+    def get(self, id_instituicao):
         """
         Retorna uma instituição de acordo com seu ID
         :argument id_instituicao o ID da instituição

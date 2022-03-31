@@ -8,9 +8,13 @@ class Busca(Endpoint):
         """
         Pesquisa um termo no escavador
         :param termo: o termo a ser pesquisado
-        :param tipo_termo: Tipo da entidade a ser pesquisada(*t* - todos os tipos, *p* -- apenas pessoas,
-         *i* -- apenas instituições, *pa* -- apenas patentes, *d* -- apenas diários oficiais,
-          *en* -- apenas pessoas e instituições envolvidas em processos)
+        :param tipo_termo: Tipo da entidade a ser pesquisada(
+        *t* - todos os tipos
+        *p* -- apenas pessoas
+        *i* -- apenas instituições
+        *pa* -- apenas patentes
+        *d* -- apenas diários oficiais
+        *en* -- apenas pessoas e instituições envolvidas em processos)
         :keyword Arguments:
             **limit*(``int``) -- limita a quantidade de registros retornados
             **page**(``ìnt``) -- número da página
@@ -20,7 +24,7 @@ class Busca(Endpoint):
         available_types = ['t', 'p', 'i', 'pa', 'd', 'en']
 
         if tipo_termo not in available_types:
-            raise InvalidParamsException("Invalid word type")
+            raise InvalidParamsException("Tipo de termo invalido")
 
         data = {
             'q': termo,
@@ -28,7 +32,6 @@ class Busca(Endpoint):
             'limit': kwargs.get('limit'),
             'page': kwargs.get('page')
         }
-
         return self.methods.get("busca", data=data)
 
     def get_processo_por_oab(self, estado_oab, numero_oab, **kwargs):

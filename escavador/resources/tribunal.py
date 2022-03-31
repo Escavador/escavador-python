@@ -10,7 +10,7 @@ class Tribunal(Endpoint):
         """
         return self.methods.get("tribunal/origens");
 
-    def get_detalhes_tribunal(self, sigla_tribunal):
+    def get_detalhes(self, sigla_tribunal):
         """
         Retorna os detalhes do tribunal enviado
         :param sigla_tribunal: the acronym of the searched court system

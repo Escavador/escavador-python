@@ -49,7 +49,7 @@ class BuscaAssincrona(Endpoint):
             'wait': kwargs.get('wait')
         }
 
-        return self.methods.post(f"tribunal/{origem}/busca-por-nome/async", data=data)
+        return self.methods.post(f"tribunal/{origem.upper()}/busca-por-nome/async", data=data)
 
     def get_processo_por_documento(self, origem, numero_documento, **kwargs):
         """
@@ -70,7 +70,7 @@ class BuscaAssincrona(Endpoint):
             'wait': kwargs.get('wait')
         }
 
-        return self.methods.post(f"tribunal/{origem}/busca-por-documento/async", data=data)
+        return self.methods.post(f"tribunal/{origem.upper()}/busca-por-documento/async", data=data)
 
     def get_processo_por_oab(self, origem, numero_oab, estado_oab , **kwargs):
         """
@@ -93,7 +93,7 @@ class BuscaAssincrona(Endpoint):
             'wait': kwargs.get('wait')
         }
 
-        return self.methods.post(f"tribunal/{origem}/busca-por-oab/async", data=data)
+        return self.methods.post(f"tribunal/{origem.upper()}/busca-por-oab/async", data=data)
 
     def busca_em_lote(self, tipo_busca, origens, **kwargs):
         """
@@ -110,6 +110,8 @@ class BuscaAssincrona(Endpoint):
         """
 
         available_types = ['busca_por_nome', 'busca_por_documento', 'busca_por_oab']
+
+        origens = [origem.upper() for origem in origens]
 
         if tipo_busca not in available_types:
             raise InvalidParamsException("Tipo de busca inválida")
