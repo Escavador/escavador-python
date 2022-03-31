@@ -1,4 +1,4 @@
-from escavador.endpoint import Endpoint
+from escavador.resources.endpoint import Endpoint
 
 
 class Legislacao(Endpoint):

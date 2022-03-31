@@ -1,10 +1,7 @@
-from escavador.method import Method
+from escavador.resources.endpoint import Endpoint
 
 
-class Tribunal(object):
-
-    def __init__(self):
-        self.methods = Method()
+class Tribunal(Endpoint):
 
     def get_sistemas_tribunais_disponiveis(self):
         """
