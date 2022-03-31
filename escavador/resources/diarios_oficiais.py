@@ -8,7 +8,7 @@ class DiarioOficial(Endpoint):
         Retorna as origens de todos os diários disponiveis no Escavador.
         :return: json
         """
-        return self.methods.get("/origens")
+        return self.methods.get("origens")
 
     def get_pagina_diario(self, id_diario, **kwargs):
         """
@@ -20,7 +20,7 @@ class DiarioOficial(Endpoint):
         """
         data = kwargs.get('page')
 
-        return self.methods.get(f"/diarios/{id_diario}", data=data)
+        return self.methods.get(f"diarios/{id_diario}", data=data)
 
     def download_pdf_pagina_diario(self, id_diario, page):
         """
@@ -29,4 +29,4 @@ class DiarioOficial(Endpoint):
         :param page: número da página do diário oficial
         :return: pdf com a página do diario
         """
-        return self.methods.get(f"/diarios/{id_diario}/pdf/pagina/{page}/baixar")
+        return self.methods.get(f"diarios/{id_diario}/pdf/pagina/{page}/baixar")

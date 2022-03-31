@@ -8,7 +8,7 @@ class Tribunal(Endpoint):
         Retorna todos os sistemas de tribunais disponiveis
         :return: json contendo todos os sistemas de tribunais disponiveis
         """
-        return self.methods.get("/tribunal/origens");
+        return self.methods.get("tribunal/origens");
 
     def get_detalhes_tribunal(self, sigla_tribunal):
         """
@@ -16,4 +16,4 @@ class Tribunal(Endpoint):
         :param sigla_tribunal: the acronym of the searched court system
         :return: json contendo os detalhes do tribunal enviado
         """
-        return self.methods.get(f"/tribunal/origens/{sigla_tribunal}");
+        return self.methods.get(f"tribunal/origens/{sigla_tribunal}");

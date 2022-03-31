@@ -28,7 +28,7 @@ class BuscaAssincrona(Endpoint):
             'origem': kwargs.get('origem')
         }
 
-        return self.methods.post(f"/processo-tribunal/{numero_unico}/async", data=data)
+        return self.methods.post(f"processo-tribunal/{numero_unico}/async", data=data)
 
     def get_processo_por_nome(self, origem, nome, **kwargs):
         """
@@ -49,7 +49,7 @@ class BuscaAssincrona(Endpoint):
             'wait': kwargs.get('wait')
         }
 
-        return self.methods.post(f"/tribunal/{origem}/busca-por-nome/async", data=data)
+        return self.methods.post(f"tribunal/{origem}/busca-por-nome/async", data=data)
 
     def get_processo_por_documento(self, origem, numero_documento, **kwargs):
         """
@@ -70,7 +70,7 @@ class BuscaAssincrona(Endpoint):
             'wait': kwargs.get('wait')
         }
 
-        return self.methods.post(f"/tribunal/{origem}/busca-por-documento/async", data=data)
+        return self.methods.post(f"tribunal/{origem}/busca-por-documento/async", data=data)
 
     def get_processo_por_oab(self, origem, numero_oab, estado_oab , **kwargs):
         """
@@ -93,7 +93,7 @@ class BuscaAssincrona(Endpoint):
             'wait': kwargs.get('wait')
         }
 
-        return self.methods.post(f"/tribunal/{origem}/busca-por-oab/async", data=data)
+        return self.methods.post(f"tribunal/{origem}/busca-por-oab/async", data=data)
 
     def busca_em_lote(self, tipo_busca, origens, **kwargs):
         """
@@ -123,7 +123,7 @@ class BuscaAssincrona(Endpoint):
             'estado_oab': kwargs.get('estado_oab')
         }
 
-        return self.methods.post("/tribunal/async/lote", data=data)
+        return self.methods.post("tribunal/async/lote", data=data)
 
     def get_todos_resultados(self):
         """
@@ -131,7 +131,7 @@ class BuscaAssincrona(Endpoint):
         :return: json
         """
 
-        return self.methods.get('/async/resultados')
+        return self.methods.get('async/resultados')
 
     def get_resultado(self, id_busca):
         """
@@ -139,7 +139,7 @@ class BuscaAssincrona(Endpoint):
         :return: json
         """
 
-        return self.methods.get(f'/async/resultados/{id_busca}')
+        return self.methods.get(f'async/resultados/{id_busca}')
 
 
 

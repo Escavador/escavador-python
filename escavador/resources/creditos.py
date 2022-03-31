@@ -8,4 +8,4 @@ class Creditos(Endpoint):
         Retorna a quantidade de créditos do usuário
         :return: json
         """
-        return self.methods.get("/quantidade-creditos")
+        return self.methods.get("quantidade-creditos")

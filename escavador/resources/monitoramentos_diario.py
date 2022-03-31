@@ -11,7 +11,7 @@ class MonitoramentoDiario(Endpoint):
         :return: json
         """
 
-        return self.methods.get(f"/monitoramentos/{id_monitoramento}/origens")
+        return self.methods.get(f"monitoramentos/{id_monitoramento}/origens")
 
     def criar_monitoramento(self, tipo_monitoramento, **kwargs):
         """
@@ -39,7 +39,7 @@ class MonitoramentoDiario(Endpoint):
             'termos_auxiliares': kwargs.get('termos_auxiliares')
         }
 
-        return self.methods.post("/monitoramentos", data=data)
+        return self.methods.post("monitoramentos", data=data)
 
     def get_monitoramentos(self):
         """
@@ -47,7 +47,7 @@ class MonitoramentoDiario(Endpoint):
         :return: json
         """
 
-        return self.methods.get("/monitoramentos")
+        return self.methods.get("monitoramentos")
 
     def get_monitoramento(self, id_monitoramento):
         """
@@ -56,7 +56,7 @@ class MonitoramentoDiario(Endpoint):
         :return: json
         """
 
-        return self.methods.get(f"/monitoramentos/{id_monitoramento}")
+        return self.methods.get(f"monitoramentos/{id_monitoramento}")
 
     def editar_monitoramento(self, id_monitoramento, **kwargs):
         """
@@ -74,14 +74,14 @@ class MonitoramentoDiario(Endpoint):
 
         return self.methods.put(f"monitoramentos/{id_monitoramento}", data=data)
 
-    def remover_monitoramento(self,id_monitoramento):
+    def remover_monitoramento(self, id_monitoramento):
         """
         Remove um monitoramento de acordo com seu ID
         :param id_monitoramento: o ID do monitoramento
         :return: json
         """
 
-        return self.methods.delete(f"/monitoramentos/{id_monitoramento}")
+        return self.methods.delete(f"monitoramentos/{id_monitoramento}")
 
     def get_aparicoes(self, id_monitoramento):
         """
@@ -90,7 +90,7 @@ class MonitoramentoDiario(Endpoint):
         :return: json
         """
 
-        return self.methods.get(f"/monitoramentos/{id_monitoramento}/aparicoes")
+        return self.methods.get(f"monitoramentos/{id_monitoramento}/aparicoes")
 
     def test_callback_monitoramento(self, callback_url, **kwargs):
         """
@@ -104,4 +104,4 @@ class MonitoramentoDiario(Endpoint):
             'callback_url': callback_url,
             'tipo': kwargs.get('tipo')
         }
-        return self.methods.post("/monitoramentos/testcallback", data=data)
+        return self.methods.post("monitoramentos/testcallback", data=data)

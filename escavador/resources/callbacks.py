@@ -23,4 +23,4 @@ class Callbacks(Endpoint):
             "item_id": kwargs.get('item_id')
         }
 
-        return self.methods.get('/callbacks', data=data)
+        return self.methods.get('callbacks', data=data)

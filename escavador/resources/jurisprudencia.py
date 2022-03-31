@@ -8,7 +8,7 @@ class Jurisprudencia(Endpoint):
         Lista de filtros disponíveis para a busca de jurisprudências
         :return: json
         """
-        return self.methods.get("/jurisprudencias")
+        return self.methods.get("jurisprudencias")
 
     def busca_por_jurisprudencias(self, termo, **kwargs):
         """
@@ -32,7 +32,7 @@ class Jurisprudencia(Endpoint):
             'filtro': kwargs.get('filtro')
         }
 
-        return self.methods.get('/jurisprudencias/busca', data=data)
+        return self.methods.get('jurisprudencias/busca', data=data)
 
     def get_documento_jurisprudencia(self, tipo_documento, id_documento):
         """
@@ -42,7 +42,7 @@ class Jurisprudencia(Endpoint):
         :return json
         """
 
-        return self.methods.get(f"/jurisprudencias/documento/{tipo_documento}/{id_documento}")
+        return self.methods.get(f"jurisprudencias/documento/{tipo_documento}/{id_documento}")
 
     def download_jurisprudence_document(self, tipo_documento, id_documento, id_arquivo):
         """
@@ -53,4 +53,4 @@ class Jurisprudencia(Endpoint):
         :return: pdf do documento de jurisprudencia
         """
 
-        return self.methods.get(f"/jurisprudencias/pdf/{tipo_documento}/{id_documento}/{id_arquivo}")
+        return self.methods.get(f"jurisprudencias/pdf/{tipo_documento}/{id_documento}/{id_arquivo}")

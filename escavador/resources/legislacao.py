@@ -8,7 +8,7 @@ class Legislacao(Endpoint):
         Lista de filtros disponíveis para a busca de Legislação
         :return: json
         """
-        return self.methods.get("/legislacoes")
+        return self.methods.get("legislacoes")
 
     def busca_por_legislation(self, termo, **kwargs):
         """
@@ -32,7 +32,7 @@ class Legislacao(Endpoint):
             'filtro': kwargs.get('filtro')
         }
 
-        return self.methods.get('/legislacoes/busca', data=data)
+        return self.methods.get('legislacoes/busca', data=data)
 
     def get_documento_legislacao(self, tipo_documento, id_documento):
         """
@@ -42,7 +42,7 @@ class Legislacao(Endpoint):
         :return json
         """
 
-        return self.methods.get(f"/legislacoes/documento/{tipo_documento}/{id_documento}")
+        return self.methods.get(f"legislacoes/documento/{tipo_documento}/{id_documento}")
 
     def fragmentos_texto_legislacao(self, tipo_documento, id_documento):
         """
@@ -52,4 +52,4 @@ class Legislacao(Endpoint):
         :return: json containing text fragments
         """
 
-        return self.methods.get(f"/legislacoes/pdf/{tipo_documento}/{id_documento}/fragmentos")
+        return self.methods.get(f"legislacoes/pdf/{tipo_documento}/{id_documento}/fragmentos")
