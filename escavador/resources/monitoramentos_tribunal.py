@@ -19,7 +19,7 @@ class MonitoramentoTribunal(Endpoint):
         :return: json
         """
 
-        return self.methods.get("/monitoramentos-tribunal/{}".format(id_monitoramento))
+        return self.methods.get(f"/monitoramentos-tribunal/{id_monitoramento}")
 
     def editar_monitoramento(self, id_monitoramento, **kwargs):
         """
@@ -32,7 +32,7 @@ class MonitoramentoTribunal(Endpoint):
         data = {
             'frequencia': kwargs.get('frequencia')
         }
-        return self.methods.put("/monitoramentos-tribunal/{}".format(id_monitoramento), data=data)
+        return self.methods.put(f"/monitoramentos-tribunal/{id_monitoramento}", data=data)
 
     def criar_monitoramento(self, tipo_monitoramento, valor, **kwargs):
         """
@@ -69,4 +69,4 @@ class MonitoramentoTribunal(Endpoint):
         :return: json
         """
 
-        return self.methods.delete("/monitoramentos-tribunal/{}".format(id_monitoramento));
+        return self.methods.delete(f"/monitoramentos-tribunal/{id_monitoramento}")

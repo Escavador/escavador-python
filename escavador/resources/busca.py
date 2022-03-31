@@ -48,7 +48,7 @@ class Busca(Endpoint):
         if estado_oab not in self.states:
             raise InvalidParamsException("Invalid state")
 
-        return self.methods.get("/oab/{}/{}/processos".format(estado_oab, numero_oab), data=data)
+        return self.methods.get(f"/oab/{estado_oab}/{numero_oab}/processos", data=data)
 
     def get_processo(self, id_processo):
         """
@@ -57,7 +57,7 @@ class Busca(Endpoint):
         :return: json
         """
 
-        return self.methods.get("/processos/{}".format(id_processo))
+        return self.methods.get(f"/processos/{id_processo}")
 
     def get_movimentacao_processo(self, id_processo, **kwargs):
         """
@@ -74,7 +74,7 @@ class Busca(Endpoint):
             'page': kwargs.get('page')
         }
 
-        return self.methods.get("/processos/{}/movimentacoes".format(id_processo), data=data)
+        return self.methods.get(f"/processos/{id_processo}/movimentacoes", data=data)
 
     def get_processo_por_numero_unico(self, numero_unico, **kwargs):
         """
@@ -89,7 +89,7 @@ class Busca(Endpoint):
             'match_exato': kwargs.get('match_exato')
         }
 
-        return self.methods.get("/processos/numero/{}".format(numero_unico), data=data)
+        return self.methods.get(f"/processos/numero/{numero_unico}", data=data)
 
     def get_envolvidos_processo(self, id_processo, **kwargs):
         """
@@ -106,7 +106,7 @@ class Busca(Endpoint):
             'page': kwargs.get('page')
         }
 
-        return self.methods.get("/processos/{}/envolvidos".format(id_processo), data=data)
+        return self.methods.get(f"/processos/{id_processo}/envolvidos", data=data)
 
 
 

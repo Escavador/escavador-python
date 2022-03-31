@@ -10,7 +10,7 @@ class Instituicao(Endpoint):
         :return json
         """
 
-        return self.methods.get("/instituicoes/{}".format(id_instituicao))
+        return self.methods.get(f"/instituicoes/{id_instituicao}")
 
     def get_processos_instituicao(self, id_instituicao, **kwargs):
         """
@@ -26,7 +26,7 @@ class Instituicao(Endpoint):
             'limit': kwargs.get('limit'),
             'page': kwargs.get('page')
         }
-        return self.methods.get("/instituicoes/{}/processos".format(id_instituicao),data=data)
+        return self.methods.get(f"/instituicoes/{id_instituicao}/processos", data=data)
 
     def get_institution_persons(self, id_instituicao, **kwargs):
         """
@@ -42,4 +42,4 @@ class Instituicao(Endpoint):
             'limit': kwargs.get('limit'),
             'page': kwargs.get('page')
         }
-        return self.methods.get("/instituicoes/{}/pessoas".format(id_instituicao), data=data)
+        return self.methods.get(f"/instituicoes/{id_instituicao}/pessoas", data=data)

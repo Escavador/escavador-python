@@ -16,4 +16,4 @@ class Tribunal(Endpoint):
         :param sigla_tribunal: the acronym of the searched court system
         :return: json contendo os detalhes do tribunal enviado
         """
-        return self.methods.get("/tribunal/origens/{}".format(sigla_tribunal));
+        return self.methods.get(f"/tribunal/origens/{sigla_tribunal}");

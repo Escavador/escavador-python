@@ -9,7 +9,7 @@ class Pessoas(Endpoint):
         :param id_pessoa: o ID da pessoa
         :return: json
         """
-        return self.methods.get("/pessoas/{}".format(id_pessoa))
+        return self.methods.get(f"/pessoas/{id_pessoa}")
 
     def get_processos_pessoa(self,id_pessoa, **kwargs):
         """
@@ -25,4 +25,4 @@ class Pessoas(Endpoint):
             'page': kwargs.get('page')
         }
 
-        return self.methods.get("/pessoas/{}/processos".format(id_pessoa), data=data)
+        return self.methods.get(f"/pessoas/{id_pessoa}/processos", data=data)

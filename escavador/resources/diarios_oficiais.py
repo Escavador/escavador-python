@@ -20,7 +20,7 @@ class DiarioOficial(Endpoint):
         """
         data = kwargs.get('page')
 
-        return self.methods.get("/diarios/{}".format(id_diario), data=data)
+        return self.methods.get(f"/diarios/{id_diario}", data=data)
 
     def download_pdf_pagina_diario(self, id_diario, page):
         """
@@ -29,4 +29,4 @@ class DiarioOficial(Endpoint):
         :param page: número da página do diário oficial
         :return: pdf com a página do diario
         """
-        return self.methods.get("/diarios/{}/pdf/pagina/{}/baixar".format(id_diario, page))
+        return self.methods.get(f"/diarios/{id_diario}/pdf/pagina/{page}/baixar")

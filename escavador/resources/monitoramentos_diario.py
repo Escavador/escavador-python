@@ -11,7 +11,7 @@ class MonitoramentoDiario(Endpoint):
         :return: json
         """
 
-        return self.methods.get("/monitoramentos/{}/origens".format(id_monitoramento))
+        return self.methods.get(f"/monitoramentos/{id_monitoramento}/origens")
 
     def criar_monitoramento(self, tipo_monitoramento, **kwargs):
         """
@@ -56,7 +56,7 @@ class MonitoramentoDiario(Endpoint):
         :return: json
         """
 
-        return self.methods.get("/monitoramentos/{}".format(id_monitoramento))
+        return self.methods.get(f"/monitoramentos/{id_monitoramento}")
 
     def editar_monitoramento(self, id_monitoramento, **kwargs):
         """
@@ -72,7 +72,7 @@ class MonitoramentoDiario(Endpoint):
             'origens_ids': kwargs.get('origens_ids')
         }
 
-        return self.methods.put("monitoramentos/{}".format(id_monitoramento), data=data)
+        return self.methods.put(f"monitoramentos/{id_monitoramento}", data=data)
 
     def remover_monitoramento(self,id_monitoramento):
         """
@@ -81,7 +81,7 @@ class MonitoramentoDiario(Endpoint):
         :return: json
         """
 
-        return self.methods.delete("/monitoramentos/{}".format(id_monitoramento))
+        return self.methods.delete(f"/monitoramentos/{id_monitoramento}")
 
     def get_aparicoes(self, id_monitoramento):
         """
@@ -90,7 +90,7 @@ class MonitoramentoDiario(Endpoint):
         :return: json
         """
 
-        return self.methods.get("/monitoramentos/{}/aparicoes".format(id_monitoramento))
+        return self.methods.get(f"/monitoramentos/{id_monitoramento}/aparicoes")
 
     def test_callback_monitoramento(self, callback_url, **kwargs):
         """

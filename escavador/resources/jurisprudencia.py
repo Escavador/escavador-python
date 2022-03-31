@@ -42,7 +42,7 @@ class Jurisprudencia(Endpoint):
         :return json
         """
 
-        return self.methods.get("/jurisprudencias/documento/{}/{}".format(tipo_documento, id_documento))
+        return self.methods.get(f"/jurisprudencias/documento/{tipo_documento}/{id_documento}")
 
     def download_jurisprudence_document(self, tipo_documento, id_documento, id_arquivo):
         """
@@ -53,4 +53,4 @@ class Jurisprudencia(Endpoint):
         :return: pdf do documento de jurisprudencia
         """
 
-        return self.methods.get("/jurisprudencias/pdf/{}/{}/{}".format(tipo_documento, id_documento, id_arquivo))
+        return self.methods.get(f"/jurisprudencias/pdf/{tipo_documento}/{id_documento}/{id_arquivo}")

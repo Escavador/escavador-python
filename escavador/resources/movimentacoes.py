@@ -9,4 +9,4 @@ class Movimentacao(Endpoint):
         :param id_movimentacao: o ID da movimentação
         :return: json
         """
-        return self.methods.get("/movimentacoes/{}".format(id_movimentacao))
+        return self.methods.get(f"/movimentacoes/{id_movimentacao}")

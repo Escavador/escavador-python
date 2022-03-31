@@ -42,7 +42,7 @@ class Legislacao(Endpoint):
         :return json
         """
 
-        return self.methods.get("/legislacoes/documento/{}/{}".format(tipo_documento, id_documento))
+        return self.methods.get(f"/legislacoes/documento/{tipo_documento}/{id_documento}")
 
     def fragmentos_texto_legislacao(self, tipo_documento, id_documento):
         """
@@ -52,4 +52,4 @@ class Legislacao(Endpoint):
         :return: json containing text fragments
         """
 
-        return self.methods.get("/legislacoes/pdf/{}/{}/fragmentos".format(tipo_documento, id_documento))
+        return self.methods.get(f"/legislacoes/pdf/{tipo_documento}/{id_documento}/fragmentos")
