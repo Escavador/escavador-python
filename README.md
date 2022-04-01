@@ -1,7 +1,7 @@
-##escavador-python
+## escavador-python
 SDK em python para utilizar a API do Escavador
 
-###Como Utilizar
+### Como Utilizar
 ```py
 from escavador import BuscaAssincrona
 
