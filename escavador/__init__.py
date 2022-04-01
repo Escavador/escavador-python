@@ -1,0 +1,1 @@
+from escavador.resources import *
