@@ -1,5 +1,6 @@
 from escavador.resources.endpoint import Endpoint
 from escavador.exceptions import InvalidParamsException
+from escavador.resources.utils import Utils
 
 
 class BuscaAssincrona(Endpoint):
@@ -24,7 +25,7 @@ class BuscaAssincrona(Endpoint):
             'wait': kwargs.get('wait'),
             'autos': kwargs.get('autos'),
             'usuario': kwargs.get('usuario'),
-            'senha':kwargs.get('senha'),
+            'senha': kwargs.get('senha'),
             'origem': kwargs.get('origem')
         }
 
@@ -72,7 +73,7 @@ class BuscaAssincrona(Endpoint):
 
         return self.methods.post(f"tribunal/{origem.upper()}/busca-por-documento/async", data=data)
 
-    def get_processo_por_oab(self, origem, numero_oab, estado_oab , **kwargs):
+    def get_processo_por_oab(self, origem, numero_oab, estado_oab, **kwargs):
         """
         Cria uma busca assíncrona no tribunal de origem baseada nos dados de oab enviados
         :param origem: o tribunal onde a busca será realizada
@@ -113,6 +114,11 @@ class BuscaAssincrona(Endpoint):
 
         origens = [origem.upper() for origem in origens]
 
+        estado_oab = kwargs.get('estado_oab')
+
+        if estado_oab is not None and estado_oab not in Utils.valid_states():
+            raise InvalidParamsException("Estado inválido")
+
         if tipo_busca not in available_types:
             raise InvalidParamsException("Tipo de busca inválida")
 
@@ -142,6 +148,3 @@ class BuscaAssincrona(Endpoint):
         """
 
         return self.methods.get(f'async/resultados/{id_busca}')
-
-
-

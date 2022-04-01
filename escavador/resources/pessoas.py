@@ -11,7 +11,7 @@ class Pessoa(Endpoint):
         """
         return self.methods.get(f"pessoas/{id_pessoa}")
 
-    def get_processos_pessoa(self,id_pessoa, **kwargs):
+    def get_processos_pessoa(self, id_pessoa, **kwargs):
         """
         Return the process of an person based on the person ID \n
         :argument id_pessoa: o ID da pessoa

@@ -16,7 +16,7 @@ class Callbacks(Endpoint):
         """
 
         data = {
-            "data_maxima":kwargs.get('data_maxima'),
+            "data_maxima": kwargs.get('data_maxima'),
             "data_minima": kwargs.get('data_minima'),
             "evento": kwargs.get('evento'),
             "item_tipo": kwargs.get('item_tipo'),
