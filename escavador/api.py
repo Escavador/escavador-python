@@ -24,5 +24,5 @@ class Api(object):
         if data is not None:
             data = {key: value for key, value in kwargs.get('data').items() if value is not None}
         async with aiohttp.ClientSession() as session:
-            async with session.request(method=method, url=url, headers=self.headers(), data=json.dumps(data)) as resp:
+            async with session.request(method=method, url=url, headers=self.headers(), json=data) as resp:
                 return await resp.json()
