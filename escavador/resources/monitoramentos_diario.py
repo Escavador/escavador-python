@@ -4,7 +4,7 @@ from escavador.exceptions import InvalidParamsException
 
 class MonitoramentoDiario(Endpoint):
 
-    def get_monitor_journals(self, id_monitoramento):
+    def get_diarios_monitoramento(self, id_monitoramento):
         """
         Retorna os diários oficiais de um monitoramento
         :param id_monitoramento: the monitor ID
