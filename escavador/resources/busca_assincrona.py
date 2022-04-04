@@ -148,3 +148,28 @@ class BuscaAssincrona(Endpoint):
         """
 
         return self.methods.get(f'async/resultados/{id_busca}')
+
+    def get_pdf(self, link_pdf, path, nome_arquivo):
+        """
+        Baixa um pdf de autos de acordo com seu link e salva no caminho enviado, com o nome enviado
+        :param nome_arquivo: nome do arquivo a ser criado
+        :param link_pdf: link do documento
+        :param path: caminho onde o pdf será salvo
+        :return: json
+        """
+        path = f"{path}/{nome_arquivo}.pdf"
+
+        try:
+            open(path, "x")
+
+            conteudo = self.methods.get(link_pdf)
+
+            arquivo = open(path, "+wb")
+            arquivo.write(conteudo)
+            arquivo.close()
+        except FileExistsError as error:
+            return {"error": error.strerror}
+        except FileNotFoundError as error:
+            return {"error": error.strerror}
+
+        return {"path": path}

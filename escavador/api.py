@@ -1,4 +1,3 @@
-import json
 import os
 import aiohttp
 from urllib import parse
@@ -25,4 +24,7 @@ class Api(object):
             data = {key: value for key, value in kwargs.get('data').items() if value is not None}
         async with aiohttp.ClientSession() as session:
             async with session.request(method=method, url=url, headers=self.headers(), json=data) as resp:
-                return await resp.json()
+                if resp.headers['Content-Type'] == 'application/pdf':
+                    return await resp.read()
+                else:
+                    return await resp.json()
