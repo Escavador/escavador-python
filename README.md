@@ -1,6 +1,11 @@
 ## escavador-python
 SDK em python para utilizar a API do Escavador
 
+### Como Configurar
+
+- Crie no .env do seu projeto uma variavel ESCAVADOR_API_KEY com seu token da API
+- para obter seu token da API, acesse o [painel de tokens](https://api.escavador.com/tokens)
+
 ### Como Utilizar
 ```py
 from escavador import BuscaAssincrona
