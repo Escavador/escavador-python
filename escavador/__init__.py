@@ -1,1 +1,1 @@
-from resources import *
+from escavador.resources import *
