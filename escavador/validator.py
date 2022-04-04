@@ -1,4 +1,4 @@
-class Utils(object):
+class Validator(object):
 
     @staticmethod
     def valid_states():

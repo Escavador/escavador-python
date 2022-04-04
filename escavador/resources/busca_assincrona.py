@@ -1,6 +1,6 @@
 from escavador.resources.endpoint import Endpoint
 from escavador.exceptions import InvalidParamsException
-from escavador.resources.utils import Utils
+from escavador.validator import Validator
 
 
 class BuscaAssincrona(Endpoint):
@@ -116,7 +116,7 @@ class BuscaAssincrona(Endpoint):
 
         estado_oab = kwargs.get('estado_oab')
 
-        if estado_oab is not None and estado_oab not in Utils.valid_states():
+        if estado_oab is not None and estado_oab not in Validator.valid_states():
             raise InvalidParamsException("Estado inválido")
 
         if tipo_busca not in available_types:

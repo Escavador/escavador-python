@@ -1,6 +1,6 @@
 from escavador.resources.endpoint import Endpoint
 from escavador.exceptions import InvalidParamsException
-from escavador.resources.utils import Utils
+from escavador.validator import Validator
 
 
 class Busca(Endpoint):
@@ -49,7 +49,7 @@ class Busca(Endpoint):
             'page': kwargs.get('page')
         }
 
-        if estado_oab not in Utils.valid_states():
+        if estado_oab not in Validator.valid_states():
             raise InvalidParamsException("Invalid state")
 
         return self.methods.get(f"oab/{estado_oab}/{numero_oab}/processos", data=data)
