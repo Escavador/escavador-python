@@ -3,7 +3,7 @@ class Documento(object):
     @staticmethod
     def get_pdf(conteudo, path, nome_arquivo):
         """
-        Baixa um pdf de autos de acordo com seu link e salva no caminho enviado, com o nome enviado
+        Salva um pdf vindo de respostas da API com o nome enviado, no diretório informado
         :param nome_arquivo: nome do arquivo a ser criado
         :param conteudo: pdf vindo de respostas da API
         :param path: caminho onde o pdf será salvo
