@@ -1,9 +1,9 @@
 from escavador.resources.endpoint import Endpoint
 
 
-class Creditos(Endpoint):
+class Saldo(Endpoint):
 
-    def get_creditos(self):
+    def get(self):
         """
         Retorna a quantidade de créditos do usuário
         :return: json
