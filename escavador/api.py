@@ -8,7 +8,7 @@ load_dotenv()
 class Api(object):
 
     def __init__(self):
-        self.base_url = os.environ['ESCAVADOR_BASE_URL']
+        self.base_url = 'http://api.escavador.com/api/v1/'
         self.api_key = os.environ['ESCAVADOR_API_KEY']
 
     def headers(self):
