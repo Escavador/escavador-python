@@ -1,4 +1,5 @@
 from escavador.resources.endpoint import Endpoint
+from escavador.resources.documentos import Documento
 
 
 class Jurisprudencia(Endpoint):
@@ -44,13 +45,17 @@ class Jurisprudencia(Endpoint):
 
         return self.methods.get(f"jurisprudencias/documento/{tipo_documento}/{id_documento}")
 
-    def download_documento_jurisprudencia(self, tipo_documento, id_documento, id_arquivo):
+    def download_documento_jurisprudencia(self, tipo_documento, id_documento, id_arquivo, path, nome_arquivo):
         """
         Retorna, em formato PDF, um documento de jurisprudência
          :param tipo_documento: o tipo de documento
         :param id_documento: o ID do documento
         :param id_arquivo: o ID do arquivo do documento
+        :param path: caminho onde o pdf será salvo
+        :param nome_arquivo: nome do arquivo a ser criado
         :return: pdf do documento de jurisprudencia
         """
 
-        return self.methods.get(f"jurisprudencias/pdf/{tipo_documento}/{id_documento}/{id_arquivo}")
+        conteudo = self.methods.get(f"jurisprudencias/pdf/{tipo_documento}/{id_documento}/{id_arquivo}")
+
+        return Documento.get_pdf(conteudo, path, nome_arquivo)

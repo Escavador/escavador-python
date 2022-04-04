@@ -1,6 +1,7 @@
 from escavador.resources.endpoint import Endpoint
 from escavador.exceptions import InvalidParamsException
 from escavador.validator import Validator
+from escavador.resources.documentos import Documento
 
 
 class BuscaAssincrona(Endpoint):
@@ -157,19 +158,6 @@ class BuscaAssincrona(Endpoint):
         :param path: caminho onde o pdf será salvo
         :return: json
         """
-        path = f"{path}/{nome_arquivo}.pdf"
+        conteudo = self.methods.get(link_pdf)
 
-        try:
-            open(path, "x")
-
-            conteudo = self.methods.get(link_pdf)
-
-            arquivo = open(path, "+wb")
-            arquivo.write(conteudo)
-            arquivo.close()
-        except FileExistsError as error:
-            return {"error": error.strerror}
-        except FileNotFoundError as error:
-            return {"error": error.strerror}
-
-        return {"path": path}
+        return Documento.get_pdf(conteudo, path, nome_arquivo)
