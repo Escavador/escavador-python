@@ -3,7 +3,7 @@ SDK em python para utilizar a API do Escavador
 
 ### Como Configurar
 
-- Crie no .env do seu projeto uma variavel ESCAVADOR_API_KEY com seu token da API
+- Crie no `.env` do seu projeto uma variável `ESCAVADOR_API_KEY` com seu token da API
 - para obter seu token da API, acesse o [painel de tokens](https://api.escavador.com/tokens)
 
 ### Como Utilizar
@@ -13,7 +13,7 @@ from escavador import BuscaAssincrona
 resultado_busca = BuscaAssincrona().get_processo("8809061-58.2022.8.10.3695")
 ```
 
-### Módulos Disponiveis
+### Módulos Disponíveis
 
 | Módulo                | Link API                                                                          |
 |-----------------------|-----------------------------------------------------------------------------------|
