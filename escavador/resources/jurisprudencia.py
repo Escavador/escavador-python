@@ -44,7 +44,7 @@ class Jurisprudencia(Endpoint):
 
         return self.methods.get(f"jurisprudencias/documento/{tipo_documento}/{id_documento}")
 
-    def download_jurisprudence_document(self, tipo_documento, id_documento, id_arquivo):
+    def download_documento_jurisprudencia(self, tipo_documento, id_documento, id_arquivo):
         """
         Retorna, em formato PDF, um documento de jurisprudência
          :param tipo_documento: o tipo de documento
