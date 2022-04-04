@@ -7,3 +7,22 @@ from escavador import BuscaAssincrona
 
 resultado_busca = BuscaAssincrona().get_processo("8809061-58.2022.8.10.3695")
 ```
+
+### Módulos Disponiveis
+
+| Módulo                | Link API                                                                          |
+|-----------------------|-----------------------------------------------------------------------------------|
+| Busca                 | https://api.escavador.com/docs/#busca & https://api.escavador.com/docs/#processos |
+| BuscaAssincrona       | https://api.escavador.com/docs/#processos & https://api.escavador.com/docs/#busca |
+| Callback              | https://api.escavador.com/docs/#callback                                          |
+| DiarioOficial         | https://api.escavador.com/docs/#dirios-oficiais                                   |
+| Instituicao           | https://api.escavador.com/docs/#instituies                                        |
+| Legislacao            | https://api.escavador.com/docs/#legislao                                          |
+| Jurisprudencia        | https://api.escavador.com/docs/#jurisprudncias                                    |
+| Jurisprudencia        | https://api.escavador.com/docs/#jurisprudncias                                    |
+| MonitoramentoDiario   | https://api.escavador.com/docs/#monitoramento-de-dirios-oficiais                  |
+| MonitoramentoTribunal | https://api.escavador.com/docs/#monitoramento-no-site-do-tribunal                 |
+| Movimentacao          | https://api.escavador.com/docs/#movimentaes                                       |
+| Pessoa                | https://api.escavador.com/docs/#pessoas                                           |
+| Tribunal              | https://api.escavador.com/docs/#tribunais                                         |
+| Saldo                 | https://api.escavador.com/docs/#saldo-da-api                                      | 
