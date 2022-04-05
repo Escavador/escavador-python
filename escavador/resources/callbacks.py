@@ -3,7 +3,7 @@ from escavador.resources.endpoint import Endpoint
 
 class Callbacks(Endpoint):
 
-    def get_callbacks(self, **kwargs):
+    def get(self, **kwargs):
         """
         :keyword Arguments:
             **data_maxima*(``date``) -- a data máxima do callback
