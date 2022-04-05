@@ -1,3 +1,6 @@
+from pathlib import Path
+
+
 class Documento(object):
 
     @staticmethod
@@ -9,17 +12,13 @@ class Documento(object):
         :param path: caminho onde o pdf será salvo
         :return: json
         """
-        path = f"{path}/{nome_arquivo}.pdf"
-
+        real_path = Path(path) / f"{nome_arquivo}.pdf"
         try:
-            open(path, "x")
-
-            arquivo = open(path, "+wb")
-            arquivo.write(conteudo)
-            arquivo.close()
+            with open(real_path, "xb+") as arquivo:
+                arquivo.write(conteudo)
         except FileExistsError as error:
             return {"error": error.strerror}
         except FileNotFoundError as error:
             return {"error": error.strerror}
 
-        return {"path": path}
+        return {"path": real_path}
