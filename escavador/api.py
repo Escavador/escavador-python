@@ -1,7 +1,10 @@
 import os
 import aiohttp
+import escavador
+from escavador.exceptions import ApiKeyNotFoundException
 from urllib import parse
 from dotenv import load_dotenv
+
 load_dotenv()
 
 
@@ -9,7 +12,12 @@ class Api(object):
 
     def __init__(self):
         self.base_url = 'http://api.escavador.com/api/v1/'
-        self.api_key = os.environ['ESCAVADOR_API_KEY']
+        self.api_key = escavador.__APIKEY__
+        if self.api_key is None:
+            try:
+                self.api_key = os.environ['ESCAVADOR_API_KEY']
+            except KeyError:
+                raise ApiKeyNotFoundException("Nenhuma chave da API foi informada")
 
     def headers(self):
         return {
