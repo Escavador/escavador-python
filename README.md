@@ -42,6 +42,14 @@ from escavador import Callbacks
 callbacks = Callbacks().get(data_maxima="2022-04-05")
 ```
 
+### Download de documentos
+```py
+from escavador import BuscaAssincrona
+
+resultado_busca = BuscaAssincrona().get_processo("8809061-58.2022.8.10.3695",wait=1,autos=1,usuario="user", senha="password")
+link_documento = resultado_busca['resposta']['instancia'][0]['documentos_restritos'][2]['link_api']
+documento = BuscaAssincrona().get_pdf(link_documento,'/documentos','autos')
+```
 ### Módulos Disponíveis
 
 | Módulo                | Link API                                                                          |
