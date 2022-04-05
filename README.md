@@ -11,6 +11,26 @@ SDK em python para utilizar a API do Escavador
 from escavador import BuscaAssincrona
 
 resultado_busca = BuscaAssincrona().get_processo("8809061-58.2022.8.10.3695")
+
+#Para acessar campos da resposta
+print(resultado_busca['status'])
+
+#Para utilizar parametros opcionais de rotas, utilize os kwargs
+resultado_busca = BuscaAssincrona().busca_em_lote('busca_por_oab', ['TJSP', 'TJBA'], numero_oab=12345, estado_oab='BA')
+```
+
+### Criando Monitoramentos
+```py
+from escavador import MonitoramentoTribunal
+
+monitoramento = MonitoramentoTribunal().criar_monitoramento('UNICO',"8809061-58.2022.8.10.3695",frequencia='DIARIO')
+```
+
+### Consultando Tribunais
+```py
+from escavador import Tribunal
+
+tribunais_disponiveis = Tribunal().get_sistemas_tribunais_disponiveis()
 ```
 
 ### Módulos Disponíveis
