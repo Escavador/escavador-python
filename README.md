@@ -21,9 +21,11 @@ resultado_busca = BuscaAssincrona().busca_em_lote('busca_por_oab', ['TJSP', 'TJB
 
 ### Criando Monitoramentos
 ```py
-from escavador import MonitoramentoTribunal
+from escavador import MonitoramentoTribunal, MonitoramentoDiario
 
-monitoramento = MonitoramentoTribunal().criar_monitoramento('UNICO',"8809061-58.2022.8.10.3695",frequencia='DIARIO')
+monitoramento = MonitoramentoTribunal().criar_monitoramento('UNICO',"8809061-58.2022.8.10.3695", frequencia='DIARIO')
+
+monitoramento = MonitoramentoDiario().criar_monitoramento('processo', processo_id=2, origens_id=[2,4,6])
 ```
 
 ### Consultando Tribunais
@@ -31,6 +33,13 @@ monitoramento = MonitoramentoTribunal().criar_monitoramento('UNICO',"8809061-58.
 from escavador import Tribunal
 
 tribunais_disponiveis = Tribunal().get_sistemas_tribunais_disponiveis()
+```
+
+### Obter Callbacks de buscas e monitoramentos
+```py
+from escavador import Callbacks
+
+callbacks = Callbacks().get(data_maxima="2022-04-05")
 ```
 
 ### Módulos Disponíveis
