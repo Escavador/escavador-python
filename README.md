@@ -1,4 +1,4 @@
-# escavador-python
+from escavador.resources.enums import TiposMonitoramentos# escavador-python
 SDK em python para utilizar a API do Escavador
 
 ### Como Configurar
@@ -14,7 +14,7 @@ escavador.config("API_KEY")
 
 ### Como Utilizar
 ```py
-from escavador import BuscaAssincrona
+from escavador import BuscaAssincrona, TiposBusca
 
 resultado_busca = BuscaAssincrona().get_processo("8809061-58.2022.8.10.3695")
 
@@ -22,16 +22,16 @@ resultado_busca = BuscaAssincrona().get_processo("8809061-58.2022.8.10.3695")
 print(resultado_busca['status'])
 
 #Para utilizar parametros opcionais de rotas, utilize os keyword arguments, iguais a documentação da API
-resultado_busca = BuscaAssincrona().busca_em_lote('busca_por_oab', ['TJSP', 'TJBA'], numero_oab=12345, estado_oab='BA')
+resultado_busca = BuscaAssincrona().busca_em_lote(TiposBusca.BUSCA_POR_OAB, ['TJSP', 'TJBA'], numero_oab=12345, estado_oab='BA')
 ```
 
 ### Criando Monitoramentos
 ```py
-from escavador import MonitoramentoTribunal, MonitoramentoDiario
+from escavador import MonitoramentoTribunal, MonitoramentoDiario, TiposMonitoramentosTribunal, TiposMonitoramentosDiario
 
-monitoramento_tribunal = MonitoramentoTribunal().criar_monitoramento('UNICO',"8809061-58.2022.8.10.3695", frequencia='DIARIO')
+monitoramento_tribunal = MonitoramentoTribunal().criar_monitoramento(TiposMonitoramentosTribunal.UNICO,"8809061-58.2022.8.10.3695", frequencia='DIARIO')
 
-monitoramento_diario = MonitoramentoDiario().criar_monitoramento('processo', processo_id=2, origens_ids=[2,4,6])
+monitoramento_diario = MonitoramentoDiario().criar_monitoramento(TiposMonitoramentosDiario.PROCESSO, processo_id=2, origens_ids=[2,4,6])
 ```
 
 ### Consultando Tribunais
