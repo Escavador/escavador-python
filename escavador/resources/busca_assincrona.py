@@ -1,5 +1,6 @@
 from escavador.resources.endpoint import Endpoint
 from escavador.exceptions import InvalidParamsException
+from escavador.resources.enums import TiposBusca
 from escavador.validator import Validator
 from escavador.resources.documentos import Documento
 from typing import Optional
@@ -100,9 +101,9 @@ class BuscaAssincrona(Endpoint):
 
         return self.methods.post(f"tribunal/{origem.upper()}/busca-por-oab/async", data=data)
 
-    def busca_em_lote(self, tipo_busca: str, origens: list[str], *, send_callback: Optional[bool] = None,
-                      numero_oab: Optional[str, int] = None, estado_oab: Optional[str] = None,
-                      numero_documento: Optional[str, int] = None, nome: Optional[str] = None) -> dict:
+    def busca_em_lote(self, tipo_busca: TiposBusca, origens: list[str], *, send_callback: Optional[bool] = None,
+                      numero_oab: Optional[str] = None, estado_oab: Optional[str] = None,
+                      numero_documento: Optional[str] = None, nome: Optional[str] = None) -> dict:
         """
         Cria buscas do mesmo tipo para todos os tribunais enviados
         :param nome: o nome que será pesquisado
@@ -124,11 +125,11 @@ class BuscaAssincrona(Endpoint):
         if estado_oab is not None and estado_oab not in Validator.valid_states():
             raise InvalidParamsException("Estado inválido")
 
-        if tipo_busca not in available_types:
+        if tipo_busca.value not in available_types:
             raise InvalidParamsException("Tipo de busca inválida")
 
         data = {
-            'tipo': tipo_busca,
+            'tipo': tipo_busca.value,
             'tribunais': origens,
             'nome': nome,
             'numero_documento': numero_documento,

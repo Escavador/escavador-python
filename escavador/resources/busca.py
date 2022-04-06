@@ -3,11 +3,12 @@ from escavador.resources.endpoint import Endpoint
 from escavador.exceptions import InvalidParamsException
 from escavador.validator import Validator
 from typing import Optional
+from .enums import TiposTermo
 
 
 class Busca(Endpoint):
 
-    def get_termo(self, termo: str, tipo_termo: str, *, limit: Optional[int] = None,
+    def get_termo(self, termo: str, tipo_termo: TiposTermo, *, limit: Optional[int] = None,
                   page: Optional[int] = None) -> dict:
         """
         Pesquisa um termo no escavador
@@ -26,12 +27,12 @@ class Busca(Endpoint):
 
         available_types = ['t', 'p', 'i', 'pa', 'd', 'en']
 
-        if tipo_termo not in available_types:
+        if tipo_termo.value not in available_types:
             raise InvalidParamsException("Tipo de termo invalido")
 
         data = {
             'q': termo,
-            'qo': tipo_termo,
+            'qo': tipo_termo.value,
             'limit': limit,
             'page': page
         }

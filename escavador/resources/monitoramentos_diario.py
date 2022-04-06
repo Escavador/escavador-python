@@ -1,6 +1,7 @@
 from escavador.resources.endpoint import Endpoint
 from escavador.exceptions import InvalidParamsException
 from typing import Optional
+from escavador.resources.enums import TiposMonitoramentos
 
 
 class MonitoramentoDiario(Endpoint):
@@ -14,9 +15,9 @@ class MonitoramentoDiario(Endpoint):
 
         return self.methods.get(f"monitoramentos/{id_monitoramento}/origens")
 
-    def criar_monitoramento(self, tipo_monitoramento: str, *, termo: Optional[str] = None,
+    def criar_monitoramento(self, tipo_monitoramento: TiposMonitoramentos, *, termo: Optional[str] = None,
                             origens_ids: Optional[list[int]] = None, processo_id: Optional[int] = None,
-                            variacoes: Optional[list[str]] = None, termos_auxiliares: Optional[list[str][str]] = None
+                            variacoes: Optional[list[str]] = None, termos_auxiliares: Optional[list[str]] = None
                             ) -> dict:
         """
         Cria um novo monitoramento para termos ou processos
@@ -29,11 +30,11 @@ class MonitoramentoDiario(Endpoint):
         :return: dict
         """
 
-        if tipo_monitoramento not in ['termo', 'processo']:
+        if tipo_monitoramento.value not in ['termo', 'processo']:
             raise InvalidParamsException("Tipo de monitoramento inválido")
 
         data = {
-            'tipo': tipo_monitoramento,
+            'tipo': tipo_monitoramento.value,
             'termo': termo,
             'origens_ids': origens_ids,
             'processo_id': processo_id,
