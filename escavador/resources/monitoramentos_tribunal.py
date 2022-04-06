@@ -51,7 +51,7 @@ class MonitoramentoTribunal(Endpoint):
         if tipo_monitoramento.value not in available_types:
             raise InvalidParamsException("Tipo de monitoramento inválido")
 
-        if tipo_monitoramento is not TiposMonitoramentosTribunal.UNICO and tribunal is None:
+        if tipo_monitoramento.value is not TiposMonitoramentosTribunal.UNICO and tribunal is None:
             raise InvalidParamsException("O tribunal é obrigatório para esse tipo de monitoramento")
 
         data = {
