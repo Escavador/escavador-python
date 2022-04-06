@@ -4,13 +4,13 @@ from pathlib import Path
 class Documento(object):
 
     @staticmethod
-    def get_pdf(conteudo, path, nome_arquivo):
+    def get_pdf(conteudo: str, path: str, nome_arquivo: str) -> dict:
         """
         Salva um pdf vindo de respostas da API com o nome enviado, no diretório informado
         :param nome_arquivo: nome do arquivo a ser criado
         :param conteudo: pdf vindo de respostas da API
         :param path: caminho onde o pdf será salvo
-        :return: json
+        :return: dict
         """
         real_path = Path(path) / f"{nome_arquivo}.pdf"
         try:

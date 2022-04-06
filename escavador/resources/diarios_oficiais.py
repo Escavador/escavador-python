@@ -1,32 +1,37 @@
 from escavador.resources.endpoint import Endpoint
+from escavador.resources.documentos import Documento
+from typing import Optional
 
 
 class DiarioOficial(Endpoint):
 
-    def get_origens(self):
+    def get_origens(self) -> dict:
         """
         Retorna as origens de todos os diários disponiveis no Escavador.
-        :return: json
+        :return: dict
         """
         return self.methods.get("origens")
 
-    def get_pagina_diario(self, id_diario, **kwargs):
+    def get_pagina_diario(self, id_diario: int, *, page: Optional[int] = None) -> dict:
         """
         Retorna uma página específica do Diário Oficial pelo seu identificador no Escavador.
         :param id_diario: o ID do diario oficial
-        :keyword arguments:
-            **page**(``int``) -- número da página do diário oficial
-        :return: json
+        :param page número da página do diário oficial
+        :return: dict
         """
-        data = kwargs.get('page')
+        data = page
 
         return self.methods.get(f"diarios/{id_diario}", data=data)
 
-    def download_pdf_pagina_diario(self, id_diario, page):
+    def download_pdf_pagina_diario(self, id_diario: int, page: int, path: str, nome_arquivo: str) -> dict:
         """
         Retorna em formato PDF, uma página do Diário Oficial pelo seu identificador
+        :param nome_arquivo:nome para o arquivo baixado
+        :param path: diretorio onde o arquivo será salvo
         :param id_diario: o ID do diario oficial
         :param page: número da página do diário oficial
-        :return: pdf com a página do diario
+        :return: dict
         """
-        return self.methods.get(f"diarios/{id_diario}/pdf/pagina/{page}/baixar")
+        conteudo = self.methods.get(f"diarios/{id_diario}/pdf/pagina/{page}/baixar")
+
+        return Documento.get_pdf(conteudo, path, nome_arquivo)

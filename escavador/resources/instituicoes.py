@@ -1,45 +1,46 @@
 from escavador.resources.endpoint import Endpoint
+from typing import Optional
 
 
 class Instituicao(Endpoint):
 
-    def get(self, id_instituicao):
+    def get(self, id_instituicao: int) -> dict:
         """
         Retorna uma instituição de acordo com seu ID
         :argument id_instituicao o ID da instituição
-        :return json
+        :return dict
         """
 
         return self.methods.get(f"instituicoes/{id_instituicao}")
 
-    def get_processos_instituicao(self, id_instituicao, **kwargs):
+    def get_processos_instituicao(self, id_instituicao: int, *, limit: Optional[int] = None,
+                                  page: Optional[int] = None) -> dict:
         """
         Retorna os processos de uma instituição
+        :param page: número da página
+        :param limit: limita a quantidade de registros retornados
         :argument id_instituicao: o ID da instituição
-        :keyword Arguments:
-            **limit*(``int``) -- limita a quantidade de registros retornados
-            **page**(``ìnt``) -- número da página
-        :return json
+        :return dict
         """
 
         data = {
-            'limit': kwargs.get('limit'),
-            'page': kwargs.get('page')
+            'limit': limit,
+            'page': page
         }
         return self.methods.get(f"instituicoes/{id_instituicao}/processos", data=data)
 
-    def get_pessoas_instituicao(self, id_instituicao, **kwargs):
+    def get_pessoas_instituicao(self, id_instituicao: int, *, limit: Optional[int] = None,
+                                page: Optional[int] = None) -> dict:
         """
         Retorna as pessoas de uma instituição
-        :argument id_instituicao: o ID da instituição
-        :keyword Arguments:
-            **limit*(``int``) -- limita a quantidade de registros retornados\n
-            **page**(``ìnt``) -- número da página\n
-        :return json
+        :param id_instituicao: o ID da instituição
+        :param page: número da página
+        :param limit: limita a quantidade de registros retornados
+        :return dict
         """
 
         data = {
-            'limit': kwargs.get('limit'),
-            'page': kwargs.get('page')
+            'limit': limit,
+            'page': page
         }
         return self.methods.get(f"instituicoes/{id_instituicao}/pessoas", data=data)

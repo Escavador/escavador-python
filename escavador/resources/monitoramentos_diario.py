@@ -1,30 +1,32 @@
 from escavador.resources.endpoint import Endpoint
 from escavador.exceptions import InvalidParamsException
+from typing import Optional
 
 
 class MonitoramentoDiario(Endpoint):
 
-    def get_diarios_monitoramento(self, id_monitoramento):
+    def get_diarios_monitoramento(self, id_monitoramento: int) -> dict:
         """
         Retorna os diários oficiais de um monitoramento
         :param id_monitoramento: the monitor ID
-        :return: json
+        :return: dict
         """
 
         return self.methods.get(f"monitoramentos/{id_monitoramento}/origens")
 
-    def criar_monitoramento(self, tipo_monitoramento, **kwargs):
+    def criar_monitoramento(self, tipo_monitoramento: str, *, termo: Optional[str] = None,
+                            origens_ids: Optional[list[str]] = None, processo_id: Optional[int] = None,
+                            variacoes: Optional[list[str]] = None, termos_auxiliares: Optional[list[str][str]] = None
+                            ) -> dict:
         """
         Cria um novo monitoramento para termos ou processos
+        :param termos_auxiliares: Array de array de strings com termos e condições
+        :param variacoes: array de strings com as variações do termo monitorado.
+        :param processo_id: o id do processo a ser monitorado nos diários.
+        :param origens_ids: array de ids dos diarios que deseja monitorar
+        :param termo: o termo a ser monitorado, obrigatório se tipo_monitoramento == termo
         :param tipo_monitoramento: o tipo de monitoramento: termo ou processo
-        :keyword arguments:
-            **termo**(``string``) --o termo a ser monitorado, obrigatório se tipo_monitoramento == termo
-            **origens_ids**(``int[]``) -- array de ids dos diarios que deseja monitorar
-            **processo_id**(``string``) -- o id do processo a ser monitorado nos diários.
-            **variacoes**(``string[]``) -- array de strings com as variações do termo monitorado.
-            **termos_auxiliares**(``string[][]``) -- Array de array de strings com termos e condições
-            para o alerta do monitoramento
-        :return: json
+        :return: dict
         """
 
         if tipo_monitoramento not in ['termo', 'processo']:
@@ -32,76 +34,75 @@ class MonitoramentoDiario(Endpoint):
 
         data = {
             'tipo': tipo_monitoramento,
-            'termo': kwargs.get('termo'),
-            'origens_id': kwargs.get('origens_id'),
-            'processo_id': kwargs.get('processo_id'),
-            'variacoes': kwargs.get('variacoes'),
-            'termos_auxiliares': kwargs.get('termos_auxiliares')
+            'termo': termo,
+            'origens_ids': origens_ids,
+            'processo_id': processo_id,
+            'variacoes':variacoes,
+            'termos_auxiliares': termos_auxiliares
         }
 
         return self.methods.post("monitoramentos", data=data)
 
-    def get_monitoramentos(self):
+    def get_monitoramentos(self) -> dict:
         """
         Retorna todos os monitoramentos de diários oficiais do usuário
-        :return: json
+        :return: dict
         """
 
         return self.methods.get("monitoramentos")
 
-    def get_monitoramento(self, id_monitoramento):
+    def get_monitoramento(self, id_monitoramento: int) -> dict:
         """
         Retorna um monitoramento de diários oficiais de acordo com seu ID
         :param id_monitoramento o ID do monitoramento
-        :return: json
+        :return: dict
         """
 
         return self.methods.get(f"monitoramentos/{id_monitoramento}")
 
-    def editar_monitoramento(self, id_monitoramento, **kwargs):
+    def editar_monitoramento(self, id_monitoramento: int, *, variacoes: Optional[list[str]] = None,
+                             origens_ids: Optional[list[str]] = None) -> dict:
         """
         Edita os diários oficiais e as variações do termo do monitoramento
         :param id_monitoramento: o ID do monitoramento
-        :keyword arguments:
-            **variacoes**(``string[]``) -- Array de array de strings com termos e condições
-            **origens_ids**(``int[]``) -- array de ids dos diarios que deseja monitorar
-        :return: json
+        :param origens_ids: array de ids dos diarios que deseja monitorar
+        :param variacoes: array de strings com as variações do termo monitorado.
+        :return: dict
         """
         data = {
-            'variacoes': kwargs.get('variacoes'),
-            'origens_ids': kwargs.get('origens_ids')
+            'variacoes': variacoes,
+            'origens_ids': origens_ids
         }
 
         return self.methods.put(f"monitoramentos/{id_monitoramento}", data=data)
 
-    def remover_monitoramento(self, id_monitoramento):
+    def remover_monitoramento(self, id_monitoramento: int) -> dict:
         """
         Remove um monitoramento de acordo com seu ID
         :param id_monitoramento: o ID do monitoramento
-        :return: json
+        :return: dict
         """
 
         return self.methods.delete(f"monitoramentos/{id_monitoramento}")
 
-    def get_aparicoes(self, id_monitoramento):
+    def get_aparicoes(self, id_monitoramento: int) -> dict:
         """
         Retorna as aparições de um monitoramento pelo identificador do monitoramento.
         :param id_monitoramento: tho ID do monitoramento
-        :return: json
+        :return: dict
         """
 
         return self.methods.get(f"monitoramentos/{id_monitoramento}/aparicoes")
 
-    def test_callback_monitoramento(self, callback_url, **kwargs):
+    def test_callback_monitoramento(self, callback_url: str, *, tipo: Optional[str] = None) -> dict:
         """
         Testa se a ulr de callback do usuário pode receber callbacks com resultados de monitoramentos
         :param callback_url: a url que o callback será enviado
-        :keyword arguments:
-            **tipo**(``string``) -o tipo de objeto do callback: movimentacao ou diario
-        :return: json
+        :param tipo o tipo de objeto do callback: movimentacao ou diario
+        :return: dict
         """
         data = {
             'callback_url': callback_url,
-            'tipo': kwargs.get('tipo')
+            'tipo': tipo
         }
         return self.methods.post("monitoramentos/testcallback", data=data)

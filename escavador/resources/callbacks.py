@@ -1,26 +1,28 @@
 from escavador.resources.endpoint import Endpoint
+from typing import Optional
+from datetime import date
 
 
 class Callbacks(Endpoint):
 
-    def get(self, **kwargs):
+    def get(self, *, data_maxima: Optional[date] = None, data_minima: Optional[date] = None,
+            evento: Optional[str] = None, item_tipo: Optional[str] = None, item_id: Optional[int] = None) -> dict:
         """
-        :keyword Arguments:
-            **data_maxima*(``date``) -- a data máxima do callback
-            **data_maxima**(``date``) -- a data mínima do callback
-            **evento**(``string``) -- o evento do callback
-            **item_tipo**(``string``) -- o tipo do item do callback e.g: busca_assincrona, monitoramento_tribunal
-            , monitoramento_diario
-            **item_id**(``int``) -- o id do item do callback, obrigatório se o item_tipo foi enviado
-        :return: json
+        Retorna todos os callbacks, de acordo com os filtros enviados
+        :param item_id:o id do item do callback, obrigatório se o item_tipo foi enviado
+        :param item_tipo: o tipo do item do callback e.g: busca_assincrona, monitoramento_tribunal, monitoramento_diario
+        :param evento: o evento do callback
+        :param data_minima: a data mínima do callback
+        :param data_maxima a data máxima do callback
+        :return: dict
         """
 
         data = {
-            "data_maxima": kwargs.get('data_maxima'),
-            "data_minima": kwargs.get('data_minima'),
-            "evento": kwargs.get('evento'),
-            "item_tipo": kwargs.get('item_tipo'),
-            "item_id": kwargs.get('item_id')
+            "data_maxima": data_maxima,
+            "data_minima":data_minima,
+            "evento": evento,
+            "item_tipo": item_tipo,
+            "item_id": item_id
         }
 
         return self.methods.get('callbacks', data=data)

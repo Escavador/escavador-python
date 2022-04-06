@@ -1,28 +1,29 @@
 from escavador.resources.endpoint import Endpoint
+from typing import Optional
 
 
 class Pessoa(Endpoint):
 
-    def get(self, id_pessoa):
+    def get(self, id_pessoa: int) -> dict:
         """
         Retorna dados relacionados a uma pessoa pelo seu identificador.
         :param id_pessoa: o ID da pessoa
-        :return: json
+        :return: dict
         """
         return self.methods.get(f"pessoas/{id_pessoa}")
 
-    def get_processos_pessoa(self, id_pessoa, **kwargs):
+    def get_processos_pessoa(self, id_pessoa: int, *, limit: Optional[int] = None,
+                             page: Optional[int] = None) -> dict:
         """
         Return the process of an person based on the person ID \n
-        :argument id_pessoa: o ID da pessoa
-        :keyword Arguments:
-            **limit*(``int``) -- limita a quantidade de registros retornados\n
-            **page**(``ìnt``) -- número da página\n
-        :return: json
+        :param id_pessoa: o ID da pessoa
+        :param page: número da página
+        :param limit: limita a quantidade de registros retornados
+        :return: dict
         """
         data = {
-            'limit': kwargs.get('limit'),
-            'page': kwargs.get('page')
+            'limit': limit,
+            'page': page
         }
 
         return self.methods.get(f"pessoas/{id_pessoa}/processos", data=data)

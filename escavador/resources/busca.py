@@ -1,13 +1,18 @@
+from __future__ import annotations
 from escavador.resources.endpoint import Endpoint
 from escavador.exceptions import InvalidParamsException
 from escavador.validator import Validator
+from typing import Optional
 
 
 class Busca(Endpoint):
 
-    def get_termo(self, termo, tipo_termo, **kwargs):
+    def get_termo(self, termo: str, tipo_termo: str, *, limit: Optional[int] = None,
+                  page: Optional[int] = None) -> dict:
         """
         Pesquisa um termo no escavador
+        :param page: número da página
+        :param limit: limita a quantidade de registros retornados
         :param termo: o termo a ser pesquisado
         :param tipo_termo: Tipo da entidade a ser pesquisada(
         *t* - todos os tipos
@@ -16,10 +21,7 @@ class Busca(Endpoint):
         *pa* -- apenas patentes
         *d* -- apenas diários oficiais
         *en* -- apenas pessoas e instituições envolvidas em processos)
-        :keyword Arguments:
-            **limit*(``int``) -- limita a quantidade de registros retornados
-            **page**(``ìnt``) -- número da página
-        :return:json
+        :return: dict
         """
 
         available_types = ['t', 'p', 'i', 'pa', 'd', 'en']
@@ -30,23 +32,22 @@ class Busca(Endpoint):
         data = {
             'q': termo,
             'qo': tipo_termo,
-            'limit': kwargs.get('limit'),
-            'page': kwargs.get('page')
+            'limit': limit,
+            'page': page
         }
         return self.methods.get("busca", data=data)
 
-    def get_processo_por_oab(self, estado_oab, numero_oab, **kwargs):
+    def get_processo_por_oab(self, estado_oab: str, numero_oab: str | int, *, page: Optional[int] = None) -> dict:
         """
         Busca processos que estão nos Diários Oficiais do Escavador que estão relacionados ao OAB informado
+        :param page: número da página
         :param estado_oab: sigla do estado da OAB
         :param numero_oab: número da OAB
-        :keyword Arguments:
-             **page**(``ìnt``) -- número da página
-        :return: json
+        :return: dict
         """
 
         data = {
-            'page': kwargs.get('page')
+            'page': page
         }
 
         if estado_oab not in Validator.valid_states():
@@ -54,60 +55,59 @@ class Busca(Endpoint):
 
         return self.methods.get(f"oab/{estado_oab}/{numero_oab}/processos", data=data)
 
-    def get_processo(self, id_processo):
+    def get_processo(self, id_processo: int) -> dict:
         """
         Retorna um processo pelo seu identificador no Escavador.
         :param id_processo: o ID do processo
-        :return: json
+        :return: dict
         """
 
-        return self.methods.get(f"/processos/{id_processo}")
+        return self.methods.get(f"processos/{id_processo}")
 
-    def get_movimentacao_processo(self, id_processo, **kwargs):
+    def get_movimentacao_processo(self, id_processo: int, *, limit: Optional[int] = None,
+                                  page: Optional[int] = None) -> dict:
         """
         Retorna as movimentações de um Processo pelo identificador do processo no Escavador.
+        :param page: número da página
+        :param limit: limita a quantidade de registros retornados
         :param id_processo:  o ID do processo
-        :keyword Arguments:
-            **limit*(``int``) -- limita a quantidade de registros retornados
-            **page**(``ìnt``) -- número da página
-        :return: json
+        :return: dict
         """
 
         data = {
-            'limit': kwargs.get('limit'),
-            'page': kwargs.get('page')
+            'limit': limit,
+            'page': page
         }
 
         return self.methods.get(f"processos/{id_processo}/movimentacoes", data=data)
 
-    def get_processo_por_numero_unico(self, numero_unico, **kwargs):
+    def get_processo_por_numero_unico(self, numero_unico: str, *, match_exato: Optional[bool] = None) -> dict:
         """
-        usca processos que estão nos Diários Oficiais do Escavador. e contenham o número único informado.
+        Busca processos que estão nos Diários Oficiais do Escavador. e contenham o número único informado.
+        :param match_exato: a busca será feita pelo número inteiro do processo pesquisado.
         :param numero_unico: número único do processo
-        :keyword Arguments:
-              **match_exato**(``boolean``) -- a busca será feita pelo número inteiro do processo pesquisado.
-        :return: json
+        :return: dict
         """
 
         data = {
-            'match_exato': kwargs.get('match_exato')
+            'match_exato': match_exato
         }
 
         return self.methods.get(f"processos/numero/{numero_unico}", data=data)
 
-    def get_envolvidos_processo(self, id_processo, **kwargs):
+    def get_envolvidos_processo(self, id_processo: int, *, limit: Optional[int] = None,
+                                page: Optional[int] = None) -> dict:
         """
        Retorna os envolvidos de um Processo pelo identificador do processo no Escavador.
         :param id_processo:  o ID do processo
-        :keyword arguments:
-            **limit*(``int``) -- limita a quantidade de registros retornados
-            **page**(``ìnt``) -- número da página
-        :return: json
+        :param page: número da página
+        :param limit: limita a quantidade de registros retornados
+        :return: dict
         """
 
         data = {
-            'limit': kwargs.get('limit'),
-            'page': kwargs.get('page')
+            'limit': limit,
+            'page': page
         }
 
         return self.methods.get(f"processos/{id_processo}/envolvidos", data=data)

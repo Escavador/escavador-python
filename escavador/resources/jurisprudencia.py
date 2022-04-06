@@ -1,51 +1,55 @@
 from escavador.resources.endpoint import Endpoint
 from escavador.resources.documentos import Documento
+from typing import Optional
+from datetime import date
 
 
 class Jurisprudencia(Endpoint):
 
-    def filtros_busca_jurisprudencia(self):
+    def filtros_busca_jurisprudencia(self) -> dict:
         """
         Lista de filtros disponíveis para a busca de jurisprudências
-        :return: json
+        :return: dict
         """
         return self.methods.get("jurisprudencias")
 
-    def busca_por_jurisprudencias(self, termo, **kwargs):
+    def busca_por_jurisprudencias(self, termo: str, *, ordena_por: Optional[str] = None, de_data: Optional[date] = None,
+                                  ate_data: Optional[date] = None, pagina: Optional[int] = None,
+                                  filtro: Optional[str] = None) -> dict:
         """
         Traz a lista paginada dos itens encontrados na busca.
+        :param filtro: Um dos filtros listados pelo método filtros_busca_jurisprudencia()
+        :param pagina: lista os itens de uma página
+        :param ate_data: filtra os resultados com data de julgamento limite até a data informada
+        :param de_data: filtra os resultados com data de julgamento a partir da data informada
+        :param ordena_por: modifica a forma como o retorno da busca será ordenado
         :param termo: o termo a ser pesquisado
-        :keyword arguments:
-            **ordena_por**(``orderna_por``) -- modifica a forma como o retorno da busca será ordenado
-            **de_data**(``de_data``) -- filtra os resultados com data de julgamento a partir da data informada
-            **ate_data**(``ate_data``) -- filtra os resultados com data de julgamento limite até a data informada
-            **pagina**(``pagina``) -- lista os itens de uma página
-            **filtro**(``filtro``) -- Um dos filtros listados pelo método filtros_busca_jurisprudencia()
-        :return: json
+        :return: dict
         """
 
         data = {
             'q': termo,
-            'ordena_por': kwargs.get('ordena_por'),
-            'de_data': kwargs.get('de_data'),
-            'ate_data': kwargs.get('ate_data'),
-            'pagina': kwargs.get('data'),
-            'filtro': kwargs.get('filtro')
+            'ordena_por': ordena_por,
+            'de_data': de_data,
+            'ate_data': ate_data,
+            'pagina': pagina,
+            'filtro': filtro
         }
 
         return self.methods.get('jurisprudencias/busca', data=data)
 
-    def get_documento_jurisprudencia(self, tipo_documento, id_documento):
+    def get_documento_jurisprudencia(self, tipo_documento: str, id_documento: int) -> dict:
         """
         Traz informações sobre um documento de Jurisprudência em específico
         :param tipo_documento: o tipo de documento
         :param id_documento: o ID do documento
-        :return json
+        :return dict
         """
 
         return self.methods.get(f"jurisprudencias/documento/{tipo_documento}/{id_documento}")
 
-    def download_documento_jurisprudencia(self, tipo_documento, id_documento, id_arquivo, path, nome_arquivo):
+    def download_documento_jurisprudencia(self, tipo_documento: str, id_documento: int, id_arquivo: str, path: str,
+                                          nome_arquivo: str) -> dict:
         """
         Retorna, em formato PDF, um documento de jurisprudência
          :param tipo_documento: o tipo de documento
@@ -53,7 +57,7 @@ class Jurisprudencia(Endpoint):
         :param id_arquivo: o ID do arquivo do documento
         :param path: caminho onde o pdf será salvo
         :param nome_arquivo: nome do arquivo a ser criado
-        :return: pdf do documento de jurisprudencia
+        :return: dict
         """
 
         conteudo = self.methods.get(f"jurisprudencias/pdf/{tipo_documento}/{id_documento}/{id_arquivo}")
