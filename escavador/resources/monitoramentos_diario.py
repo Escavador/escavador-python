@@ -15,7 +15,7 @@ class MonitoramentoDiario(Endpoint):
         return self.methods.get(f"monitoramentos/{id_monitoramento}/origens")
 
     def criar_monitoramento(self, tipo_monitoramento: str, *, termo: Optional[str] = None,
-                            origens_ids: Optional[list[str]] = None, processo_id: Optional[int] = None,
+                            origens_ids: Optional[list[int]] = None, processo_id: Optional[int] = None,
                             variacoes: Optional[list[str]] = None, termos_auxiliares: Optional[list[str][str]] = None
                             ) -> dict:
         """
@@ -37,7 +37,7 @@ class MonitoramentoDiario(Endpoint):
             'termo': termo,
             'origens_ids': origens_ids,
             'processo_id': processo_id,
-            'variacoes':variacoes,
+            'variacoes': variacoes,
             'termos_auxiliares': termos_auxiliares
         }
 
@@ -98,7 +98,7 @@ class MonitoramentoDiario(Endpoint):
         """
         Testa se a ulr de callback do usuário pode receber callbacks com resultados de monitoramentos
         :param callback_url: a url que o callback será enviado
-        :param tipo o tipo de objeto do callback: movimentacao ou diario
+        :param tipo o tipo de objeto do callback (movimentacao ou diario)
         :return: dict
         """
         data = {

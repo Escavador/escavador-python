@@ -1,10 +1,11 @@
 from pathlib import Path
+from typing import AnyStr
 
 
 class Documento(object):
 
     @staticmethod
-    def get_pdf(conteudo: str, path: str, nome_arquivo: str) -> dict:
+    def get_pdf(conteudo: AnyStr, path: str, nome_arquivo: str) -> dict:
         """
         Salva um pdf vindo de respostas da API com o nome enviado, no diretório informado
         :param nome_arquivo: nome do arquivo a ser criado

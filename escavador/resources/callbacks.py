@@ -1,11 +1,10 @@
 from escavador.resources.endpoint import Endpoint
 from typing import Optional
-from datetime import date
 
 
 class Callbacks(Endpoint):
 
-    def get(self, *, data_maxima: Optional[date] = None, data_minima: Optional[date] = None,
+    def get(self, *, data_maxima: Optional[str] = None, data_minima: Optional[str] = None,
             evento: Optional[str] = None, item_tipo: Optional[str] = None, item_id: Optional[int] = None) -> dict:
         """
         Retorna todos os callbacks, de acordo com os filtros enviados
@@ -19,7 +18,7 @@ class Callbacks(Endpoint):
 
         data = {
             "data_maxima": data_maxima,
-            "data_minima":data_minima,
+            "data_minima": data_minima,
             "evento": evento,
             "item_tipo": item_tipo,
             "item_id": item_id

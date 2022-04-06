@@ -101,7 +101,7 @@ class BuscaAssincrona(Endpoint):
         return self.methods.post(f"tribunal/{origem.upper()}/busca-por-oab/async", data=data)
 
     def busca_em_lote(self, tipo_busca: str, origens: list[str], *, send_callback: Optional[bool] = None,
-                      numero_oab: Optional[str,int] = None, estado_oab: Optional[str] = None,
+                      numero_oab: Optional[str, int] = None, estado_oab: Optional[str] = None,
                       numero_documento: Optional[str, int] = None, nome: Optional[str] = None) -> dict:
         """
         Cria buscas do mesmo tipo para todos os tribunais enviados
