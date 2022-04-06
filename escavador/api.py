@@ -11,7 +11,7 @@ load_dotenv()
 class Api(object):
 
     def __init__(self):
-        self.base_url = 'http://api.escavlocal.com/api/v1/'
+        self.base_url = 'http://api.escavador.com/api/v1/'
         self.api_key = escavador.__APIKEY__
         if self.api_key is None:
             try:
@@ -28,7 +28,6 @@ class Api(object):
     async def request(self, method, url, **kwargs):
         url = parse.urljoin(self.base_url, url)
         data = kwargs.get('data')
-        print(url)
         if data is not None:
             data = {key: value for key, value in kwargs.get('data').items() if value is not None}
         async with aiohttp.ClientSession() as session:
