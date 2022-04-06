@@ -21,7 +21,7 @@ resultado_busca = BuscaAssincrona().get_processo("8809061-58.2022.8.10.3695")
 #Para acessar campos da resposta
 print(resultado_busca['status'])
 
-#Para utilizar parametros opcionais de rotas, utilize os kwargs
+#Para utilizar parametros opcionais de rotas, utilize os keyword arguments, iguais a documentação da API
 resultado_busca = BuscaAssincrona().busca_em_lote('busca_por_oab', ['TJSP', 'TJBA'], numero_oab=12345, estado_oab='BA')
 ```
 
@@ -29,9 +29,9 @@ resultado_busca = BuscaAssincrona().busca_em_lote('busca_por_oab', ['TJSP', 'TJB
 ```py
 from escavador import MonitoramentoTribunal, MonitoramentoDiario
 
-monitoramento = MonitoramentoTribunal().criar_monitoramento('UNICO',"8809061-58.2022.8.10.3695", frequencia='DIARIO')
+monitoramento_tribunal = MonitoramentoTribunal().criar_monitoramento('UNICO',"8809061-58.2022.8.10.3695", frequencia='DIARIO')
 
-monitoramento = MonitoramentoDiario().criar_monitoramento('processo', processo_id=2, origens_id=[2,4,6])
+monitoramento_diario = MonitoramentoDiario().criar_monitoramento('processo', processo_id=2, origens_ids=[2,4,6])
 ```
 
 ### Consultando Tribunais
@@ -56,7 +56,7 @@ resultado_busca = BuscaAssincrona().get_processo("8809061-58.2022.8.10.3695",wai
 link_documento = resultado_busca['resposta']['instancia'][0]['documentos_restritos'][2]['link_api']
 documento = BuscaAssincrona().get_pdf(link_documento,'/documentos','autos')
 ```
-### Módulos Disponíveis
+### Módulos Disponíveis e Referência da API
 
 | Módulo                | Link API                                                                          |
 |-----------------------|-----------------------------------------------------------------------------------|
