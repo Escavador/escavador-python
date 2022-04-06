@@ -16,7 +16,12 @@ class TiposBusca(Enum):
     BUSCA_POR_NOME = 'busca_por_nome'
 
 
-class TiposMonitoramentos(Enum):
+class TiposMonitoramentosTribunal(Enum):
     UNICO = 'UNICO'
     NUMERO_DOCUMENTO = 'NUMDOC'
     NOME = 'NOME'
+
+
+class TiposMonitoramentosDiario(Enum):
+    PROCESSO = 'processo',
+    TERMO = 'termo'

@@ -11,3 +11,4 @@ from .monitoramentos_tribunal import MonitoramentoTribunal
 from .movimentacoes import Movimentacao
 from .pessoas import Pessoa
 from .tribunal import Tribunal
+from .enums import TiposMonitoramentosTribunal, TiposMonitoramentosDiario,  TiposBusca, TiposTermo

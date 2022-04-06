@@ -1,7 +1,7 @@
 from escavador.resources.endpoint import Endpoint
 from escavador.exceptions import InvalidParamsException
 from typing import Optional
-from escavador.resources.enums import TiposMonitoramentos
+from escavador.resources.enums import TiposMonitoramentosDiario
 
 
 class MonitoramentoDiario(Endpoint):
@@ -15,7 +15,7 @@ class MonitoramentoDiario(Endpoint):
 
         return self.methods.get(f"monitoramentos/{id_monitoramento}/origens")
 
-    def criar_monitoramento(self, tipo_monitoramento: TiposMonitoramentos, *, termo: Optional[str] = None,
+    def criar_monitoramento(self, tipo_monitoramento: TiposMonitoramentosDiario, *, termo: Optional[str] = None,
                             origens_ids: Optional[list[int]] = None, processo_id: Optional[int] = None,
                             variacoes: Optional[list[str]] = None, termos_auxiliares: Optional[list[str]] = None
                             ) -> dict:
