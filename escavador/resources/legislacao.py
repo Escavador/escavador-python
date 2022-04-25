@@ -40,8 +40,8 @@ class Legislacao(Endpoint):
     def get_documento_legislacao(self, tipo_documento: str, id_documento: int) -> dict:
         """
         Traz informações sobre um documento de Legislação
-        :param tipo_documento: the type of the document
-        :param id_documento: the document ID
+        :param tipo_documento: O tipo do Documento
+        :param id_documento: O ID do documento
         :return dict
         """
 
@@ -50,8 +50,8 @@ class Legislacao(Endpoint):
     def fragmentos_texto_legislacao(self, tipo_documento: str, id_documento: int) -> dict:
         """
         Traz os fragmentos de uma legislação paginados.
-        :param tipo_documento: the type of the document
-        :param id_documento: the document ID
+        :param tipo_documento: O tipo do Documento
+        :param id_documento: O ID do documento
         :return: dict
         """
 

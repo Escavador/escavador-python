@@ -16,7 +16,7 @@ class DiarioOficial(Endpoint):
         """
         Retorna uma página específica do Diário Oficial pelo seu identificador no Escavador.
         :param id_diario: o ID do diario oficial
-        :param page número da página do diário oficial
+        :param page: número da página do diário oficial
         :return: dict
         """
         data = page

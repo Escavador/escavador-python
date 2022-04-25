@@ -15,7 +15,7 @@ class Pessoa(Endpoint):
     def get_processos_pessoa(self, id_pessoa: int, *, limit: Optional[int] = None,
                              page: Optional[int] = None) -> dict:
         """
-        Return the process of an person based on the person ID \n
+        Retorna os processos de uma pessoa baseado no ID da pessoa.
         :param id_pessoa: o ID da pessoa
         :param page: número da página
         :param limit: limita a quantidade de registros retornados

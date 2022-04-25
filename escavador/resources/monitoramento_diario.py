@@ -8,7 +8,7 @@ class MonitoramentoDiario(Endpoint):
     def get_diarios_monitoramento(self, id_monitoramento: int) -> dict:
         """
         Retorna os diários oficiais de um monitoramento
-        :param id_monitoramento: the monitor ID
+        :param id_monitoramento: o ID do monitoramento
         :return: dict
         """
 
@@ -85,7 +85,7 @@ class MonitoramentoDiario(Endpoint):
     def get_aparicoes(self, id_monitoramento: int) -> dict:
         """
         Retorna as aparições de um monitoramento pelo identificador do monitoramento.
-        :param id_monitoramento: tho ID do monitoramento
+        :param id_monitoramento: O ID do monitoramento
         :return: dict
         """
 

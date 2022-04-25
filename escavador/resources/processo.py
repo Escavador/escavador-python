@@ -112,7 +112,7 @@ class Processo(Endpoint):
         :param numero_oab:  o numero da oab que será pesquisado
         :param send_callback: opção para mandar um callback com o resultado da busca
         :param origens: os tribunais onde a busca será realizada
-        :param tipo_busca: the tipe of search, available types: busca_por_nome, busca_por_documento, busca_por_oab
+        :param tipo_busca: O tipo da busca, tipos disponiveis: busca_por_nome, busca_por_documento, busca_por_oab
         :return: dict
         """
 
