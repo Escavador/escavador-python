@@ -1,5 +1,4 @@
 from escavador.resources.endpoint import Endpoint
-from escavador.exceptions import InvalidParamsException
 from typing import Optional
 from escavador.resources.enums import TiposMonitoramentosDiario
 
@@ -29,9 +28,6 @@ class MonitoramentoDiario(Endpoint):
         :param tipo_monitoramento: o tipo de monitoramento: termo ou processo
         :return: dict
         """
-
-        if tipo_monitoramento.value not in ['termo', 'processo']:
-            raise InvalidParamsException("Tipo de monitoramento inválido")
 
         data = {
             'tipo': tipo_monitoramento.value,

@@ -29,7 +29,9 @@ resultado_busca = BuscaAssincrona().busca_em_lote(TiposBusca.BUSCA_POR_OAB, ['TJ
 ```py
 from escavador import MonitoramentoTribunal, MonitoramentoDiario, TiposMonitoramentosTribunal, TiposMonitoramentosDiario
 
-monitoramento_tribunal = MonitoramentoTribunal().criar_monitoramento(TiposMonitoramentosTribunal.UNICO,"8809061-58.2022.8.10.3695", frequencia='DIARIO')
+monitoramento_tribunal = MonitoramentoTribunal().criar_monitoramento(tipo_monitoramento=TiposMonitoramentosTribunal.UNICO,
+                                                                     valor="8809061-58.2022.8.10.3695",tribunal='TJSP', 
+                                                                     frequencia='DIARIO')
 
 monitoramento_diario = MonitoramentoDiario().criar_monitoramento(TiposMonitoramentosDiario.PROCESSO, processo_id=2, origens_ids=[2,4,6])
 ```

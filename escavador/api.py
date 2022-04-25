@@ -11,7 +11,7 @@ load_dotenv()
 class Api(object):
 
     def __init__(self):
-        self.base_url = 'http://api.escavador.com/api/v1/'
+        self.base_url = 'https://api.escavador.com/api/v1/'
         self.api_key = escavador.__APIKEY__
         if self.api_key is None:
             try:
@@ -35,4 +35,11 @@ class Api(object):
                 if resp.headers['Content-Type'] == 'application/pdf':
                     return await resp.read()
                 else:
-                    return await resp.json()
+                    content = await resp.json()
+                    code = resp.status
+                    status = "Error" if code >= 400 else "Success"
+                    return {
+                        "content": content,
+                        "code": code,
+                        "status": status
+                    }

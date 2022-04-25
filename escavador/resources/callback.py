@@ -2,7 +2,7 @@ from escavador.resources.endpoint import Endpoint
 from typing import Optional
 
 
-class Callbacks(Endpoint):
+class Callback(Endpoint):
 
     def get(self, *, data_maxima: Optional[str] = None, data_minima: Optional[str] = None,
             evento: Optional[str] = None, item_tipo: Optional[str] = None, item_id: Optional[int] = None) -> dict:

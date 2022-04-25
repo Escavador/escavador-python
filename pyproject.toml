@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "escavador-python"
+name = "escavador"
 version = "0.1.0"
 description = "A library to  interact with Escavador API"
 authors = ["Your Name <you@example.com>"]

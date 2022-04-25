@@ -1,7 +1,5 @@
 from __future__ import annotations
 from escavador.resources.endpoint import Endpoint
-from escavador.exceptions import InvalidParamsException
-from escavador.validator import Validator
 from typing import Optional
 from .enums import TiposTermo
 
@@ -25,11 +23,6 @@ class Busca(Endpoint):
         :return: dict
         """
 
-        available_types = ['t', 'p', 'i', 'pa', 'd', 'en']
-
-        if tipo_termo.value not in available_types:
-            raise InvalidParamsException("Tipo de termo invalido")
-
         data = {
             'q': termo,
             'qo': tipo_termo.value,
@@ -50,9 +43,6 @@ class Busca(Endpoint):
         data = {
             'page': page
         }
-
-        if estado_oab not in Validator.valid_states():
-            raise InvalidParamsException("Invalid state")
 
         return self.methods.get(f"oab/{estado_oab}/{numero_oab}/processos", data=data)
 

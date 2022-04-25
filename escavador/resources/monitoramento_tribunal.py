@@ -1,7 +1,6 @@
 from escavador.resources.endpoint import Endpoint
-from escavador.exceptions import InvalidParamsException
 from typing import Optional
-from escavador.resources.enums import TiposMonitoramentosTribunal
+from escavador.resources.enums import TiposMonitoramentosTribunal, FrequenciaMonitoramentoTribunal
 
 
 class MonitoramentoTribunal(Endpoint):
@@ -36,7 +35,8 @@ class MonitoramentoTribunal(Endpoint):
         return self.methods.put(f"monitoramentos-tribunal/{id_monitoramento}", data=data)
 
     def criar_monitoramento(self, tipo_monitoramento: TiposMonitoramentosTribunal, valor: str, *,
-                            frequencia: Optional[str] = None, tribunal: Optional[str] = None) -> dict:
+                            frequencia: Optional[FrequenciaMonitoramentoTribunal] = None,
+                            tribunal: Optional[str] = None) -> dict:
         """
         Cria um monitoramento de tribunal
         :param tribunal: o tribunal a ser pesquisado
@@ -45,14 +45,6 @@ class MonitoramentoTribunal(Endpoint):
         :param valor: o valor que será monitorado no tribunal
         :return: dict
         """
-
-        available_types = ['UNICO', 'NUMDOC', 'NOME']
-
-        if tipo_monitoramento.value not in available_types:
-            raise InvalidParamsException("Tipo de monitoramento inválido")
-
-        if tipo_monitoramento.value is not TiposMonitoramentosTribunal.UNICO and tribunal is None:
-            raise InvalidParamsException("O tribunal é obrigatório para esse tipo de monitoramento")
 
         data = {
             'tipo': tipo_monitoramento.value,

@@ -1,8 +1,6 @@
 from escavador.resources.endpoint import Endpoint
-from escavador.exceptions import InvalidParamsException
 from escavador.resources.enums import TiposBusca
-from escavador.validator import Validator
-from escavador.resources.documentos import Documento
+from escavador.resources.documento import Documento
 from typing import Optional
 
 
@@ -116,17 +114,7 @@ class BuscaAssincrona(Endpoint):
         :return: dict
         """
 
-        available_types = ['busca_por_nome', 'busca_por_documento', 'busca_por_oab']
-
         origens = [origem.upper() for origem in origens]
-
-        estado_oab = estado_oab
-
-        if estado_oab is not None and estado_oab not in Validator.valid_states():
-            raise InvalidParamsException("Estado inválido")
-
-        if tipo_busca.value not in available_types:
-            raise InvalidParamsException("Tipo de busca inválida")
 
         data = {
             'tipo': tipo_busca.value,

@@ -23,5 +23,10 @@ class TiposMonitoramentosTribunal(Enum):
 
 
 class TiposMonitoramentosDiario(Enum):
-    PROCESSO = 'processo',
+    PROCESSO = 'processo'
     TERMO = 'termo'
+
+
+class FrequenciaMonitoramentoTribunal(Enum):
+    DIARIA = 'DIARIA'
+    SEMANAL = 'SEMANAL'
