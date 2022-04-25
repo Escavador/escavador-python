@@ -1,4 +1,4 @@
-from escavador.resources.endpoint import Endpoint
+from escavador.resources.helpers.endpoint import Endpoint
 
 
 class Movimentacao(Endpoint):

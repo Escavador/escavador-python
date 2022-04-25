@@ -1,7 +1,7 @@
 from __future__ import annotations
-from escavador.resources.endpoint import Endpoint
-from escavador.resources.enums import TiposBusca
-from escavador.resources.documento import Documento
+from escavador.resources.helpers.endpoint import Endpoint
+from escavador.resources.helpers.enums import TiposBusca
+from escavador.resources.helpers.documento import Documento
 from typing import Optional
 
 

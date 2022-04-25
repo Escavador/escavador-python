@@ -11,7 +11,7 @@ load_dotenv()
 class Api(object):
 
     def __init__(self):
-        self.base_url = 'https://api.escavador.com/api/v1/'
+        self.base_url = 'http://api.escavlocal.com/api/v1/'
         self.api_key = escavador.__APIKEY__
         if self.api_key is None:
             try:

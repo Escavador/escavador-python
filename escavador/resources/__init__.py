@@ -11,5 +11,5 @@ from .monitoramento_tribunal import MonitoramentoTribunal
 from .movimentacao import Movimentacao
 from .pessoa import Pessoa
 from .tribunal import Tribunal
-from .enums import TiposMonitoramentosTribunal, TiposMonitoramentosDiario, TiposBusca, TiposTermo, \
+from escavador.resources.helpers.enums import TiposMonitoramentosTribunal, TiposMonitoramentosDiario, TiposBusca, TiposTermo, \
     FrequenciaMonitoramentoTribunal

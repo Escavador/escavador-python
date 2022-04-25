@@ -1,6 +1,6 @@
-from escavador.resources.endpoint import Endpoint
+from escavador.resources.helpers.endpoint import Endpoint
 from typing import Optional
-from escavador.resources.enums import TiposMonitoramentosDiario
+from escavador.resources.helpers.enums import TiposMonitoramentosDiario
 
 
 class MonitoramentoDiario(Endpoint):

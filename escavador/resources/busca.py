@@ -1,6 +1,6 @@
-from escavador.resources.endpoint import Endpoint
+from escavador.resources.helpers.endpoint import Endpoint
 from typing import Optional
-from .enums import TiposTermo
+from escavador.resources.helpers.enums import TiposTermo
 
 
 class Busca(Endpoint):

@@ -1,5 +1,5 @@
-from escavador.resources.endpoint import Endpoint
-from escavador.resources.documento import Documento
+from escavador.resources.helpers.endpoint import Endpoint
+from escavador.resources.helpers.documento import Documento
 from typing import Optional
 from datetime import date
 
