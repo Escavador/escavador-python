@@ -14,24 +14,24 @@ escavador.config("API_KEY")
 
 ### Como Utilizar
 ```py
-from escavador import BuscaAssincrona, TiposBusca
+from escavador import Processo, TiposBusca
 
-resultado_busca = BuscaAssincrona().get_processo("8809061-58.2022.8.10.3695")
+resultado_busca = Processo().get_processo("8809061-58.2022.8.10.3695")
 
 #Para acessar campos da resposta
 print(resultado_busca['status'])
 
 #Para utilizar parametros opcionais de rotas, utilize os keyword arguments, iguais a documentação da API
-resultado_busca = BuscaAssincrona().busca_em_lote(TiposBusca.BUSCA_POR_OAB, ['TJSP', 'TJBA'], numero_oab=12345, estado_oab='BA')
+resultado_busca = Processo().busca_em_lote(TiposBusca.BUSCA_POR_OAB, ['TJSP', 'TJBA'], numero_oab=12345, estado_oab='BA')
 ```
 
 ### Criando Monitoramentos
 ```py
-from escavador import MonitoramentoTribunal, MonitoramentoDiario, TiposMonitoramentosTribunal, TiposMonitoramentosDiario
+from escavador import MonitoramentoTribunal, MonitoramentoDiario, TiposMonitoramentosTribunal, TiposMonitoramentosDiario,FrequenciaMonitoramentoTribunal
 
 monitoramento_tribunal = MonitoramentoTribunal().criar_monitoramento(tipo_monitoramento=TiposMonitoramentosTribunal.UNICO,
                                                                      valor="8809061-58.2022.8.10.3695",tribunal='TJSP', 
-                                                                     frequencia='DIARIO')
+                                                                     frequencia=FrequenciaMonitoramentoTribunal.SEMANAL)
 
 monitoramento_diario = MonitoramentoDiario().criar_monitoramento(TiposMonitoramentosDiario.PROCESSO, processo_id=2, origens_ids=[2,4,6])
 ```
@@ -45,33 +45,33 @@ tribunais_disponiveis = Tribunal().get_sistemas_tribunais_disponiveis()
 
 ### Obter Callbacks de buscas e monitoramentos
 ```py
-from escavador import Callbacks
+from escavador import Callback
 
-callbacks = Callbacks().get(data_maxima="2022-04-05")
+callbacks = Callback().get(data_maxima="2022-04-05")
 ```
 
 ### Download de documentos
 ```py
-from escavador import BuscaAssincrona
+from escavador import Processo
 
-resultado_busca = BuscaAssincrona().get_processo("8809061-58.2022.8.10.3695",wait=1,autos=1,usuario="user", senha="password")
+resultado_busca = Processo().get_processo("8809061-58.2022.8.10.3695",wait=1,autos=1,usuario="user", senha="password")
 link_documento = resultado_busca['resposta']['instancia'][0]['documentos_restritos'][2]['link_api']
-documento = BuscaAssincrona().get_pdf(link_documento,'/documentos','autos')
+documento = Processo().get_pdf(link_documento,'/documentos','autos')
 ```
 ### Módulos Disponíveis e Referência da API
 
-| Módulo                | Link API                                                                          |
-|-----------------------|-----------------------------------------------------------------------------------|
-| Busca                 | https://api.escavador.com/docs/#busca & https://api.escavador.com/docs/#processos |
-| BuscaAssincrona       | https://api.escavador.com/docs/#processos & https://api.escavador.com/docs/#busca |
-| Callback              | https://api.escavador.com/docs/#callback                                          |
-| DiarioOficial         | https://api.escavador.com/docs/#dirios-oficiais                                   |
-| Instituicao           | https://api.escavador.com/docs/#instituies                                        |
-| Legislacao            | https://api.escavador.com/docs/#legislao                                          |
-| Jurisprudencia        | https://api.escavador.com/docs/#jurisprudncias                                    |
-| MonitoramentoDiario   | https://api.escavador.com/docs/#monitoramento-de-dirios-oficiais                  |
-| MonitoramentoTribunal | https://api.escavador.com/docs/#monitoramento-no-site-do-tribunal                 |
-| Movimentacao          | https://api.escavador.com/docs/#movimentaes                                       |
-| Pessoa                | https://api.escavador.com/docs/#pessoas                                           |
-| Tribunal              | https://api.escavador.com/docs/#tribunais                                         |
-| Saldo                 | https://api.escavador.com/docs/#saldo-da-api                                      | 
+| Módulo                | Link API                                                          |
+|-----------------------|-------------------------------------------------------------------|
+| Busca                 | https://api.escavador.com/docs/#busca                             |
+| Processo              | https://api.escavador.com/docs/#processos                         |
+| Callback              | https://api.escavador.com/docs/#callback                          |
+| DiarioOficial         | https://api.escavador.com/docs/#dirios-oficiais                   |
+| Instituicao           | https://api.escavador.com/docs/#instituies                        |
+| Legislacao            | https://api.escavador.com/docs/#legislao                          |
+| Jurisprudencia        | https://api.escavador.com/docs/#jurisprudncias                    |
+| MonitoramentoDiario   | https://api.escavador.com/docs/#monitoramento-de-dirios-oficiais  |
+| MonitoramentoTribunal | https://api.escavador.com/docs/#monitoramento-no-site-do-tribunal |
+| Movimentacao          | https://api.escavador.com/docs/#movimentaes                       |
+| Pessoa                | https://api.escavador.com/docs/#pessoas                           |
+| Tribunal              | https://api.escavador.com/docs/#tribunais                         |
+| Saldo                 | https://api.escavador.com/docs/#saldo-da-api                      | 
