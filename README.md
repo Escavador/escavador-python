@@ -1,5 +1,5 @@
-from escavador.resources.enums import TiposMonitoramentos# escavador-python
-SDK em python para utilizar a API do Escavador
+
+##SDK em python para utilizar a API do Escavador
 
 ### Como Configurar
 
