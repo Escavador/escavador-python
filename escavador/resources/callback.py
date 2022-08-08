@@ -25,3 +25,16 @@ class Callback(Endpoint):
         }
 
         return self.methods.get('callbacks', data=data)
+
+    def marcarRecebido(self, ids: list) -> dict:
+        """
+        Marca callbacks como recebidos
+        :param ids:lista com ids dos callbacks que serão marcardos como recebidos
+        :return: dict
+        """
+
+        data = {
+            'ids': ids
+        }
+
+        return self.methods.get('callbacks/marcar-recebidos',data=data)
