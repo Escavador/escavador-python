@@ -37,4 +37,13 @@ class Callback(Endpoint):
             'ids': ids
         }
 
-        return self.methods.get('callbacks/marcar-recebidos',data=data)
+        return self.methods.post('callbacks/marcar-recebidos',data=data)
+
+    def reenviar(self, id: int) -> dict:
+        """
+        Reenvia uma callback
+        :param id: id do callback
+        :return: dict
+        """
+
+        return self.methods.post(f'callbacks/{id}/reenviar')
