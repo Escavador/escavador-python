@@ -19,7 +19,9 @@ class DiarioOficial(Endpoint):
         :param page: número da página do diário oficial
         :return: dict
         """
-        data = page
+        data = {
+            "page": page
+        }
 
         return self.methods.get(f"diarios/{id_diario}", data=data)
 
