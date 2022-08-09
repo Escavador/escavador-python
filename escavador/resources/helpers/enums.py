@@ -30,3 +30,9 @@ class TiposMonitoramentosDiario(Enum):
 class FrequenciaMonitoramentoTribunal(Enum):
     DIARIA = 'DIARIA'
     SEMANAL = 'SEMANAL'
+
+
+class StatusCallback(Enum):
+    SUCESSO = "sucesso"
+    EM_TENTATIVA = "em_tentativa"
+    ERRO = "erro"
