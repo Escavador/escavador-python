@@ -10,7 +10,7 @@ class Processo(Endpoint):
     def get_processo_async(self, numero_unico: str, *, send_callback: Optional[bool] = None,
                            wait: Optional[bool] = None,
                            autos: Optional[bool] = None, usuario: Optional[str] = None, senha: Optional[str] = None,
-                           origem: Optional[str] = None) -> dict:
+                           origem: Optional[str] = None, tipo_numero: Optional[str] = None) -> dict:
         """
         Cria uma busca assíncrona com o numero único, e busca por ele em todos os tribunais
         :param senha: a senha do advogado para o tribunal, obrigatório se autos == 1
@@ -21,6 +21,7 @@ class Processo(Endpoint):
         :param wait: opção para esperar pelo resultado, espera no máximo 1 minuto
         :param send_callback: opção para mandar um callback com o resultado da busca
         :param numero_unico: o numero único do processo
+        :param tipo_numero: formato do numero unico do processo
         :return: dict
         """
 
@@ -30,7 +31,8 @@ class Processo(Endpoint):
             'autos': autos,
             'usuario': usuario,
             'senha': senha,
-            'origem': origem
+            'origem': origem,
+            'tipo_numero': tipo_numero
         }
 
         return self.methods.post(f"processo-tribunal/{numero_unico}/async", data=data)
