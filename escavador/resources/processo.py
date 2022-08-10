@@ -93,7 +93,8 @@ class Processo(Endpoint):
 
     def get_processo_por_oab_async(self, origem: str, numero_oab: str, estado_oab: str, *,
                                    send_callback: Optional[bool] = None, wait: Optional[bool] = None,
-                                   permitir_parcial: Optional[bool] = None) -> dict:
+                                   permitir_parcial: Optional[bool] = None,
+                                   tentativas: Optional[int] = None) -> dict:
         """
         Cria uma busca assíncrona no tribunal de origem baseada nos dados de oab enviados
         :param permitir_parcial: opção para não fazer a busca em todos os sistemas de um tribunal
@@ -102,6 +103,7 @@ class Processo(Endpoint):
         :param origem: o tribunal onde a busca será realizada
         :param numero_oab: o numero da oab que será pesquisado
         :param estado_oab: o estado da oab enviada
+        :param tentativas: numero de tentativas a serem realizadas na busca
         :return: dict
         """
 
@@ -110,7 +112,8 @@ class Processo(Endpoint):
             'estado_oab': estado_oab,
             'permitir_parcial': permitir_parcial,
             'send_callback': send_callback,
-            'wait': wait
+            'wait': wait,
+            'tentativas': tentativas
         }
 
         return self.methods.post(f"tribunal/{origem.upper()}/busca-por-oab/async", data=data)
