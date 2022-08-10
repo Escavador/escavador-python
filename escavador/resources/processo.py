@@ -68,7 +68,8 @@ class Processo(Endpoint):
         return self.methods.post(f"tribunal/{origem.upper()}/busca-por-nome/async", data=data)
 
     def get_processo_por_documento(self, origem: str, numero_documento: str, *, send_callback: Optional[bool] = None,
-                                   wait: Optional[bool] = None, permitir_parcial: Optional[bool] = None) -> dict:
+                                   wait: Optional[bool] = None, permitir_parcial: Optional[bool] = None,
+                                   tentativas: Optional[int] = None) -> dict:
         """
         Cria uma busca assíncrona no tribunal de origem baseada no numero de documento enviado
         :param permitir_parcial: opção para não fazer a busca em todos os sistemas de um tribunal
@@ -76,6 +77,7 @@ class Processo(Endpoint):
         :param send_callback: opção para mandar um callback com o resultado da busca
         :param origem: o tribunal onde a busca será realizada
         :param numero_documento: o documento que será pesquisado
+        :param tentativas: numero de tentativas a serem realizadas na busca
         :return: dict
         """
 
@@ -83,7 +85,8 @@ class Processo(Endpoint):
             'numero_documento': numero_documento,
             'permitir_parcial': permitir_parcial,
             'send_callback': send_callback,
-            'wait': wait
+            'wait': wait,
+            'tentativas': tentativas
         }
 
         return self.methods.post(f"tribunal/{origem.upper()}/busca-por-documento/async", data=data)
