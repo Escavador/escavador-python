@@ -9,8 +9,10 @@ class Processo(Endpoint):
 
     def get_processo_async(self, numero_unico: str, *, send_callback: Optional[bool] = None,
                            wait: Optional[bool] = None,
-                           autos: Optional[bool] = None, usuario: Optional[str] = None, senha: Optional[str] = None,
-                           origem: Optional[str] = None, tipo_numero: Optional[str] = None) -> dict:
+                           autos: Optional[bool] = None, documentos_publicos:  Optional[bool] = None,
+                           usuario: Optional[str] = None, senha: Optional[str] = None,
+                           origem: Optional[str] = None, tipo_numero: Optional[str] = None,
+                           tentativas:Optional[int] = None) -> dict:
         """
         Cria uma busca assíncrona com o numero único, e busca por ele em todos os tribunais
         :param senha: a senha do advogado para o tribunal, obrigatório se autos == 1
@@ -18,10 +20,12 @@ class Processo(Endpoint):
         :param origem: sigla de um tribunal para fazer a busca, utilizado para forçar a busca em um tribunal diferente
         do tribunal do processo
         :param autos: opção para retornar os autos do processo
+        :param documentos_publicos: opção para retornar os documentos publicos do processo
         :param wait: opção para esperar pelo resultado, espera no máximo 1 minuto
         :param send_callback: opção para mandar um callback com o resultado da busca
         :param numero_unico: o numero único do processo
         :param tipo_numero: formato do numero unico do processo
+        :param tentativas: numero de tentativas a serem realizadas na busca
         :return: dict
         """
 
@@ -29,10 +33,12 @@ class Processo(Endpoint):
             'send_callback': send_callback,
             'wait': wait,
             'autos': autos,
+            'documentos_publicos': documentos_publicos,
             'usuario': usuario,
             'senha': senha,
             'origem': origem,
-            'tipo_numero': tipo_numero
+            'tipo_numero': tipo_numero,
+            'tentativas': tentativas
         }
 
         return self.methods.post(f"processo-tribunal/{numero_unico}/async", data=data)
