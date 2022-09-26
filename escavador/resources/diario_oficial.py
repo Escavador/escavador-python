@@ -5,14 +5,14 @@ from typing import Optional
 
 class DiarioOficial(Endpoint):
 
-    def get_origens(self) -> dict:
+    def origens(self) -> dict:
         """
         Retorna as origens de todos os diários disponiveis no Escavador.
         :return: dict
         """
         return self.methods.get("origens")
 
-    def get_pagina_diario(self, id_diario: int, *, page: Optional[int] = None) -> dict:
+    def pagina(self, id_diario: int, *, page: Optional[int] = None) -> dict:
         """
         Retorna uma página específica do Diário Oficial pelo seu identificador no Escavador.
         :param id_diario: o ID do diario oficial
@@ -25,7 +25,7 @@ class DiarioOficial(Endpoint):
 
         return self.methods.get(f"diarios/{id_diario}", data=data)
 
-    def download_pdf_pagina_diario(self, id_diario: int, page: int, path: str, nome_arquivo: str) -> dict:
+    def download_pdf_pagina(self, id_diario: int, page: int, path: str, nome_arquivo: str) -> dict:
         """
         Retorna em formato PDF, uma página do Diário Oficial pelo seu identificador
         :param nome_arquivo:nome para o arquivo baixado

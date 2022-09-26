@@ -12,52 +12,58 @@ escavador.config("API_KEY")
 ```
 - para obter seu token da API, acesse o [painel de tokens](https://api.escavador.com/tokens)
 
-### Como Utilizar
+### Exemplo de como utilizar
+Buscando informações do processo no sistema do Tribunal de forma assíncrona
 ```py
-from escavador import Processo, TiposBusca
+from escavador import Processo, BuscaAssincrona
+import time
 
-resultado_busca = Processo().informacoes_no_tribunal("8809061-58.2022.8.10.3695")
+resultado_busca = Processo().informacoes_no_tribunal("0078700-86.2008.5.17.0009")  # Gera uma busca assíncrona
 
-#Para acessar campos da resposta
-print(resultado_busca['status'])
+while resultado_busca['resposta']['status'] == 'PENDENTE':
+    # Aguarda para checar novamente
+    print("Está pendente")
+    time.sleep(20)
 
-#Para utilizar parametros opcionais de rotas, utilize os keyword arguments, iguais a documentação da API
-resultado_busca = Processo().busca_em_lote(TiposBusca.BUSCA_POR_OAB, ['TJSP', 'TJBA'], numero_oab=12345, estado_oab='BA')
+    id_async = resultado_busca['resposta']['id']
+    resultado_busca = BuscaAssincrona().por_id(id_async)
+
+# Checa a saida do processso
+if resultado_busca['resposta']['status'] == 'ERRO':
+    print("Deu erro, tentar novamente")
+    exit(0)
+
+if resultado_busca['resposta']['status'] == 'SUCESSO':
+    busca_async = resultado_busca['resposta']
+    for instancia in busca_async['resposta']['instancias']:
+        print(instancia['assunto'])  # Imprime os assuntos das instâncias do processo
 ```
 
 ### Criando Monitoramentos
 ```py
 from escavador import MonitoramentoTribunal, MonitoramentoDiario, TiposMonitoramentosTribunal, TiposMonitoramentosDiario,FrequenciaMonitoramentoTribunal
 
-monitoramento_tribunal = MonitoramentoTribunal().criar_monitoramento(tipo_monitoramento=TiposMonitoramentosTribunal.UNICO,
+monitoramento_tribunal = MonitoramentoTribunal().criar(tipo_monitoramento=TiposMonitoramentosTribunal.UNICO,
                                                                      valor="8809061-58.2022.8.10.3695",tribunal='TJSP', 
                                                                      frequencia=FrequenciaMonitoramentoTribunal.SEMANAL)
 
-monitoramento_diario = MonitoramentoDiario().criar_monitoramento(TiposMonitoramentosDiario.PROCESSO, processo_id=2, origens_ids=[2,4,6])
+monitoramento_diario = MonitoramentoDiario().criar(TiposMonitoramentosDiario.PROCESSO, processo_id=2, origens_ids=[2,4,6])
 ```
 
 ### Consultando Tribunais
 ```py
 from escavador import Tribunal
 
-tribunais_disponiveis = Tribunal().get_sistemas_tribunais_disponiveis()
+tribunais_disponiveis = Tribunal().sistemas_disponiveis()
 ```
 
 ### Obter Callbacks de buscas e monitoramentos
 ```py
 from escavador import Callback
 
-callbacks = Callback().get(data_maxima="2022-04-05")
+callbacks = Callback().callbacks(data_maxima="2022-04-05")
 ```
 
-### Download de documentos
-```py
-from escavador import Processo
-
-resultado_busca = Processo().get_processo("8809061-58.2022.8.10.3695",wait=1,autos=1,usuario="user", senha="password")
-link_documento = resultado_busca['resposta']['instancia'][0]['documentos_restritos'][2]['link_api']
-documento = Processo().get_pdf(link_documento,'/documentos','autos')
-```
 ### Módulos Disponíveis e Referência da API
 
 | Módulo                | Link API                                                          |

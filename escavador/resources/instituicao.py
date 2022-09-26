@@ -4,7 +4,7 @@ from typing import Optional
 
 class Instituicao(Endpoint):
 
-    def get(self, id_instituicao: int) -> dict:
+    def por_id(self, id_instituicao: int) -> dict:
         """
         Retorna uma instituição de acordo com seu ID
         :argument id_instituicao: o ID da instituição

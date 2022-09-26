@@ -43,7 +43,7 @@ class Processo(Endpoint):
 
         return self.methods.post(f"processo-tribunal/{numero_unico}/async", data=data)
 
-    def get_processo_por_nome(self, origem: str, nome: str, *, send_callback: Optional[bool] = None,
+    def processos_por_nome_no_tribunal(self, origem: str, nome: str, *, send_callback: Optional[bool] = None,
                               wait: Optional[bool] = None, permitir_parcial: Optional[bool] = None,
                               tentativas: Optional[int] = None) -> dict:
         """
@@ -67,7 +67,7 @@ class Processo(Endpoint):
 
         return self.methods.post(f"tribunal/{origem.upper()}/busca-por-nome/async", data=data)
 
-    def get_processo_por_documento(self, origem: str, numero_documento: str, *, send_callback: Optional[bool] = None,
+    def processos_por_documento_no_tribunal(self, origem: str, numero_documento: str, *, send_callback: Optional[bool] = None,
                                    wait: Optional[bool] = None, permitir_parcial: Optional[bool] = None,
                                    tentativas: Optional[int] = None) -> dict:
         """
@@ -91,7 +91,7 @@ class Processo(Endpoint):
 
         return self.methods.post(f"tribunal/{origem.upper()}/busca-por-documento/async", data=data)
 
-    def get_processo_por_oab_async(self, origem: str, numero_oab: str, estado_oab: str, *,
+    def processos_por_oab_no_tribunal(self, origem: str, numero_oab: str, estado_oab: str, *,
                                    send_callback: Optional[bool] = None, wait: Optional[bool] = None,
                                    permitir_parcial: Optional[bool] = None,
                                    tentativas: Optional[int] = None) -> dict:
@@ -118,7 +118,7 @@ class Processo(Endpoint):
 
         return self.methods.post(f"tribunal/{origem.upper()}/busca-por-oab/async", data=data)
 
-    def busca_em_lote(self, tipo_busca: TiposBusca, origens: list[str], *, send_callback: Optional[bool] = None,
+    def busca_em_lote_no_tribunal(self, tipo_busca: TiposBusca, origens: list[str], *, send_callback: Optional[bool] = None,
                       numero_oab: Optional[str | int] = None, estado_oab: Optional[str] = None,
                       numero_documento: Optional[str] = None, nome: Optional[str] = None) -> dict:
         """
@@ -147,7 +147,7 @@ class Processo(Endpoint):
 
         return self.methods.post("tribunal/async/lote", data=data)
 
-    def get_processo_por_oab(self, estado_oab: str, numero_oab: str | int, *, page: Optional[int] = None) -> dict:
+    def processos_por_oab_em_diarios(self, estado_oab: str, numero_oab: str | int, *, page: Optional[int] = None) -> dict:
         """
         Busca processos que estão nos Diários Oficiais do Escavador que estão relacionados ao OAB informado
         :param page: número da página
@@ -162,7 +162,7 @@ class Processo(Endpoint):
 
         return self.methods.get(f"oab/{estado_oab}/{numero_oab}/processos", data=data)
 
-    def get_processo(self, id_processo: int) -> dict:
+    def por_id_em_diarios(self, id_processo: int) -> dict:
         """
         Retorna um processo pelo seu identificador no Escavador.
         :param id_processo: o ID do processo
@@ -171,7 +171,7 @@ class Processo(Endpoint):
 
         return self.methods.get(f"processos/{id_processo}")
 
-    def get_movimentacao_processo(self, id_processo: int, *, limit: Optional[int] = None,
+    def movimentacoes_diario_oficial(self, id_processo: int, *, limit: Optional[int] = None,
                                   page: Optional[int] = None) -> dict:
         """
         Retorna as movimentações de um Processo pelo identificador do processo no Escavador.
@@ -188,7 +188,7 @@ class Processo(Endpoint):
 
         return self.methods.get(f"processos/{id_processo}/movimentacoes", data=data)
 
-    def get_processo_por_numero_unico(self, numero_unico: str, *, match_exato: Optional[bool] = None) -> dict:
+    def processo_por_numero_em_diarios(self, numero_unico: str, *, match_exato: Optional[bool] = None) -> dict:
         """
         Busca processos que estão nos Diários Oficiais do Escavador. e contenham o número único informado.
         :param match_exato: a busca será feita pelo número inteiro do processo pesquisado.
@@ -218,23 +218,6 @@ class Processo(Endpoint):
         }
 
         return self.methods.get(f"processos/{id_processo}/envolvidos", data=data)
-
-    def get_todos_resultados(self) -> dict:
-        """
-        Retorna todos os resultados de busca
-        :return: dict
-        """
-
-        return self.methods.get('async/resultados')
-
-    def get_resultado(self, id_busca: int) -> dict:
-        """
-        Retorna um resultado de busca específico
-        :param id_busca: id do resultado
-        :return: dict
-        """
-
-        return self.methods.get(f'async/resultados/{id_busca}')
 
     def get_pdf(self, link_pdf: str, path: str, nome_arquivo: str) -> dict:
         """

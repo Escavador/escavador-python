@@ -1,5 +1,6 @@
 from .busca import Busca
 from .processo import Processo
+from .busca_assincrona import BuscaAssincrona
 from .callback import Callback
 from .saldo import Saldo
 from .diario_oficial import DiarioOficial

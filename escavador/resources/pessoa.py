@@ -4,7 +4,7 @@ from typing import Optional
 
 class Pessoa(Endpoint):
 
-    def get(self, id_pessoa: int) -> dict:
+    def por_id(self, id_pessoa: int) -> dict:
         """
         Retorna dados relacionados a uma pessoa pelo seu identificador.
         :param id_pessoa: o ID da pessoa
@@ -12,7 +12,7 @@ class Pessoa(Endpoint):
         """
         return self.methods.get(f"pessoas/{id_pessoa}")
 
-    def get_processos_pessoa(self, id_pessoa: int, *, limit: Optional[int] = None,
+    def processos(self, id_pessoa: int, *, limit: Optional[int] = None,
                              page: Optional[int] = None) -> dict:
         """
         Retorna os processos de uma pessoa baseado no ID da pessoa.

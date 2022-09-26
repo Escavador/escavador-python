@@ -3,7 +3,7 @@ from escavador.resources.helpers.endpoint import Endpoint
 
 class Saldo(Endpoint):
 
-    def get(self) -> dict:
+    def quantidade(self) -> dict:
         """
         Retorna a quantidade de créditos do usuário
         :return: dict

@@ -5,7 +5,7 @@ from escavador.resources.helpers.enums import TiposMonitoramentosDiario
 
 class MonitoramentoDiario(Endpoint):
 
-    def get_diarios_monitoramento(self, id_monitoramento: int) -> dict:
+    def origens(self, id_monitoramento: int) -> dict:
         """
         Retorna os diários oficiais de um monitoramento
         :param id_monitoramento: o ID do monitoramento
@@ -14,7 +14,7 @@ class MonitoramentoDiario(Endpoint):
 
         return self.methods.get(f"monitoramentos/{id_monitoramento}/origens")
 
-    def criar_monitoramento(self, tipo_monitoramento: TiposMonitoramentosDiario, *, termo: Optional[str] = None,
+    def criar(self, tipo_monitoramento: TiposMonitoramentosDiario, *, termo: Optional[str] = None,
                             origens_ids: Optional[list[int]] = None, processo_id: Optional[int] = None,
                             variacoes: Optional[list[str]] = None, termos_auxiliares: Optional[list[str]] = None
                             ) -> dict:
@@ -40,7 +40,7 @@ class MonitoramentoDiario(Endpoint):
 
         return self.methods.post("monitoramentos", data=data)
 
-    def get_monitoramentos(self) -> dict:
+    def monitoramentos(self) -> dict:
         """
         Retorna todos os monitoramentos de diários oficiais do usuário
         :return: dict
@@ -48,7 +48,7 @@ class MonitoramentoDiario(Endpoint):
 
         return self.methods.get("monitoramentos")
 
-    def get_monitoramento(self, id_monitoramento: int) -> dict:
+    def por_id(self, id_monitoramento: int) -> dict:
         """
         Retorna um monitoramento de diários oficiais de acordo com seu ID
         :param id_monitoramento o ID do monitoramento
@@ -57,7 +57,7 @@ class MonitoramentoDiario(Endpoint):
 
         return self.methods.get(f"monitoramentos/{id_monitoramento}")
 
-    def editar_monitoramento(self, id_monitoramento: int, *, variacoes: Optional[list[str]] = None,
+    def editar(self, id_monitoramento: int, *, variacoes: Optional[list[str]] = None,
                              origens_ids: Optional[list[str]] = None) -> dict:
         """
         Edita os diários oficiais e as variações do termo do monitoramento
@@ -73,7 +73,7 @@ class MonitoramentoDiario(Endpoint):
 
         return self.methods.put(f"monitoramentos/{id_monitoramento}", data=data)
 
-    def remover_monitoramento(self, id_monitoramento: int) -> dict:
+    def remover(self, id_monitoramento: int) -> dict:
         """
         Remove um monitoramento de acordo com seu ID
         :param id_monitoramento: o ID do monitoramento
@@ -82,7 +82,7 @@ class MonitoramentoDiario(Endpoint):
 
         return self.methods.delete(f"monitoramentos/{id_monitoramento}")
 
-    def get_aparicoes(self, id_monitoramento: int) -> dict:
+    def aparicoes(self, id_monitoramento: int) -> dict:
         """
         Retorna as aparições de um monitoramento pelo identificador do monitoramento.
         :param id_monitoramento: O ID do monitoramento

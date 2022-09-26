@@ -6,7 +6,7 @@ from escavador.resources.helpers.enums import StatusCallback
 
 class Callback(Endpoint):
 
-    def get(self, *, data_maxima: Optional[str] = None, data_minima: Optional[str] = None,
+    def callbacks(self, *, data_maxima: Optional[str] = None, data_minima: Optional[str] = None,
             evento: Optional[str] = None, item_tipo: Optional[str] = None, item_id: Optional[int] = None,
             status: Optional[StatusCallback]) -> dict:
         """
