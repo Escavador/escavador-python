@@ -13,7 +13,7 @@ escavador.config("API_KEY")
 - para obter seu token da API, acesse o [painel de tokens](https://api.escavador.com/tokens)
 
 ### Exemplo de como utilizar
-Buscando informações do processo no sistema do Tribunal de forma assíncrona
+[Buscando informações do processo no sistema do Tribunal](https://api.escavador.com/docs/#pesquisar-processo-no-site-do-tribunal-assncrono) (Assíncrono)
 ```py
 from escavador import Processo, BuscaAssincrona
 import time
@@ -43,25 +43,20 @@ if resultado_busca['resposta']['status'] == 'SUCESSO':
 ```py
 from escavador import MonitoramentoTribunal, MonitoramentoDiario, TiposMonitoramentosTribunal, TiposMonitoramentosDiario,FrequenciaMonitoramentoTribunal
 
+# Monitoramento nos sisteams dos Tribunais
 monitoramento_tribunal = MonitoramentoTribunal().criar(tipo_monitoramento=TiposMonitoramentosTribunal.UNICO,
                                                                      valor="8809061-58.2022.8.10.3695",tribunal='TJSP', 
                                                                      frequencia=FrequenciaMonitoramentoTribunal.SEMANAL)
 
+# Monitoramento em Diários Oficiais
 monitoramento_diario = MonitoramentoDiario().criar(TiposMonitoramentosDiario.PROCESSO, processo_id=2, origens_ids=[2,4,6])
 ```
 
-### Consultando Tribunais
+### Consultando os Tribunais e sistemas disponíveis
 ```py
 from escavador import Tribunal
 
 tribunais_disponiveis = Tribunal().sistemas_disponiveis()
-```
-
-### Obter Callbacks de buscas e monitoramentos
-```py
-from escavador import Callback
-
-callbacks = Callback().callbacks(data_maxima="2022-04-05")
 ```
 
 ### Módulos Disponíveis e Referência da API
