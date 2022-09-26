@@ -16,7 +16,7 @@ escavador.config("API_KEY")
 ```py
 from escavador import Processo, TiposBusca
 
-resultado_busca = Processo().get_processo("8809061-58.2022.8.10.3695")
+resultado_busca = Processo().informacoes_no_tribunal("8809061-58.2022.8.10.3695")
 
 #Para acessar campos da resposta
 print(resultado_busca['status'])

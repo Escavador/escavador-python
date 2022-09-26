@@ -1,5 +1,7 @@
 import os
 import aiohttp
+import requests
+
 import escavador
 from escavador.exceptions import ApiKeyNotFoundException
 from urllib import parse
@@ -25,21 +27,21 @@ class Api(object):
             'X-Requested-With': 'XMLHttpRequest'
         }
 
-    async def request(self, method, url, **kwargs):
+    def request(self, method, url, **kwargs):
         url = parse.urljoin(self.base_url, url)
         data = kwargs.get('data')
         if data is not None:
             data = {key: value for key, value in kwargs.get('data').items() if value is not None}
-        async with aiohttp.ClientSession() as session:
-            async with session.request(method=method, url=url, headers=self.headers(), json=data) as resp:
+        with requests.Session() as session:
+            with session.request(method=method, url=url, headers=self.headers(), json=data) as resp:
                 if resp.headers['Content-Type'] == 'application/pdf':
-                    return await resp.read()
+                    return resp.content
                 else:
-                    content = await resp.json()
-                    code = resp.status
-                    status = "Error" if code >= 400 else "Success"
+                    content = resp.json()
+                    code = resp.status_code
+                    success = True if code >= 400 else False
                     return {
-                        "content": content,
-                        "code": code,
-                        "status": status
+                        "resposta": content,
+                        "http_status": code,
+                        "sucesso": success
                     }

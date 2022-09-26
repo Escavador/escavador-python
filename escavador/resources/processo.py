@@ -7,7 +7,7 @@ from typing import Optional
 
 class Processo(Endpoint):
 
-    def get_processo_async(self, numero_unico: str, *, send_callback: Optional[bool] = None,
+    def informacoes_no_tribunal(self, numero_unico: str, *, send_callback: Optional[bool] = None,
                            wait: Optional[bool] = None,
                            autos: Optional[bool] = None, documentos_publicos:  Optional[bool] = None,
                            usuario: Optional[str] = None, senha: Optional[str] = None,
