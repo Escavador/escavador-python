@@ -1,5 +1,11 @@
-
 ## SDK em python para utilizar a API do Escavador
+
+### Instalação
+    
+Instale utilizando o pip:
+```bash
+pip install escavador
+```
 
 ### Como Configurar
 
