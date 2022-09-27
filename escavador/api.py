@@ -1,5 +1,4 @@
 import os
-import aiohttp
 import requests
 
 import escavador
