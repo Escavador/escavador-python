@@ -1,12 +1,14 @@
 [tool.poetry]
 name = "escavador"
-version = "0.1.3"
+version = "0.1.4"
 description = "A library to  interact with Escavador API"
 authors = [
     "Rafael <rafaelcampos@escavador.com>",
     "Gabriel <gabriel@escavador.com>"
 ]
 readme = "README.md"
+homepage = "https://www.escavador.com"
+repository = "https://github.com/Escavador/escavador-python"
 
 [tool.poetry.dependencies]
 python = "^3.9"
