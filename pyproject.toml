@@ -3,9 +3,10 @@ name = "escavador"
 version = "0.1.2"
 description = "A library to  interact with Escavador API"
 authors = [
-    "Rafael <rafaelcampos@escavador.com>",
-    "Gabriel <gabriel@escavador.com>"
+    { name="Rafael", email="rafaelcampos@escavador.com" },
+    { name="Gabriel", email="gabriel@escavador.com" }
 ]
+readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
