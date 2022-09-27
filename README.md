@@ -10,6 +10,7 @@
 import escavador
 escavador.config("API_KEY")
 ```
+
 - para obter seu token da API, acesse o [painel de tokens](https://api.escavador.com/tokens)
 
 ### Exemplo de como utilizar
