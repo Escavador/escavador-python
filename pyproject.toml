@@ -9,6 +9,9 @@ authors = [
 readme = "README.md"
 homepage = "https://www.escavador.com"
 repository = "https://github.com/Escavador/escavador-python"
+documentation = "https://api.escavador.com/docs/"
+license = "MIT"
+keywords = ["escavador", "api", "python"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
