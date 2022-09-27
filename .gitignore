@@ -2,4 +2,5 @@
 .lock
 .toml
 .idea/
+.dist/
 __pycache__
