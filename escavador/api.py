@@ -38,7 +38,7 @@ class Api(object):
                 else:
                     content = resp.json()
                     code = resp.status_code
-                    success = True if code >= 400 else False
+                    success = False if code >= 400 else True
                     return {
                         "resposta": content,
                         "http_status": code,
