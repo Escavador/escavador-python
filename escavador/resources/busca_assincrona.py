@@ -11,3 +11,10 @@ class BuscaAssincrona(Endpoint):
         """
         return self.methods.get(f"async/resultados/{id}")
 
+    def resultados(self) -> dict:
+        """
+        Consultar todos os resultados das buscas assíncrona
+        :return: dict
+        :return:
+        """
+        return self.methods.get("async/resultados")
