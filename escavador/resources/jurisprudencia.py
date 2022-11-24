@@ -62,4 +62,7 @@ class Jurisprudencia(Endpoint):
 
         conteudo = self.methods.get(f"jurisprudencias/pdf/{tipo_documento}/{id_documento}/{id_arquivo}")
 
-        return Documento.get_pdf(conteudo, path, nome_arquivo)
+        if conteudo.sucesso is True:
+            return Documento.get_pdf(conteudo, path, nome_arquivo)
+        else:
+            return conteudo
