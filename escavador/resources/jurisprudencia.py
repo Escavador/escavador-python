@@ -1,7 +1,7 @@
 from escavador.resources.helpers.endpoint import Endpoint
 from escavador.resources.helpers.documento import Documento
 from typing import Optional
-from datetime import date
+from datetime import  datetime
 
 
 class Jurisprudencia(Endpoint):
@@ -13,8 +13,8 @@ class Jurisprudencia(Endpoint):
         """
         return self.methods.get("jurisprudencias")
 
-    def busca_por_jurisprudencias(self, termo: str, *, ordena_por: Optional[str] = None, de_data: Optional[date] = None,
-                                  ate_data: Optional[date] = None, pagina: Optional[int] = None,
+    def busca_por_jurisprudencias(self, termo: str, *, ordena_por: Optional[str] = None, de_data: Optional[datetime] = None,
+                                  ate_data: Optional[datetime] = None, pagina: Optional[int] = None,
                                   filtro: Optional[str] = None) -> dict:
         """
         Traz a lista paginada dos itens encontrados na busca.
@@ -30,8 +30,8 @@ class Jurisprudencia(Endpoint):
         data = {
             'q': termo,
             'ordena_por': ordena_por,
-            'de_data': de_data,
-            'ate_data': ate_data,
+            'de_data': de_data.strftime("%Y%m%d") if de_data else None,
+            'ate_data': ate_data.strftime("%Y%m%d") if ate_data else None,
             'pagina': pagina,
             'filtro': filtro
         }

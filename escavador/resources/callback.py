@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from escavador.resources.helpers.endpoint import Endpoint
 from typing import Optional
 
@@ -6,7 +8,7 @@ from escavador.resources.helpers.enums import StatusCallback
 
 class Callback(Endpoint):
 
-    def callbacks(self, *, data_maxima: Optional[str] = None, data_minima: Optional[str] = None,
+    def callbacks(self, *, data_maxima: Optional[datetime] = None, data_minima: Optional[datetime] = None,
             evento: Optional[str] = None, item_tipo: Optional[str] = None, item_id: Optional[int] = None,
             status: Optional[StatusCallback]) -> dict:
         """
@@ -21,8 +23,8 @@ class Callback(Endpoint):
         """
 
         data = {
-            "data_maxima": data_maxima,
-            "data_minima": data_minima,
+            "data_maxima": data_maxima.strftime("%Y-%m-%d %H:%M:%S") if data_maxima else None,
+            "data_minima": data_minima.strftime("%Y-%m-%d %H:%M:%S") if data_minima else None,
             "evento": evento,
             "item_tipo": item_tipo,
             "item_id": item_id,
