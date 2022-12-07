@@ -28,7 +28,7 @@ class Callback(Endpoint):
             "evento": evento,
             "item_tipo": item_tipo,
             "item_id": item_id,
-            "status": status
+            "status": status.value
         }
 
         return self.methods.get('callbacks', data=data)

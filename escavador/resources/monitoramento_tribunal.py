@@ -50,7 +50,7 @@ class MonitoramentoTribunal(Endpoint):
             'tipo': tipo_monitoramento.value,
             'valor': valor,
             'tribunal': tribunal,
-            'frequencia': frequencia
+            'frequencia': frequencia.value
         }
 
         return self.methods.post("monitoramento-tribunal", data=data)
