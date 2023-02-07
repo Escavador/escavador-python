@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "escavador"
-version = "0.1.5"
+version = "0.1.6"
 description = "A library to  interact with Escavador API"
 authors = [
     "Rafael <rafaelcampos@escavador.com>",
@@ -14,7 +14,7 @@ license = "MIT"
 keywords = ["escavador", "api", "python"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.6"
 requests = "^2.27.1"
 cchardet = "^2.1.7"
 python-dotenv = "^0.19.2"
