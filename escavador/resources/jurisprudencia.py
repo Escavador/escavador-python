@@ -1,21 +1,21 @@
 from escavador.resources.helpers.endpoint import Endpoint
 from escavador.resources.helpers.documento import Documento
-from typing import Optional
+from typing import Optional, Dict
 from datetime import  datetime
 
 
 class Jurisprudencia(Endpoint):
 
-    def filtros_busca_jurisprudencia(self) -> dict:
+    def filtros_busca_jurisprudencia(self) -> Dict:
         """
         Lista de filtros disponíveis para a busca de jurisprudências
-        :return: dict
+        :return: Dict
         """
         return self.methods.get("jurisprudencias")
 
     def busca_por_jurisprudencias(self, termo: str, *, ordena_por: Optional[str] = None, de_data: Optional[datetime] = None,
                                   ate_data: Optional[datetime] = None, pagina: Optional[int] = None,
-                                  filtro: Optional[str] = None) -> dict:
+                                  filtro: Optional[str] = None) -> Dict:
         """
         Traz a lista paginada dos itens encontrados na busca.
         :param filtro: Um dos filtros listados pelo método filtros_busca_jurisprudencia()
@@ -24,7 +24,7 @@ class Jurisprudencia(Endpoint):
         :param de_data: filtra os resultados com data de julgamento a partir da data informada
         :param ordena_por: modifica a forma como o retorno da busca será ordenado
         :param termo: o termo a ser pesquisado
-        :return: dict
+        :return: Dict
         """
 
         data = {
@@ -38,18 +38,18 @@ class Jurisprudencia(Endpoint):
 
         return self.methods.get('jurisprudencias/busca', data=data)
 
-    def get_documento_jurisprudencia(self, tipo_documento: str, id_documento: int) -> dict:
+    def get_documento_jurisprudencia(self, tipo_documento: str, id_documento: int) -> Dict:
         """
         Traz informações sobre um documento de Jurisprudência em específico
         :param tipo_documento: o tipo de documento
         :param id_documento: o ID do documento
-        :return dict
+        :return Dict
         """
 
         return self.methods.get(f"jurisprudencias/documento/{tipo_documento}/{id_documento}")
 
     def download_documento_jurisprudencia(self, tipo_documento: str, id_documento: int, id_arquivo: str, path: str,
-                                          nome_arquivo: str) -> dict:
+                                          nome_arquivo: str) -> Dict:
         """
         Retorna, em formato PDF, um documento de jurisprudência
          :param tipo_documento: o tipo de documento
@@ -57,7 +57,7 @@ class Jurisprudencia(Endpoint):
         :param id_arquivo: o ID do arquivo do documento
         :param path: caminho onde o pdf será salvo
         :param nome_arquivo: nome do arquivo a ser criado
-        :return: dict
+        :return: Dict
         """
 
         conteudo = self.methods.get(f"jurisprudencias/pdf/{tipo_documento}/{id_documento}/{id_arquivo}")

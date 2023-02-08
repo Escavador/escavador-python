@@ -1,20 +1,20 @@
 from escavador.resources.helpers.endpoint import Endpoint
-from typing import Optional
+from typing import Optional, Dict
 from datetime import datetime
 
 
 class Legislacao(Endpoint):
 
-    def filtros_busca_legislacao(self) -> dict:
+    def filtros_busca_legislacao(self) -> Dict:
         """
         Lista de filtros disponíveis para a busca de Legislação
-        :return: dict
+        :return: Dict
         """
         return self.methods.get("legislacoes")
 
     def busca_por_legislacao(self, termo: str, *, ordena_por: Optional[str] = None, de_data: Optional[datetime] = None,
                              ate_data: Optional[datetime] = None, pagina: Optional[int] = None,
-                             filtro: Optional[str] = None) -> dict:
+                             filtro: Optional[str] = None) -> Dict:
         """
         Traz a lista paginada dos itens encontrados na busca.
         :param filtro: Um dos filtros listados pelo método filtros_busca_jurisprudencia()
@@ -23,7 +23,7 @@ class Legislacao(Endpoint):
         :param de_data: filtra os resultados com data de julgamento a partir da data informada
         :param ordena_por: modifica a forma como o retorno da busca será ordenado
         :param termo: o termo a ser pesquisado
-        :return: dict
+        :return: Dict
         """
 
         data = {
@@ -37,22 +37,22 @@ class Legislacao(Endpoint):
 
         return self.methods.get('legislacoes/busca', data=data)
 
-    def get_documento_legislacao(self, tipo_documento: str, id_documento: int) -> dict:
+    def get_documento_legislacao(self, tipo_documento: str, id_documento: int) -> Dict:
         """
         Traz informações sobre um documento de Legislação
         :param tipo_documento: O tipo do Documento
         :param id_documento: O ID do documento
-        :return dict
+        :return Dict
         """
 
         return self.methods.get(f"legislacoes/documento/{tipo_documento}/{id_documento}")
 
-    def fragmentos_texto_legislacao(self, tipo_documento: str, id_documento: int) -> dict:
+    def fragmentos_texto_legislacao(self, tipo_documento: str, id_documento: int) -> Dict:
         """
         Traz os fragmentos de uma legislação paginados.
         :param tipo_documento: O tipo do Documento
         :param id_documento: O ID do documento
-        :return: dict
+        :return: Dict
         """
 
         return self.methods.get(f"legislacoes/pdf/{tipo_documento}/{id_documento}/fragmentos")

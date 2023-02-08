@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from escavador.resources.helpers.endpoint import Endpoint
-from typing import Optional
+from typing import Optional, List, Dict
 
 from escavador.resources.helpers.enums import StatusCallback
 
@@ -10,7 +10,7 @@ class Callback(Endpoint):
 
     def callbacks(self, *, data_maxima: Optional[datetime] = None, data_minima: Optional[datetime] = None,
             evento: Optional[str] = None, item_tipo: Optional[str] = None, item_id: Optional[int] = None,
-            status: Optional[StatusCallback]) -> dict:
+            status: Optional[StatusCallback]) -> Dict:
         """
         Retorna todos os callbacks, de acordo com os filtros enviados
         :param item_id:o id do item do callback, obrigatório se o item_tipo foi enviado
@@ -19,7 +19,7 @@ class Callback(Endpoint):
         :param data_minima: a data mínima do callback
         :param data_maxima: a data máxima do callback
         :param status: status do callback
-        :return: dict
+        :return: Dict
         """
 
         data = {
@@ -33,11 +33,11 @@ class Callback(Endpoint):
 
         return self.methods.get('callbacks', data=data)
 
-    def marcarRecebido(self, ids: list) -> dict:
+    def marcarRecebido(self, ids: List) -> Dict:
         """
         Marca callbacks como recebidos
         :param ids:lista com ids dos callbacks que serão marcardos como recebidos
-        :return: dict
+        :return: Dict
         """
 
         data = {
@@ -46,11 +46,11 @@ class Callback(Endpoint):
 
         return self.methods.post('callbacks/marcar-recebidos',data=data)
 
-    def reenviar(self, id: int) -> dict:
+    def reenviar(self, id: int) -> Dict:
         """
         Reenvia uma callback
         :param id: id do callback
-        :return: dict
+        :return: Dict
         """
 
         return self.methods.post(f'callbacks/{id}/reenviar')
