@@ -3,8 +3,8 @@ from escavador.api import Api
 
 class Method(object):
 
-    def __init__(self):
-        self.api = Api()
+    def __init__(self, api_version):
+        self.api = Api(version=api_version)
 
     def get(self, url, **kwargs):
         return self.api.request('GET', url, data=kwargs.get('data'))

@@ -9,11 +9,17 @@ from importlib_metadata import version
 
 load_dotenv()
 
+SUPPORTED_VERSIONS = [1, 2]
+
 
 class Api(object):
 
-    def __init__(self):
-        self.base_url = 'https://api.escavador.com/api/v1/'
+    def __init__(self, version):
+        if version not in SUPPORTED_VERSIONS:
+            raise ValueError("Versão da API inválida")
+
+        self.base_url = f'https://api.escavador.com/api/v{version}/'
+
         self.api_key = escavador.__APIKEY__
         if self.api_key is None:
             try:

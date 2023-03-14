@@ -7,6 +7,9 @@ from typing import Optional, List, Dict, Union
 
 class Processo(Endpoint):
 
+    def __init__(self):
+        super().__init__(api_version=1)
+
     def informacoes_no_tribunal(self, numero_unico: str, *, send_callback: Optional[bool] = None,
                            wait: Optional[bool] = None,
                            autos: Optional[bool] = None, documentos_publicos:  Optional[bool] = None,

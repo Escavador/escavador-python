@@ -5,6 +5,9 @@ from escavador.resources.helpers.enums import TiposMonitoramentosTribunal, Frequ
 
 class MonitoramentoTribunal(Endpoint):
 
+    def __init__(self):
+        super().__init__(api_version=1)
+
     def monitoramentos(self) -> Dict:
         """
         Retorna todos os monitoramentos de tribunal do usuário

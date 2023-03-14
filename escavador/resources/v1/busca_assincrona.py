@@ -1,7 +1,11 @@
 from escavador.resources.helpers.endpoint import Endpoint
 from typing import Dict
 
+
 class BuscaAssincrona(Endpoint):
+
+    def __init__(self):
+        super().__init__(api_version=1)
 
     def por_id(self, id: int) -> Dict:
         """

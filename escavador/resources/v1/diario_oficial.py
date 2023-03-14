@@ -5,6 +5,9 @@ from typing import Optional, Dict
 
 class DiarioOficial(Endpoint):
 
+    def __init__(self):
+        super().__init__(api_version=1)
+
     def origens(self) -> Dict:
         """
         Retorna as origens de todos os diários disponiveis no Escavador.

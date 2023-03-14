@@ -4,6 +4,9 @@ from escavador.resources.helpers.enums import TiposMonitoramentosDiario
 
 class MonitoramentoDiario(Endpoint):
 
+    def __init__(self):
+        super().__init__(api_version=1)
+
     def origens(self, id_monitoramento: int) -> Dict:
         """
         Retorna os diários oficiais de um monitoramento

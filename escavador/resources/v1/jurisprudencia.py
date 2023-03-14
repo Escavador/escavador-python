@@ -6,6 +6,9 @@ from datetime import  datetime
 
 class Jurisprudencia(Endpoint):
 
+    def __init__(self):
+        super().__init__(api_version=1)
+
     def filtros_busca_jurisprudencia(self) -> Dict:
         """
         Lista de filtros disponíveis para a busca de jurisprudências,
