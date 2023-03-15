@@ -36,3 +36,8 @@ class StatusCallback(Enum):
     SUCESSO = "sucesso"
     EM_TENTATIVA = "em_tentativa"
     ERRO = "erro"
+
+
+class Ordem(Enum):
+    ASC = "asc"
+    DESC = "desc"

@@ -1,4 +1,3 @@
-# from __future__ import annotations
 from escavador.resources.helpers.endpoint import Endpoint
 from escavador.resources.helpers.enums import TiposBusca
 from escavador.resources.helpers.documento import Documento
