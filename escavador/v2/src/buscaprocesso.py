@@ -5,7 +5,7 @@ from escavador.resources.helpers.enums import Ordem
 from typing import Optional, Dict, List, Union
 
 
-class Processo(Endpoint):
+class BuscaProcesso(Endpoint):
     class Ordenacao(Enum):
         ULTIMA_MOVIMENTACAO = "data_ultima_movimentacao"
         INICIO = "data_inicio"
@@ -19,7 +19,7 @@ class Processo(Endpoint):
         :param numero_cnj: o número único do CNJ do processo
         :return: Dict
 
-        >>> Processo().por_numero("0000000-00.0000.0.00.0000") # doctest: +SKIP
+        >>> BuscaProcesso().por_numero("0000000-00.0000.0.00.0000") # doctest: +SKIP
         """
         data = kwargs
 
@@ -31,7 +31,7 @@ class Processo(Endpoint):
         :param numero_cnj: o número único do CNJ do processo
         :return:
 
-        >>> Processo().movimentacoes("0000000-00.0000.0.00.0000") # doctest: +SKIP
+        >>> BuscaProcesso().movimentacoes("0000000-00.0000.0.00.0000") # doctest: +SKIP
         """
         data = kwargs
 
@@ -41,7 +41,7 @@ class Processo(Endpoint):
                  nome: str,
                  ordena_por: Optional[Ordenacao] = None,
                  ordem: Optional[Ordem] = None,
-                 tribunais: Optional[List[int]] = None,
+                 tribunais: Optional[List[str]] = None,
                  **kwargs) -> Dict:
         """
         Retorna os processos envolvendo uma pessoa ou empresa a partir do seu nome.
@@ -50,12 +50,12 @@ class Processo(Endpoint):
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
 
-        >>> Processo().por_nome("Escavador Engenharia e Construcoes Ltda",
-        ...                     ordena_por=Processo.Ordenacao.INICIO,
-        ...                     ordem=Ordem.DESC,
-        ...                     tribunais=['TJBA', 'TRF1']) # doctest: +SKIP
+        >>> BuscaProcesso().por_nome("Escavador Engenharia e Construcoes Ltda",
+        ...                          ordena_por=BuscaProcesso.Ordenacao.INICIO,
+        ...                          ordem=Ordem.DESC,
+        ...                          tribunais=['TJBA', 'TRF1']) # doctest: +SKIP
 
-        >>> Processo().por_nome("Escavador Engenharia e Construcoes Ltda") # doctest: +SKIP
+        >>> BuscaProcesso().por_nome("Escavador Engenharia e Construcoes Ltda") # doctest: +SKIP
         """
         return self.por_envolvido(nome=nome, ordena_por=ordena_por, ordem=ordem, tribunais=tribunais, **kwargs)
 
@@ -63,7 +63,7 @@ class Processo(Endpoint):
                 cpf: str,
                 ordena_por: Optional[Ordenacao] = None,
                 ordem: Optional[Ordem] = None,
-                tribunais: Optional[List[int]] = None,
+                tribunais: Optional[List[str]] = None,
                 **kwargs) -> Dict:
         """
         Retorna os processos envolvendo uma pessoa a partir de seu CPF.
@@ -72,12 +72,12 @@ class Processo(Endpoint):
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
 
-        >>> Processo().por_cpf("12345678999",
-        ...                    ordena_por=Processo.Ordenacao.ULTIMA_MOVIMENTACAO,
-        ...                    ordem=Ordem.ASC,
-        ...                    tribunais=['STF']) # doctest: +SKIP
+        >>> BuscaProcesso().por_cpf("12345678999",
+        ...                         ordena_por=BuscaProcesso.Ordenacao.ULTIMA_MOVIMENTACAO,
+        ...                         ordem=Ordem.ASC,
+        ...                         tribunais=['STF']) # doctest: +SKIP
 
-        >>> Processo().por_cpf("123.456.789-99") # doctest: +SKIP
+        >>> BuscaProcesso().por_cpf("123.456.789-99") # doctest: +SKIP
         """
         return self.por_envolvido(cpf_cnpj=cpf, ordena_por=ordena_por, ordem=ordem, tribunais=tribunais, **kwargs)
 
@@ -85,7 +85,7 @@ class Processo(Endpoint):
                  cnpj: str,
                  ordena_por: Optional[Ordenacao] = None,
                  ordem: Optional[Ordem] = None,
-                 tribunais: Optional[List] = None,
+                 tribunais: Optional[List[str]] = None,
                  **kwargs) -> Dict:
         """
         Retorna os processos envolvendo uma instituição a partir de seu CNPJ.
@@ -94,12 +94,12 @@ class Processo(Endpoint):
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
 
-        >>> Processo().por_cnpj("07.838.351/0021.60",
-        ...                     ordena_por=Processo.Ordenacao.ULTIMA_MOVIMENTACAO,
-        ...                     ordem=Ordem.ASC,
-        ...                     tribunais=['TJBA', 'TRF1']) # doctest: +SKIP
+        >>> BuscaProcesso().por_cnpj("07.838.351/0021.60",
+        ...                          ordena_por=BuscaProcesso.Ordenacao.ULTIMA_MOVIMENTACAO,
+        ...                          ordem=Ordem.ASC,
+        ...                          tribunais=['TJBA', 'TRF1']) # doctest: +SKIP
 
-        >>> Processo().por_cnpj("07838351002160") # doctest: +SKIP
+        >>> BuscaProcesso().por_cnpj("07838351002160") # doctest: +SKIP
         """
         return self.por_envolvido(cpf_cnpj=cnpj, ordena_por=ordena_por, ordem=ordem, tribunais=tribunais, **kwargs)
 
@@ -108,7 +108,7 @@ class Processo(Endpoint):
                       nome: Optional[str] = None,
                       ordena_por: Optional[Ordenacao] = None,
                       ordem: Optional[Ordem] = None,
-                      tribunais: Optional[List[int]] = None,
+                      tribunais: Optional[List[str]] = None,
                       **kwargs) -> Dict:
         """
         Retorna os processos envolvendo uma pessoa ou instituição a partir de seu nome e/ou CPF/CNPJ.
@@ -118,12 +118,12 @@ class Processo(Endpoint):
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
 
-        >>> Processo().por_envolvido(nome="Potelo Sistemas de Informacao",
-        ...                          ordena_por=Processo.Ordenacao.ULTIMA_MOVIMENTACAO,
-        ...                          ordem=Ordem.ASC,
-        ...                          tribunais=['TRF4']) # doctest: +SKIP
+        >>> BuscaProcesso().por_envolvido(nome="Potelo Sistemas de Informacao",
+        ...                               ordena_por=BuscaProcesso.Ordenacao.ULTIMA_MOVIMENTACAO,
+        ...                               ordem=Ordem.ASC,
+        ...                               tribunais=['TRF4']) # doctest: +SKIP
 
-        >>> Processo().por_envolvido(cpf_cnpj="07.838.351/0021.60") # doctest: +SKIP
+        >>> BuscaProcesso().por_envolvido(cpf_cnpj="07.838.351/0021.60") # doctest: +SKIP
         """
         data = {
             'nome': nome,
@@ -151,13 +151,12 @@ class Processo(Endpoint):
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
 
-        >>> Processo().por_oab(1234, "AC") # doctest: +SKIP
+        >>> BuscaProcesso().por_oab(1234, "AC") # doctest: +SKIP
 
-        >>> Processo().por_oab(numero="123456",
-        ...                    estado="SP",
-        ...                    ordena_por=Processo.Ordenacao.ULTIMA_MOVIMENTACAO,
-        ...                    ordem=Ordem.DESC) # doctest: +SKIP
-
+        >>> BuscaProcesso().por_oab(numero="123456",
+        ...                         estado="SP",
+        ...                         ordena_por=BuscaProcesso.Ordenacao.ULTIMA_MOVIMENTACAO,
+        ...                         ordem=Ordem.DESC) # doctest: +SKIP
         """
         data = {
             'oab_numero': f"{numero}",

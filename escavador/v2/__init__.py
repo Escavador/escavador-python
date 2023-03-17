@@ -1,1 +1,1 @@
-from .src.processo import Processo
+from .src.buscaprocesso import BuscaProcesso
