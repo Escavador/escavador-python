@@ -39,7 +39,8 @@ class BuscaProcesso(Endpoint):
         """
         data = kwargs
 
-        return self.methods.get(f"processos/numero_cnj/{numero_cnj}/movimentacoes", data=data)
+        first_response = self.methods.get(f"processos/numero_cnj/{numero_cnj}/movimentacoes", data=data)
+        return self.__get_up_to(first_response, qtd, **kwargs)
 
     def por_nome(self,
                  nome: str,
@@ -173,28 +174,9 @@ class BuscaProcesso(Endpoint):
             'ordem': ordem.value if ordem else None,
         }
 
-        current_response = self.methods.get(f"envolvido/processos", data=data, params=params, **kwargs)
-        while 0 < len(current_response['resposta'].get('items', [])) < qtd:
-            cursor = current_response['resposta']['links']['next']
-            if not cursor:
-                break
+        first_response = self.methods.get(f"envolvido/processos", data=data, params=params, **kwargs)
 
-            next_response = self.__get_more(cursor, **kwargs)
-            next_items = next_response['resposta'].get('items')
-            if not next_items:
-                current_response['http_status'] = next_response['http_status']
-                current_response['success'] = next_response['success']
-                break
-
-            current_response['resposta']['items'].extend(next_items)
-
-            next_cursor = next_response['resposta']['links']['next']
-            if not next_cursor:
-                break
-
-            current_response['resposta']['links']['next'] = next_cursor
-
-        return self.__selecionar_alguns(current_response, qtd)
+        return self.__get_up_to(first_response, qtd, **kwargs)
 
     def por_oab(self,
                 numero: Union[str, int],
@@ -230,7 +212,7 @@ class BuscaProcesso(Endpoint):
         }
         return self.methods.get(f"advogado/processos", data=data, params=params)
 
-    def __get_more(self, cursor: str, **kwargs) -> Dict:
+    def __consumir_cursor(self, cursor: str, **kwargs) -> Dict:
         """Consome um cursor para obter os próximos resultados de uma busca
         :param cursor: o cursor a ser consumido
         :return: um dicionário com a resposta da requisição
@@ -238,14 +220,28 @@ class BuscaProcesso(Endpoint):
         endpoint_cursor = re.sub(r".*/api/v\d/", "", cursor)
         return self.methods.get(endpoint_cursor, **kwargs)
 
-    @staticmethod
-    def __selecionar_alguns(resposta: Dict, qtd: int) -> Dict:
-        """Seleciona os itens de uma resposta de acordo com a quantidade desejada
-
-        :param resposta: a resposta a ser filtrada
-        :param qtd: a quantidade de itens desejada
-        :return: a resposta com a quantidade de itens desejada
+    def __get_up_to(self, resposta: Dict, qtd: int, **kwargs) -> Dict:
+        """Obtém os próximos resultados de uma busca até atingir a quantidade desejada ou erro
+        :param resposta: a resposta da primeira requisição
+        :param qtd: a quantidade de resultados desejada
         """
+        while 0 < len(resposta['resposta'].get('items', [])) < qtd:
+            cursor = resposta['resposta'].get('links', {}).get('next')
+            if not cursor:
+                break
+
+            next_response = self.__consumir_cursor(cursor, **kwargs)
+            next_items = next_response['resposta'].get('items')
+            if not next_items:
+                resposta['http_status'] = next_response['http_status']
+                resposta['success'] = next_response['success']
+                break
+
+            resposta['resposta']['items'].extend(next_items)
+
+            # replace cursor with next cursor
+            resposta['resposta']['links']['next'] = next_response['resposta'].get('links', {}).get('next')
+
         if 'items' in resposta['resposta']:
             resposta['resposta']['items'] = resposta['resposta']['items'][:qtd]
         return resposta
