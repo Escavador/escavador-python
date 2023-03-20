@@ -210,7 +210,9 @@ class BuscaProcesso(Endpoint):
             'ordena_por': ordena_por.value if ordena_por else None,
             'ordem': ordem.value if ordem else None,
         }
-        return self.methods.get(f"advogado/processos", data=data, params=params)
+        first_response = self.methods.get(f"advogado/processos", data=data, params=params)
+
+        return self.__get_up_to(first_response, qtd, **kwargs)
 
     def __consumir_cursor(self, cursor: str, **kwargs) -> Dict:
         """Consome um cursor para obter os próximos resultados de uma busca
@@ -244,4 +246,5 @@ class BuscaProcesso(Endpoint):
 
         if 'items' in resposta['resposta']:
             resposta['resposta']['items'] = resposta['resposta']['items'][:qtd]
+
         return resposta
