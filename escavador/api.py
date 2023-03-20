@@ -38,7 +38,8 @@ class Api(object):
         return {
             'User-Agent': 'escavador-python/' + version('escavador'),
             'Authorization': 'Bearer ' + self.api_key,
-            'X-Requested-With': 'XMLHttpRequest'
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept-Encoding': 'gzip, deflate, br',
         }
 
     def request(self, method: str,
