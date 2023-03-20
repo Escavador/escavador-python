@@ -19,6 +19,7 @@ requests = "^2.27.1"
 cchardet = "^2.1.7"
 python-dotenv = "^0.19.2"
 importlib_metadata = "*"
+ratelimit = "*"
 
 [tool.poetry.dev-dependencies]
 

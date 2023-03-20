@@ -5,16 +5,20 @@ import requests
 
 import escavador
 from escavador.exceptions import ApiKeyNotFoundException
-from urllib import parse
 from dotenv import load_dotenv
 from importlib_metadata import version
+from ratelimit import limits
+from urllib import parse
 
 load_dotenv()
 
 SUPPORTED_VERSIONS = [1, 2]
 
+DEFAULT_RATE_LIMIT = 500
+
 
 class Api(object):
+    MAX_REQUESTS_PER_MIN = int(os.environ.get('ESCAVADOR_MAX_REQ_PER_MIN', DEFAULT_RATE_LIMIT))
 
     def __init__(self, version):
         if version not in SUPPORTED_VERSIONS:
@@ -42,6 +46,7 @@ class Api(object):
             'Accept-Encoding': 'gzip, deflate, br',
         }
 
+    @limits(calls=MAX_REQUESTS_PER_MIN, period=60)
     def request(self, method: str,
                 url: str,
                 data: Dict = None,
