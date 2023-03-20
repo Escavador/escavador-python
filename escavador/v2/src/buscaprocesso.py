@@ -158,7 +158,8 @@ class BuscaProcesso(Endpoint):
         ...                               ordena_por=BuscaProcesso.CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
         ...                               ordem=Ordem.ASC,
         ...                               tribunais=['TJBA'],
-        ...                               qtd=0)
+        ...                               qtd=1) # doctest: +SKIP
+
         >>> BuscaProcesso().por_envolvido(cpf_cnpj="07.838.351/0021.60") # doctest: +SKIP
         """
         data = {
@@ -230,12 +231,21 @@ class BuscaProcesso(Endpoint):
         return self.methods.get(f"advogado/processos", data=data, params=params)
 
     def __get_more(self, cursor: str, **kwargs) -> Dict:
-        """Consome um cursor para obter os próximos resultados de uma busca"""
+        """Consome um cursor para obter os próximos resultados de uma busca
+        :param cursor: o cursor a ser consumido
+        :return: um dicionário com a resposta da requisição
+        """
         endpoint_cursor = re.sub(r".*/api/v\d/", "", cursor)
         return self.methods.get(endpoint_cursor, **kwargs)
 
     @staticmethod
     def __selecionar_alguns(resposta: Dict, qtd: int) -> Dict:
-        """Seleciona os itens de uma resposta de acordo com a quantidade desejada"""
-        resposta['resposta']['items'] = resposta['resposta']['items'][:qtd]
+        """Seleciona os itens de uma resposta de acordo com a quantidade desejada
+
+        :param resposta: a resposta a ser filtrada
+        :param qtd: a quantidade de itens desejada
+        :return: a resposta com a quantidade de itens desejada
+        """
+        if 'items' in resposta['resposta']:
+            resposta['resposta']['items'] = resposta['resposta']['items'][:qtd]
         return resposta
