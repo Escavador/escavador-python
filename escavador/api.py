@@ -30,8 +30,8 @@ class Api(object):
         if self.api_key is None:
             try:
                 self.api_key = os.environ['ESCAVADOR_API_KEY']
-            except KeyError:
-                raise ApiKeyNotFoundException("Nenhuma chave da API foi informada")
+            except KeyError as e:
+                raise ApiKeyNotFoundException("Nenhuma chave da API foi informada") from e
 
     def headers(self) -> Dict:
         """
@@ -41,7 +41,7 @@ class Api(object):
         """
         return {
             'User-Agent': 'escavador-python/' + version('escavador'),
-            'Authorization': 'Bearer ' + self.api_key,
+            'Authorization': f'Bearer {self.api_key}',
             'X-Requested-With': 'XMLHttpRequest',
             'Accept-Encoding': 'gzip, deflate, br',
         }
@@ -70,12 +70,11 @@ class Api(object):
             with session.request(method=method, url=url, headers=self.headers(), json=data, params=params) as resp:
                 if resp.headers['Content-Type'] == 'application/pdf':
                     return resp.content
-                else:
-                    content = resp.json()
-                    code = resp.status_code
-                    success = False if code >= 400 else True
-                    return {
-                        "resposta": content,
-                        "http_status": code,
-                        "sucesso": success
-                    }
+                content = resp.json()
+                code = resp.status_code
+                success = code < 400
+                return {
+                    "resposta": content,
+                    "http_status": code,
+                    "sucesso": success
+                }
