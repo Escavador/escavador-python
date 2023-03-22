@@ -17,9 +17,6 @@ class Documento(object):
         try:
             with open(real_path, "xb+") as arquivo:
                 arquivo.write(conteudo)
-        except FileExistsError as error:
+        except (FileExistsError, FileNotFoundError) as error:
             return {"error": error.strerror}
-        except FileNotFoundError as error:
-            return {"error": error.strerror}
-
         return {"path": real_path}
