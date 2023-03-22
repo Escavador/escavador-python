@@ -1,5 +1,5 @@
 from escavador.resources.helpers.endpoint import Endpoint
-from escavador.resources.helpers.enums import TiposBusca
+from escavador.resources.helpers.enums_v1 import TiposBusca
 from escavador.resources.helpers.documento import Documento
 from typing import Optional, List, Dict, Union
 

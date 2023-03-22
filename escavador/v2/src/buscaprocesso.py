@@ -1,15 +1,11 @@
 import re
-from enum import Enum
 
 from escavador.resources.helpers.endpoint import Endpoint
-from escavador.resources.helpers.enums import Ordem
+from escavador.resources.helpers.enums_v2 import (Ordem, CriterioOrdenacao, SiglaTribunal)
 from typing import Optional, Dict, List, Union
 
 
 class BuscaProcesso(Endpoint):
-    class CriterioOrdenacao(Enum):
-        ULTIMA_MOVIMENTACAO = "data_ultima_movimentacao"
-        INICIO = "data_inicio"
 
     def __init__(self):
         super().__init__(api_version=2)
@@ -46,7 +42,7 @@ class BuscaProcesso(Endpoint):
                  nome: str,
                  ordena_por: Optional[CriterioOrdenacao] = None,
                  ordem: Optional[Ordem] = None,
-                 tribunais: Optional[List[str]] = None,
+                 tribunais: Optional[List[SiglaTribunal]] = None,
                  qtd: int = 100,
                  **kwargs) -> Dict:
         """
@@ -58,9 +54,9 @@ class BuscaProcesso(Endpoint):
         :param qtd: quantidade desejada de processos a ser retornada pela query
 
         >>> BuscaProcesso().por_nome("Escavador Engenharia e Construcoes Ltda",
-        ...                          ordena_por=BuscaProcesso.CriterioOrdenacao.INICIO,
+        ...                          ordena_por=CriterioOrdenacao.INICIO,
         ...                          ordem=Ordem.DESC,
-        ...                          tribunais=['TJBA', 'TRF1'],
+        ...                          tribunais=[SiglaTribunal.CNJ, SiglaTribunal.TRT10],
         ...                          qtd=1) # doctest: +SKIP
 
         >>> BuscaProcesso().por_nome("Escavador Engenharia e Construcoes Ltda") # doctest: +SKIP
@@ -76,7 +72,7 @@ class BuscaProcesso(Endpoint):
                 cpf: str,
                 ordena_por: Optional[CriterioOrdenacao] = None,
                 ordem: Optional[Ordem] = None,
-                tribunais: Optional[List[str]] = None,
+                tribunais: Optional[List[SiglaTribunal]] = None,
                 qtd: int = 100,
                 **kwargs) -> Dict:
         """
@@ -88,9 +84,9 @@ class BuscaProcesso(Endpoint):
         :param qtd: quantidade desejada de processos a ser retornada pela query
 
         >>> BuscaProcesso().por_cpf("12345678999",
-        ...                         ordena_por=BuscaProcesso.CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
+        ...                         ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
         ...                         ordem=Ordem.ASC,
-        ...                         tribunais=['STF'],
+        ...                         tribunais=[SiglaTribunal.STF],
         ...                         qtd=200) # doctest: +SKIP
 
         >>> BuscaProcesso().por_cpf("123.456.789-99") # doctest: +SKIP
@@ -106,7 +102,7 @@ class BuscaProcesso(Endpoint):
                  cnpj: str,
                  ordena_por: Optional[CriterioOrdenacao] = None,
                  ordem: Optional[Ordem] = None,
-                 tribunais: Optional[List[str]] = None,
+                 tribunais: Optional[List[SiglaTribunal]] = None,
                  qtd: int = 100,
                  **kwargs) -> Dict:
         """
@@ -118,9 +114,9 @@ class BuscaProcesso(Endpoint):
         :param qtd: quantidade desejada de processos a ser retornada pela query
 
         >>> BuscaProcesso().por_cnpj("07.838.351/0021.60",
-        ...                          ordena_por=BuscaProcesso.CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
+        ...                          ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
         ...                          ordem=Ordem.ASC,
-        ...                          tribunais=['TJBA', 'TRF1'],
+        ...                          tribunais=[SiglaTribunal.TJBA, SiglaTribunal.TRF1],
         ...                          qtd=1) # doctest: +SKIP
 
         >>> BuscaProcesso().por_cnpj("07838351002160") # doctest: +SKIP
@@ -137,7 +133,7 @@ class BuscaProcesso(Endpoint):
                       nome: Optional[str] = None,
                       ordena_por: Optional[CriterioOrdenacao] = None,
                       ordem: Optional[Ordem] = None,
-                      tribunais: Optional[List[str]] = None,
+                      tribunais: Optional[List[SiglaTribunal]] = None,
                       qtd: int = 100,
                       **kwargs) -> Dict:
         """
@@ -156,9 +152,9 @@ class BuscaProcesso(Endpoint):
 
 
         >>> BuscaProcesso().por_envolvido(nome='Escavador Engenharia e Construcoes Ltda',
-        ...                               ordena_por=BuscaProcesso.CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
+        ...                               ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
         ...                               ordem=Ordem.ASC,
-        ...                               tribunais=['TJBA'],
+        ...                               tribunais=[SiglaTribunal.TJBA],
         ...                               qtd=1) # doctest: +SKIP
 
         >>> BuscaProcesso().por_envolvido(cpf_cnpj="07.838.351/0021.60") # doctest: +SKIP
@@ -174,7 +170,9 @@ class BuscaProcesso(Endpoint):
             'ordem': ordem.value if ordem else None,
         }
 
-        first_response = self.methods.get(f"envolvido/processos", data=data, params=params, **kwargs)
+        first_response = self.methods.get(
+            "envolvido/processos", data=data, params=params, **kwargs
+        )
 
         return self.__get_up_to(first_response, qtd, **kwargs)
 
@@ -198,7 +196,7 @@ class BuscaProcesso(Endpoint):
 
         >>> BuscaProcesso().por_oab(numero="123456",
         ...                         estado="SP",
-        ...                         ordena_por=BuscaProcesso.CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
+        ...                         ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
         ...                         ordem=Ordem.DESC,
         ...                         qtd=1) # doctest: +SKIP
         """
@@ -210,7 +208,9 @@ class BuscaProcesso(Endpoint):
             'ordena_por': ordena_por.value if ordena_por else None,
             'ordem': ordem.value if ordem else None,
         }
-        first_response = self.methods.get(f"advogado/processos", data=data, params=params)
+        first_response = self.methods.get(
+            "advogado/processos", data=data, params=params
+        )
 
         return self.__get_up_to(first_response, qtd, **kwargs)
 

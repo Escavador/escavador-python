@@ -1,6 +1,6 @@
 from escavador.resources.helpers.endpoint import Endpoint
 from typing import Optional, Dict
-from escavador.resources.helpers.enums import TiposMonitoramentosTribunal, FrequenciaMonitoramentoTribunal
+from escavador.resources.helpers.enums_v1 import TiposMonitoramentosTribunal, FrequenciaMonitoramentoTribunal
 
 
 class MonitoramentoTribunal(Endpoint):
