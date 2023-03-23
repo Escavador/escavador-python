@@ -1,14 +1,14 @@
 import os
-from typing import Dict, Union
+from typing import Dict, Union, Optional
 
 import requests
 
 import escavador
 from escavador.exceptions import ApiKeyNotFoundException
+from urllib import parse
 from dotenv import load_dotenv
 from importlib_metadata import version
 from ratelimit import limits
-from urllib import parse
 
 load_dotenv()
 
@@ -16,6 +16,7 @@ SUPPORTED_VERSIONS = [1, 2]
 
 DEFAULT_RATE_LIMIT = 500
 
+__APIKEY__ = None
 
 class Api(object):
     MAX_REQUESTS_PER_MIN = int(os.environ.get('ESCAVADOR_MAX_REQ_PER_MIN', DEFAULT_RATE_LIMIT))
@@ -55,6 +56,8 @@ class Api(object):
         """
         Executa um request HTML para a API
 
+        Keyword arguments extras são adicionados ao corpo da requisição (json)
+
         :param method: método HTML
         :param url: slug do endpoint a ser chamado
         :param data: dados a serem enviados no formato json
@@ -64,6 +67,7 @@ class Api(object):
         url = parse.urljoin(self.base_url, url)
         if data is not None:
             data = {k: v for k, v in data.items() if v is not None}
+            data |= {k: v for k, v in kwargs.items() if k not in data and v is not None}
         if params is not None:
             params = {k: v for k, v in params.items() if v is not None}
         with requests.Session() as session:
@@ -78,3 +82,14 @@ class Api(object):
                     "http_status": code,
                     "sucesso": success
                 }
+
+
+def config(api_key: str, max_req_min: Optional[int] = None):
+    """
+     Configura a chave da API do escavador
+    :param api_key: o token da API
+    :param max_req_min: o número máximo de requisições por minuto
+    :return:
+    """
+    global __APIKEY__
+    __APIKEY__ = api_key
