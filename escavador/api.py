@@ -18,6 +18,7 @@ DEFAULT_RATE_LIMIT = 500
 
 __APIKEY__ = None
 
+
 class Api(object):
     MAX_REQUESTS_PER_MIN = int(os.environ.get('ESCAVADOR_MAX_REQ_PER_MIN', DEFAULT_RATE_LIMIT))
 
@@ -67,7 +68,7 @@ class Api(object):
         url = parse.urljoin(self.base_url, url)
         if data is not None:
             data = {k: v for k, v in data.items() if v is not None}
-            data |= {k: v for k, v in kwargs.items() if k not in data and v is not None}
+            data.update({k: v for k, v in kwargs.items() if k not in data and v is not None})
         if params is not None:
             params = {k: v for k, v in params.items() if v is not None}
         with requests.Session() as session:
@@ -84,12 +85,10 @@ class Api(object):
                 }
 
 
-def config(api_key: str, max_req_min: Optional[int] = None):
+def config(api_key: str):
     """
      Configura a chave da API do escavador
     :param api_key: o token da API
-    :param max_req_min: o número máximo de requisições por minuto
-    :return:
     """
     global __APIKEY__
     __APIKEY__ = api_key

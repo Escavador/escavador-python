@@ -214,15 +214,7 @@ class BuscaProcesso(Endpoint):
 
         return self._get_up_to(first_response, qtd)
 
-    def _consumir_cursor(self, cursor: str) -> Dict:
-        """Consome um cursor para obter os próximos resultados de uma busca
-        :param cursor: o cursor a ser consumido
-        :return: um dicionário com a resposta da requisição
-        """
-        endpoint_cursor = re.sub(r".*/api/v\d/", "", cursor)
-        return self.methods.get(endpoint_cursor)
-
-    def _get_up_to(self, qtd: int, resposta: Dict) -> Dict:
+    def _get_up_to(self, resposta: Dict, qtd: int) -> Dict:
         """Obtém os próximos resultados de uma busca até atingir a quantidade desejada ou erro
         :param resposta: a resposta da primeira requisição
         :param qtd: a quantidade de resultados desejada
@@ -236,7 +228,6 @@ class BuscaProcesso(Endpoint):
             next_items = next_response['resposta'].get('items')
             if not next_items:
                 resposta['http_status'] = next_response['http_status']
-                resposta['success'] = next_response['success']
                 break
 
             resposta['resposta']['items'].extend(next_items)
@@ -248,3 +239,11 @@ class BuscaProcesso(Endpoint):
             resposta['resposta']['items'] = resposta['resposta']['items'][:qtd]
 
         return resposta
+
+    def _consumir_cursor(self, cursor: str) -> Dict:
+        """Consome um cursor para obter os próximos resultados de uma busca
+        :param cursor: url do cursor a ser consumido
+        :return: um dicionário com a resposta da requisição
+        """
+        endpoint_cursor = re.sub(r".*/api/v\d/", "", cursor)
+        return self.methods.get(endpoint_cursor)
