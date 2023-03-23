@@ -1,7 +1,6 @@
 import escavador.v1
 import escavador.v2
 
-from typing import Optional
 from ratelimit import RateLimitException
 
 from escavador.v1 import (
