@@ -36,7 +36,7 @@ class BuscaProcesso(Endpoint):
         data = kwargs
 
         first_response = self.methods.get(f"processos/numero_cnj/{numero_cnj}/movimentacoes", data=data)
-        return self._get_up_to(first_response, qtd, **kwargs)
+        return self._get_up_to(first_response, qtd)
 
     def por_nome(self,
                  nome: str,
@@ -174,7 +174,7 @@ class BuscaProcesso(Endpoint):
             "envolvido/processos", data=data, params=params, **kwargs
         )
 
-        return self._get_up_to(first_response, qtd, **kwargs)
+        return self._get_up_to(first_response, qtd)
 
     def por_oab(self,
                 numero: Union[str, int],
@@ -212,17 +212,17 @@ class BuscaProcesso(Endpoint):
             "advogado/processos", data=data, params=params
         )
 
-        return self._get_up_to(first_response, qtd, **kwargs)
+        return self._get_up_to(first_response, qtd)
 
-    def _consumir_cursor(self, cursor: str, **kwargs) -> Dict:
+    def _consumir_cursor(self, cursor: str) -> Dict:
         """Consome um cursor para obter os próximos resultados de uma busca
         :param cursor: o cursor a ser consumido
         :return: um dicionário com a resposta da requisição
         """
         endpoint_cursor = re.sub(r".*/api/v\d/", "", cursor)
-        return self.methods.get(endpoint_cursor, **kwargs)
+        return self.methods.get(endpoint_cursor)
 
-    def _get_up_to(self, resposta: Dict, qtd: int, **kwargs) -> Dict:
+    def _get_up_to(self, qtd: int, resposta: Dict) -> Dict:
         """Obtém os próximos resultados de uma busca até atingir a quantidade desejada ou erro
         :param resposta: a resposta da primeira requisição
         :param qtd: a quantidade de resultados desejada
@@ -232,7 +232,7 @@ class BuscaProcesso(Endpoint):
             if not cursor:
                 break
 
-            next_response = self._consumir_cursor(cursor, **kwargs)
+            next_response = self._consumir_cursor(cursor)
             next_items = next_response['resposta'].get('items')
             if not next_items:
                 resposta['http_status'] = next_response['http_status']

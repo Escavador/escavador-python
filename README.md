@@ -1,26 +1,28 @@
-## SDK em python para utilizar a API do Escavador
+# O SDK em Python da API do Escavador
 
-### Instalação
+## Instalação
     
-Instale utilizando o pip:
+O SDK pode ser instalado via `pip` através do comando:
 ```bash
-pip install escavador
+python -m pip install escavador
 ```
 
-### Como Configurar
+## Como Configurar
 
-- Crie no `.env` do seu projeto uma variável `ESCAVADOR_API_KEY` com seu token da API
-- ou
-- utilize a função `config()`
+No arquivo `.env` na raíz do seu projeto, crie uma variável chamada `ESCAVADOR_API_KEY` e atribua a ela o seu token da API.
+
+Alternativamente, utilize a função `config()` durante a execução do seu projeto, antes de utilizar qualquer outro módulo do SDK.
 ```py
 import escavador
 escavador.config("API_KEY")
 ```
 
-- para obter seu token da API, acesse o [painel de tokens](https://api.escavador.com/tokens)
+Para obter seu token da API, acesse o [painel de tokens](https://api.escavador.com/tokens)
 
-### Exemplo de como utilizar
-[Buscando informações do processo no sistema do Tribunal](https://api.escavador.com/docs/#pesquisar-processo-no-site-do-tribunal-assncrono) (Assíncrono)
+## Exemplos
+
+### Buscando um processo assíncronamente usando a API V1
+[Buscando informações do processo no sistema do Tribunal](https://api.escavador.com/v1/docs/#pesquisar-processo-no-site-do-tribunal-assncrono) (Assíncrono)
 ```py
 from escavador import Processo, BuscaAssincrona
 import time
@@ -46,7 +48,22 @@ if resultado_busca['resposta']['status'] == 'SUCESSO':
         print(instancia['assunto'])  # Imprime os assuntos das instâncias do processo
 ```
 
-### Criando Monitoramentos
+### Buscando as movimentações de um processo usando a API V2
+
+```py
+from escavador import SiglaTribunal
+from escavador.v2 import BuscaProcesso
+
+
+busca = BuscaProcesso().movimentacoes(numero_processo="0078700-86.2008.5.17.0009", tribunais=[SiglaTribunal.TJPE], qtd=100)
+
+if busca['success']:
+    for movimentacao in busca['resposta']['itens']:
+        print(f"{movimentacao['data']} - {movimentacao['tipo']}:")
+        print(f"{movimentacao['conteudo']}")
+```
+
+### Criando Monitoramentos na API V1
 ```py
 from escavador import MonitoramentoTribunal, MonitoramentoDiario, TiposMonitoramentosTribunal, TiposMonitoramentosDiario,FrequenciaMonitoramentoTribunal
 
@@ -59,7 +76,7 @@ monitoramento_tribunal = MonitoramentoTribunal().criar(tipo_monitoramento=TiposM
 monitoramento_diario = MonitoramentoDiario().criar(TiposMonitoramentosDiario.PROCESSO, processo_id=2, origens_ids=[2,4,6])
 ```
 
-### Consultando os Tribunais e sistemas disponíveis
+### Consultando os Tribunais e sistemas disponíveis para a API V1
 ```py
 from escavador import Tribunal
 
@@ -68,18 +85,19 @@ tribunais_disponiveis = Tribunal().sistemas_disponiveis()
 
 ### Módulos Disponíveis e Referência da API
 
-| Módulo                | Link API                                                          |
-|-----------------------|-------------------------------------------------------------------|
-| Busca                 | https://api.escavador.com/docs/#busca                             |
-| Processo              | https://api.escavador.com/docs/#processos                         |
-| Callback              | https://api.escavador.com/docs/#callback                          |
-| DiarioOficial         | https://api.escavador.com/docs/#dirios-oficiais                   |
-| Instituicao           | https://api.escavador.com/docs/#instituies                        |
-| Legislacao            | https://api.escavador.com/docs/#legislao                          |
-| Jurisprudencia        | https://api.escavador.com/docs/#jurisprudncias                    |
-| MonitoramentoDiario   | https://api.escavador.com/docs/#monitoramento-de-dirios-oficiais  |
-| MonitoramentoTribunal | https://api.escavador.com/docs/#monitoramento-no-site-do-tribunal |
-| Movimentacao          | https://api.escavador.com/docs/#movimentaes                       |
-| Pessoa                | https://api.escavador.com/docs/#pessoas                           |
-| Tribunal              | https://api.escavador.com/docs/#tribunais                         |
-| Saldo                 | https://api.escavador.com/docs/#saldo-da-api                      | 
+| Módulo                | Link API                                                             |
+|-----------------------|----------------------------------------------------------------------|
+| Busca                 | https://api.escavador.com/v1/docs/#busca                             |
+| Processo              | https://api.escavador.com/v1/docs/#processos                         |
+| Callback              | https://api.escavador.com/v1/docs/#callback                          |
+| DiarioOficial         | https://api.escavador.com/v1/docs/#dirios-oficiais                   |
+| Instituicao           | https://api.escavador.com/v1/docs/#instituies                        |
+| Legislacao            | https://api.escavador.com/v1/docs/#legislao                          |
+| Jurisprudencia        | https://api.escavador.com/v1/docs/#jurisprudncias                    |
+| MonitoramentoDiario   | https://api.escavador.com/v1/docs/#monitoramento-de-dirios-oficiais  |
+| MonitoramentoTribunal | https://api.escavador.com/v1/docs/#monitoramento-no-site-do-tribunal |
+| Movimentacao          | https://api.escavador.com/v1/docs/#movimentaes                       |
+| Pessoa                | https://api.escavador.com/v1/docs/#pessoas                           |
+| Tribunal              | https://api.escavador.com/v1/docs/#tribunais                         |
+| Saldo                 | https://api.escavador.com/v1/docs/#saldo-da-api                      | 
+| v2.BuscaProcesso      | https://api.escavador.com/v2/docs/#processos                         |
