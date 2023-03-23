@@ -5,6 +5,7 @@ import escavador
 from escavador.exceptions import ApiKeyNotFoundException
 from urllib import parse
 from dotenv import load_dotenv
+from importlib.metadata import version
 
 load_dotenv()
 
@@ -22,6 +23,7 @@ class Api(object):
 
     def headers(self):
         return {
+            'User-Agent': 'escavador-python/' + version('escavador'),
             'Authorization': 'Bearer ' + self.api_key,
             'X-Requested-With': 'XMLHttpRequest'
         }
