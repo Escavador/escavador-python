@@ -1,11 +1,20 @@
 # O SDK em Python da API do Escavador
 
+## Documentação disponível
+
+- [API V1](https://api.escavador.com/v1/docs/)
+- [API V2](https://api.escavador.com/v2/docs/)
+
 ## Instalação
 
 O SDK pode ser instalado via `pip` através do comando:
 ```bash
 python -m pip install escavador
 ```
+
+##  Requisitos
+
+- Python 3.6+
 
 ## Como Configurar
 
@@ -21,11 +30,6 @@ escavador.config("SUA_API_KEY")
 ```
 
 Para obter seu token da API, acesse o [painel de tokens](https://api.escavador.com/tokens)
-
-## Documentação disponível
-
-- [API V1](https://api.escavador.com/v1/docs/)
-- [API V2](https://api.escavador.com/v2/docs/)
 
 ## Exemplos
 
