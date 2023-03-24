@@ -36,10 +36,9 @@ class Processo(Endpoint):
 
         >>> Processo.por_numero("0000000-00.0000.0.00.0000") # doctest: +SKIP
         """
-        data = kwargs
 
         return Processo.methods.get(
-            f"processos/numero_cnj/{numero_cnj}", data=data
+            f"processos/numero_cnj/{numero_cnj}", **kwargs
         )
 
     @staticmethod
@@ -59,7 +58,7 @@ class Processo(Endpoint):
         data = kwargs
 
         first_response = Processo.methods.get(
-            f"processos/numero_cnj/{numero_cnj}/movimentacoes", data=data
+            f"processos/numero_cnj/{numero_cnj}/movimentacoes", data=data, **kwargs
         )
         return Processo._get_up_to(first_response, qtd)
 
@@ -263,7 +262,7 @@ class Processo(Endpoint):
             "ordem": ordem.value if ordem else None,
         }
         first_response = Processo.methods.get(
-            "advogado/processos", data=data, params=params
+            "advogado/processos", data=data, params=params, **kwargs
         )
 
         return Processo._get_up_to(first_response, qtd)
