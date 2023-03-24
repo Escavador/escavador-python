@@ -6,7 +6,7 @@ from escavador.resources.helpers.endpoint import Endpoint
 from escavador.resources.helpers.enums_v2 import Ordem, CriterioOrdenacao, SiglaTribunal
 
 
-class BuscaProcesso(Endpoint):
+class Processo(Endpoint):
     """
     Oferece métodos para buscar processos e informações de processos no Escavador.
 
@@ -22,11 +22,11 @@ class BuscaProcesso(Endpoint):
         :param numero_cnj: o número único do CNJ do processo
         :return: dict com os campos ['resposta], ['status'] e ['success'].
 
-        >>> BuscaProcesso.por_numero("0000000-00.0000.0.00.0000") # doctest: +SKIP
+        >>> Processo.por_numero("0000000-00.0000.0.00.0000") # doctest: +SKIP
         """
         data = kwargs
 
-        return BuscaProcesso.methods.get(
+        return Processo.methods.get(
             f"processos/numero_cnj/{numero_cnj}", data=data
         )
 
@@ -40,16 +40,16 @@ class BuscaProcesso(Endpoint):
         code do último request feito, e resposta['success'] é True se pelo menos um request
         foi bem sucedida, e False caso contrário.
 
-        >>> BuscaProcesso.movimentacoes("0000000-00.0000.0.00.0000") # doctest: +SKIP
+        >>> Processo.movimentacoes("0000000-00.0000.0.00.0000") # doctest: +SKIP
 
-        >>> BuscaProcesso.movimentacoes("0000000-00.0000.0.00.0000", qtd=10) # doctest: +SKIP
+        >>> Processo.movimentacoes("0000000-00.0000.0.00.0000", qtd=10) # doctest: +SKIP
         """
         data = kwargs
 
-        first_response = BuscaProcesso.methods.get(
+        first_response = Processo.methods.get(
             f"processos/numero_cnj/{numero_cnj}/movimentacoes", data=data
         )
-        return BuscaProcesso._get_up_to(first_response, qtd)
+        return Processo._get_up_to(first_response, qtd)
 
     @staticmethod
     def por_nome(
@@ -71,15 +71,15 @@ class BuscaProcesso(Endpoint):
         code do último request feito, e resposta['success'] é True se pelo menos um request
         foi bem sucedida, e False caso contrário.
 
-        >>> BuscaProcesso.por_nome("Escavador Engenharia e Construcoes Ltda",
+        >>> Processo.por_nome("Escavador Engenharia e Construcoes Ltda",
         ...                        ordena_por=CriterioOrdenacao.INICIO,
         ...                        ordem=Ordem.DESC,
         ...                        tribunais=[SiglaTribunal.CNJ, SiglaTribunal.TRT10],
         ...                        qtd=1) # doctest: +SKIP
 
-        >>> BuscaProcesso.por_nome("Escavador Engenharia e Construcoes Ltda") # doctest: +SKIP
+        >>> Processo.por_nome("Escavador Engenharia e Construcoes Ltda") # doctest: +SKIP
         """
-        return BuscaProcesso.por_envolvido(
+        return Processo.por_envolvido(
             nome=nome,
             ordena_por=ordena_por,
             ordem=ordem,
@@ -108,15 +108,15 @@ class BuscaProcesso(Endpoint):
         code do último request feito, e resposta['success'] é True se pelo menos um request
         foi bem sucedida, e False caso contrário.
 
-        >>> BuscaProcesso.por_cpf("12345678999",
+        >>> Processo.por_cpf("12345678999",
         ...                       ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
         ...                       ordem=Ordem.ASC,
         ...                       tribunais=[SiglaTribunal.STF],
         ...                       qtd=200) # doctest: +SKIP
 
-        >>> BuscaProcesso.por_cpf("123.456.789-99") # doctest: +SKIP
+        >>> Processo.por_cpf("123.456.789-99") # doctest: +SKIP
         """
-        return BuscaProcesso.por_envolvido(
+        return Processo.por_envolvido(
             cpf_cnpj=cpf,
             ordena_por=ordena_por,
             ordem=ordem,
@@ -145,15 +145,15 @@ class BuscaProcesso(Endpoint):
         code do último request feito, e resposta['success'] é True se pelo menos um request
         foi bem sucedida, e False caso contrário.
 
-        >>> BuscaProcesso.por_cnpj("07.838.351/0021.60",
+        >>> Processo.por_cnpj("07.838.351/0021.60",
         ...                        ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
         ...                        ordem=Ordem.ASC,
         ...                        tribunais=[SiglaTribunal.TJBA, SiglaTribunal.TRF1],
         ...                        qtd=1) # doctest: +SKIP
 
-        >>> BuscaProcesso.por_cnpj("07838351002160") # doctest: +SKIP
+        >>> Processo.por_cnpj("07838351002160") # doctest: +SKIP
         """
-        return BuscaProcesso.por_envolvido(
+        return Processo.por_envolvido(
             cpf_cnpj=cnpj,
             ordena_por=ordena_por,
             ordem=ordem,
@@ -189,13 +189,13 @@ class BuscaProcesso(Endpoint):
         code do último request feito, e resposta['success'] é True se pelo menos um request
         foi bem sucedida, e False caso contrário.
 
-        >>> BuscaProcesso.por_envolvido(nome='Escavador Engenharia e Construcoes Ltda',
+        >>> Processo.por_envolvido(nome='Escavador Engenharia e Construcoes Ltda',
         ...                             ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
         ...                             ordem=Ordem.ASC,
         ...                             tribunais=[SiglaTribunal.TJBA],
         ...                             qtd=1) # doctest: +SKIP
 
-        >>> BuscaProcesso.por_envolvido(cpf_cnpj="07.838.351/0021.60") # doctest: +SKIP
+        >>> Processo.por_envolvido(cpf_cnpj="07.838.351/0021.60") # doctest: +SKIP
         """
         data = {
             "nome": nome,
@@ -208,11 +208,11 @@ class BuscaProcesso(Endpoint):
             "ordem": ordem.value if ordem else None,
         }
 
-        first_response = BuscaProcesso.methods.get(
+        first_response = Processo.methods.get(
             "envolvido/processos", data=data, params=params, **kwargs
         )
 
-        return BuscaProcesso._get_up_to(first_response, qtd)
+        return Processo._get_up_to(first_response, qtd)
 
     @staticmethod
     def por_oab(
@@ -234,9 +234,9 @@ class BuscaProcesso(Endpoint):
         code do último request feito, e resposta['success'] é True se pelo menos um request
         foi bem sucedida, e False caso contrário.
 
-        >>> BuscaProcesso.por_oab(1234, "AC") # doctest: +SKIP
+        >>> Processo.por_oab(1234, "AC") # doctest: +SKIP
 
-        >>> BuscaProcesso.por_oab(numero="12345",
+        >>> Processo.por_oab(numero="12345",
         ...                       estado="SP",
         ...                       ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
         ...                       ordem=Ordem.DESC,
@@ -250,11 +250,11 @@ class BuscaProcesso(Endpoint):
             "ordena_por": ordena_por.value if ordena_por else None,
             "ordem": ordem.value if ordem else None,
         }
-        first_response = BuscaProcesso.methods.get(
+        first_response = Processo.methods.get(
             "advogado/processos", data=data, params=params
         )
 
-        return BuscaProcesso._get_up_to(first_response, qtd)
+        return Processo._get_up_to(first_response, qtd)
 
     @staticmethod
     def _get_up_to(resposta: Dict, qtd: int) -> Dict:
@@ -270,7 +270,7 @@ class BuscaProcesso(Endpoint):
             if not cursor:
                 break
 
-            next_response = BuscaProcesso._consumir_cursor(cursor)
+            next_response = Processo._consumir_cursor(cursor)
             next_items = next_response["resposta"].get("items")
             if not next_items:
                 resposta["http_status"] = next_response["http_status"]
@@ -295,4 +295,4 @@ class BuscaProcesso(Endpoint):
         :return: um dicionário com a resposta da requisição
         """
         endpoint_cursor = re.sub(r".*/api/v\d/", "", cursor)
-        return BuscaProcesso.methods.get(endpoint_cursor)
+        return Processo.methods.get(endpoint_cursor)

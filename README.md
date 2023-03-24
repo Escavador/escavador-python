@@ -62,22 +62,22 @@ if resultado_busca['resposta']['status'] == 'SUCESSO':
 
 ### Consultando o processo mais recente de um advogado usando a API V2
 [Consultando processos de um advogado usando sua OAB](https://api.escavador.com/v2/docs/#processos-de-um-advogado-por-oab)
+
 ```py
 
 from escavador import CriterioOrdenacao, Ordem
-from escavador.v2 import BuscaProcesso
+from escavador.v2 import Processo
 
-
-busca = BuscaProcesso.por_oab(numero=12345,
-                                estado="SP",
-                                ordena_por=CriterioOrdenacao.INICIO,
-                                ordem=Ordem.DESC,
-                                qtd=1)
+busca = Processo.por_oab(numero=12345,
+                         estado="SP",
+                         ordena_por=CriterioOrdenacao.INICIO,
+                         ordem=Ordem.DESC,
+                         qtd=1)
 
 if not busca['success'] or not busca['resposta']['itens']:
     erro = busca['resposta']['code']
     mensagem = busca['resposta']['message']
-    erros_especificos = busca['resposta']['errors'] # dict
+    erros_especificos = busca['resposta']['errors']  # dict
     if not erro:
         print("Não foi encontrado nenhum processo para o advogado informado")
     else:
@@ -90,12 +90,12 @@ else:
 
 ### Buscando as movimentações de um processo usando a API V2
 [Consultando movimentações de um processo](https://api.escavador.com/v2/docs/#movimentaes-de-um-processo)
+
 ```py
 from escavador import SiglaTribunal
-from escavador.v2 import BuscaProcesso
+from escavador.v2 import Processo
 
-
-busca = BuscaProcesso.movimentacoes(numero_processo="0078700-86.2008.5.17.0009", tribunais=[SiglaTribunal.TJPE], qtd=100)
+busca = Processo.movimentacoes(numero_processo="0078700-86.2008.5.17.0009", tribunais=[SiglaTribunal.TJPE], qtd=100)
 
 if busca['success']:
     for movimentacao in busca['resposta']['itens']:
@@ -141,4 +141,4 @@ tribunais_disponiveis = Tribunal().sistemas_disponiveis()
 | Pessoa                | https://api.escavador.com/v1/docs/#pessoas                           |
 | Tribunal              | https://api.escavador.com/v1/docs/#tribunais                         |
 | Saldo                 | https://api.escavador.com/v1/docs/#saldo-da-api                      |
-| v2.BuscaProcesso      | https://api.escavador.com/v2/docs/#processos                         |
+| v2.Processo      | https://api.escavador.com/v2/docs/#processos                         |
