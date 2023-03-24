@@ -1,7 +1,7 @@
 # O SDK em Python da API do Escavador
 
 ## Instalação
-    
+
 O SDK pode ser instalado via `pip` através do comando:
 ```bash
 python -m pip install escavador
@@ -9,15 +9,23 @@ python -m pip install escavador
 
 ## Como Configurar
 
-No arquivo `.env` na raíz do seu projeto, crie uma variável chamada `ESCAVADOR_API_KEY` e atribua a ela o seu token da API.
+No arquivo `.env` na raíz do seu projeto, crie uma variável chamada `ESCAVADOR_API_KEY` e atribua a ela o seu token da API. A linha onde a variável é definida deve ficar parecida com:
+```bash
+ESCAVADOR_API_KEY="SUA_API_KEY"
+```
 
 Alternativamente, utilize a função `config()` durante a execução do seu projeto, antes de utilizar qualquer outro módulo do SDK.
 ```py
 import escavador
-escavador.config("API_KEY")
+escavador.config("SUA_API_KEY")
 ```
 
 Para obter seu token da API, acesse o [painel de tokens](https://api.escavador.com/tokens)
+
+## Documentação disponível
+
+- [API V1](https://api.escavador.com/v1/docs/)
+- [API V2](https://api.escavador.com/v2/docs/)
 
 ## Exemplos
 
@@ -48,8 +56,36 @@ if resultado_busca['resposta']['status'] == 'SUCESSO':
         print(instancia['assunto'])  # Imprime os assuntos das instâncias do processo
 ```
 
-### Buscando as movimentações de um processo usando a API V2
+### Consultando o processo mais recente de um advogado usando a API V2
+[Consultando processos de um advogado usando sua OAB](https://api.escavador.com/v2/docs/#processos-de-um-advogado-por-oab)
+```py
 
+from escavador import CriterioOrdenacao, Ordem
+from escavador.v2 import BuscaProcesso
+
+
+busca = BuscaProcesso().por_oab(numero=12345,
+                                estado="SP",
+                                ordena_por=CriterioOrdenacao.INICIO,
+                                ordem=Ordem.DESC,
+                                qtd=1)
+
+if not busca['success'] or not busca['resposta']['itens']:
+    erro = busca['resposta']['code']
+    mensagem = busca['resposta']['message']
+    erros_especificos = busca['resposta']['errors'] # dict
+    if not erro:
+        print("Não foi encontrado nenhum processo para o advogado informado")
+    else:
+        raise Exception(f"Error code {erro}: {mensagem}")
+else:
+    processo = busca['resposta']['itens'].pop()
+    print(f"{processo['numero_cnj']} - {processo['fontes'][0]['tipo']}:")
+    print(f"Iniciado em {processo['ano_inicio']}, última movimentação em {processo['data_ultima_movimentacao']}.")
+```
+
+### Buscando as movimentações de um processo usando a API V2
+[Consultando movimentações de um processo](https://api.escavador.com/v2/docs/#movimentaes-de-um-processo)
 ```py
 from escavador import SiglaTribunal
 from escavador.v2 import BuscaProcesso
@@ -69,8 +105,9 @@ from escavador import MonitoramentoTribunal, MonitoramentoDiario, TiposMonitoram
 
 # Monitoramento nos sisteams dos Tribunais
 monitoramento_tribunal = MonitoramentoTribunal().criar(tipo_monitoramento=TiposMonitoramentosTribunal.UNICO,
-                                                                     valor="8809061-58.2022.8.10.3695",tribunal='TJSP', 
-                                                                     frequencia=FrequenciaMonitoramentoTribunal.SEMANAL)
+                                                       valor="8809061-58.2022.8.10.3695",
+                                                       tribunal='TJSP',
+                                                       frequencia=FrequenciaMonitoramentoTribunal.SEMANAL)
 
 # Monitoramento em Diários Oficiais
 monitoramento_diario = MonitoramentoDiario().criar(TiposMonitoramentosDiario.PROCESSO, processo_id=2, origens_ids=[2,4,6])
@@ -99,5 +136,5 @@ tribunais_disponiveis = Tribunal().sistemas_disponiveis()
 | Movimentacao          | https://api.escavador.com/v1/docs/#movimentaes                       |
 | Pessoa                | https://api.escavador.com/v1/docs/#pessoas                           |
 | Tribunal              | https://api.escavador.com/v1/docs/#tribunais                         |
-| Saldo                 | https://api.escavador.com/v1/docs/#saldo-da-api                      | 
+| Saldo                 | https://api.escavador.com/v1/docs/#saldo-da-api                      |
 | v2.BuscaProcesso      | https://api.escavador.com/v2/docs/#processos                         |

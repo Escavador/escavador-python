@@ -12,9 +12,9 @@ class BuscaProcesso(Endpoint):
 
     def por_numero(self, numero_cnj: str, **kwargs) -> Dict:
         """
-        Retorna os dados de um processo pelo seu número único do CNJ.
+        Busca os dados de um processo pelo seu número único do CNJ.
         :param numero_cnj: o número único do CNJ do processo
-        :return: Dict
+        :return: dict com os campos ['resposta], ['status'] e ['success'].
 
         >>> BuscaProcesso().por_numero("0000000-00.0000.0.00.0000") # doctest: +SKIP
         """
@@ -24,10 +24,12 @@ class BuscaProcesso(Endpoint):
 
     def movimentacoes(self, numero_cnj: str, qtd: int = 100, **kwargs) -> Dict:
         """
-        Retorna as movimentações de um processo pelo seu número único do CNJ.
+        Busca as movimentações de um processo pelo seu número único do CNJ.
         :param numero_cnj: o número único do CNJ do processo
         :param qtd: quantidade desejada de movimentações a ser retornada pela query
-        :return:
+        :return: uma resposta com no máximo `qtd` resultados, onde resposta['status'] é o status
+        code do último request feito, e resposta['success'] é True se pelo menos um request
+        foi bem sucedida, e False caso contrário.
 
         >>> BuscaProcesso().movimentacoes("0000000-00.0000.0.00.0000") # doctest: +SKIP
 
@@ -46,12 +48,15 @@ class BuscaProcesso(Endpoint):
                  qtd: int = 100,
                  **kwargs) -> Dict:
         """
-        Retorna os processos envolvendo uma pessoa ou empresa a partir do seu nome.
+        Busca os processos envolvendo uma pessoa ou empresa a partir do seu nome.
         :param nome: o nome da pessoa ou empresa
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
         :param qtd: quantidade desejada de processos a ser retornada pela query
+        :return: uma resposta com no máximo `qtd` resultados, onde resposta['status'] é o status
+        code do último request feito, e resposta['success'] é True se pelo menos um request
+        foi bem sucedida, e False caso contrário.
 
         >>> BuscaProcesso().por_nome("Escavador Engenharia e Construcoes Ltda",
         ...                          ordena_por=CriterioOrdenacao.INICIO,
@@ -76,12 +81,15 @@ class BuscaProcesso(Endpoint):
                 qtd: int = 100,
                 **kwargs) -> Dict:
         """
-        Retorna os processos envolvendo uma pessoa a partir de seu CPF.
+        Busca os processos envolvendo uma pessoa a partir de seu CPF.
         :param cpf: o CPF da pessoa
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
         :param qtd: quantidade desejada de processos a ser retornada pela query
+        :return: uma resposta com no máximo `qtd` resultados, onde resposta['status'] é o status
+        code do último request feito, e resposta['success'] é True se pelo menos um request
+        foi bem sucedida, e False caso contrário.
 
         >>> BuscaProcesso().por_cpf("12345678999",
         ...                         ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
@@ -106,12 +114,15 @@ class BuscaProcesso(Endpoint):
                  qtd: int = 100,
                  **kwargs) -> Dict:
         """
-        Retorna os processos envolvendo uma instituição a partir de seu CNPJ.
+        Busca os processos envolvendo uma instituição a partir de seu CNPJ.
         :param cnpj: o CNPJ da instituição
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
         :param qtd: quantidade desejada de processos a ser retornada pela query
+        :return: uma resposta com no máximo `qtd` resultados, onde resposta['status'] é o status
+        code do último request feito, e resposta['success'] é True se pelo menos um request
+        foi bem sucedida, e False caso contrário.
 
         >>> BuscaProcesso().por_cnpj("07.838.351/0021.60",
         ...                          ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
@@ -137,7 +148,7 @@ class BuscaProcesso(Endpoint):
                       qtd: int = 100,
                       **kwargs) -> Dict:
         """
-        Retorna os processos envolvendo uma pessoa ou instituição a partir de seu nome e/ou CPF/CNPJ.
+        Busca os processos envolvendo uma pessoa ou instituição a partir de seu nome e/ou CPF/CNPJ.
 
         Caso seja necessário múltiplos requests para obter a quantidade de processos desejada e algum
         erro ocorra em um request intermediário, a função retorna todos os processos obtidos até o
@@ -149,7 +160,9 @@ class BuscaProcesso(Endpoint):
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
         :param qtd: quantidade desejada de processos a ser retornada pela query
-
+        :return: uma resposta com no máximo `qtd` resultados, onde resposta['status'] é o status
+        code do último request feito, e resposta['success'] é True se pelo menos um request
+        foi bem sucedida, e False caso contrário.
 
         >>> BuscaProcesso().por_envolvido(nome='Escavador Engenharia e Construcoes Ltda',
         ...                               ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
@@ -185,12 +198,15 @@ class BuscaProcesso(Endpoint):
                 **kwargs
                 ) -> Dict:
         """
-        Retorna os processos de um advogado a partir de sua carteira da OAB.
+        Busca os processos de um advogado a partir de sua carteira da OAB.
         :param numero: o número da OAB
         :param estado: o estado de origem da OAB
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
         :param qtd: quantidade desejada de processos a ser retornada pela query
+        :return: uma resposta com no máximo `qtd` resultados, onde resposta['status'] é o status
+        code do último request feito, e resposta['success'] é True se pelo menos um request
+        foi bem sucedida, e False caso contrário.
 
         >>> BuscaProcesso().por_oab(1234, "AC") # doctest: +SKIP
 
@@ -218,6 +234,9 @@ class BuscaProcesso(Endpoint):
         """Obtém os próximos resultados de uma busca até atingir a quantidade desejada ou erro
         :param resposta: a resposta da primeira requisição
         :param qtd: a quantidade de resultados desejada
+        :return: uma resposta extendida com até `qtd` resultados, onde resposta['status'] é o status
+        code do último request feito, e resposta['success'] é True se pelo menos um request
+        foi bem sucedida, e False caso contrário.
         """
         while 0 < len(resposta['resposta'].get('items', [])) < qtd:
             cursor = resposta['resposta'].get('links', {}).get('next')
