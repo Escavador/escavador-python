@@ -64,7 +64,7 @@ from escavador import CriterioOrdenacao, Ordem
 from escavador.v2 import BuscaProcesso
 
 
-busca = BuscaProcesso().por_oab(numero=12345,
+busca = BuscaProcesso.por_oab(numero=12345,
                                 estado="SP",
                                 ordena_por=CriterioOrdenacao.INICIO,
                                 ordem=Ordem.DESC,
@@ -91,7 +91,7 @@ from escavador import SiglaTribunal
 from escavador.v2 import BuscaProcesso
 
 
-busca = BuscaProcesso().movimentacoes(numero_processo="0078700-86.2008.5.17.0009", tribunais=[SiglaTribunal.TJPE], qtd=100)
+busca = BuscaProcesso.movimentacoes(numero_processo="0078700-86.2008.5.17.0009", tribunais=[SiglaTribunal.TJPE], qtd=100)
 
 if busca['success']:
     for movimentacao in busca['resposta']['itens']:

@@ -30,7 +30,7 @@ class Api(object):
 
         self.base_url = f"https://api.escavador.com/api/v{version}/"
 
-        self.api_key = escavador.__APIKEY__
+        self.api_key = __APIKEY__
         if self.api_key is None:
             try:
                 self.api_key = os.environ["ESCAVADOR_API_KEY"]
