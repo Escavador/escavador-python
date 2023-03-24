@@ -1,12 +1,11 @@
 import re
 
 from escavador.resources.helpers.endpoint import Endpoint
-from escavador.resources.helpers.enums_v2 import (Ordem, CriterioOrdenacao, SiglaTribunal)
+from escavador.resources.helpers.enums_v2 import Ordem, CriterioOrdenacao, SiglaTribunal
 from typing import Optional, Dict, List, Union
 
 
 class BuscaProcesso(Endpoint):
-
     def __init__(self):
         super().__init__(api_version=2)
 
@@ -37,16 +36,20 @@ class BuscaProcesso(Endpoint):
         """
         data = kwargs
 
-        first_response = self.methods.get(f"processos/numero_cnj/{numero_cnj}/movimentacoes", data=data)
+        first_response = self.methods.get(
+            f"processos/numero_cnj/{numero_cnj}/movimentacoes", data=data
+        )
         return self._get_up_to(first_response, qtd)
 
-    def por_nome(self,
-                 nome: str,
-                 ordena_por: Optional[CriterioOrdenacao] = None,
-                 ordem: Optional[Ordem] = None,
-                 tribunais: Optional[List[SiglaTribunal]] = None,
-                 qtd: int = 100,
-                 **kwargs) -> Dict:
+    def por_nome(
+        self,
+        nome: str,
+        ordena_por: Optional[CriterioOrdenacao] = None,
+        ordem: Optional[Ordem] = None,
+        tribunais: Optional[List[SiglaTribunal]] = None,
+        qtd: int = 100,
+        **kwargs,
+    ) -> Dict:
         """
         Busca os processos envolvendo uma pessoa ou empresa a partir do seu nome.
         :param nome: o nome da pessoa ou empresa
@@ -66,20 +69,24 @@ class BuscaProcesso(Endpoint):
 
         >>> BuscaProcesso().por_nome("Escavador Engenharia e Construcoes Ltda") # doctest: +SKIP
         """
-        return self.por_envolvido(nome=nome,
-                                  ordena_por=ordena_por,
-                                  ordem=ordem,
-                                  tribunais=tribunais,
-                                  qtd=qtd,
-                                  **kwargs)
+        return self.por_envolvido(
+            nome=nome,
+            ordena_por=ordena_por,
+            ordem=ordem,
+            tribunais=tribunais,
+            qtd=qtd,
+            **kwargs,
+        )
 
-    def por_cpf(self,
-                cpf: str,
-                ordena_por: Optional[CriterioOrdenacao] = None,
-                ordem: Optional[Ordem] = None,
-                tribunais: Optional[List[SiglaTribunal]] = None,
-                qtd: int = 100,
-                **kwargs) -> Dict:
+    def por_cpf(
+        self,
+        cpf: str,
+        ordena_por: Optional[CriterioOrdenacao] = None,
+        ordem: Optional[Ordem] = None,
+        tribunais: Optional[List[SiglaTribunal]] = None,
+        qtd: int = 100,
+        **kwargs,
+    ) -> Dict:
         """
         Busca os processos envolvendo uma pessoa a partir de seu CPF.
         :param cpf: o CPF da pessoa
@@ -99,20 +106,24 @@ class BuscaProcesso(Endpoint):
 
         >>> BuscaProcesso().por_cpf("123.456.789-99") # doctest: +SKIP
         """
-        return self.por_envolvido(cpf_cnpj=cpf,
-                                  ordena_por=ordena_por,
-                                  ordem=ordem,
-                                  tribunais=tribunais,
-                                  qtd=qtd,
-                                  **kwargs)
+        return self.por_envolvido(
+            cpf_cnpj=cpf,
+            ordena_por=ordena_por,
+            ordem=ordem,
+            tribunais=tribunais,
+            qtd=qtd,
+            **kwargs,
+        )
 
-    def por_cnpj(self,
-                 cnpj: str,
-                 ordena_por: Optional[CriterioOrdenacao] = None,
-                 ordem: Optional[Ordem] = None,
-                 tribunais: Optional[List[SiglaTribunal]] = None,
-                 qtd: int = 100,
-                 **kwargs) -> Dict:
+    def por_cnpj(
+        self,
+        cnpj: str,
+        ordena_por: Optional[CriterioOrdenacao] = None,
+        ordem: Optional[Ordem] = None,
+        tribunais: Optional[List[SiglaTribunal]] = None,
+        qtd: int = 100,
+        **kwargs,
+    ) -> Dict:
         """
         Busca os processos envolvendo uma instituição a partir de seu CNPJ.
         :param cnpj: o CNPJ da instituição
@@ -132,21 +143,25 @@ class BuscaProcesso(Endpoint):
 
         >>> BuscaProcesso().por_cnpj("07838351002160") # doctest: +SKIP
         """
-        return self.por_envolvido(cpf_cnpj=cnpj,
-                                  ordena_por=ordena_por,
-                                  ordem=ordem,
-                                  tribunais=tribunais,
-                                  qtd=qtd,
-                                  **kwargs)
+        return self.por_envolvido(
+            cpf_cnpj=cnpj,
+            ordena_por=ordena_por,
+            ordem=ordem,
+            tribunais=tribunais,
+            qtd=qtd,
+            **kwargs,
+        )
 
-    def por_envolvido(self,
-                      cpf_cnpj: Optional[str] = None,
-                      nome: Optional[str] = None,
-                      ordena_por: Optional[CriterioOrdenacao] = None,
-                      ordem: Optional[Ordem] = None,
-                      tribunais: Optional[List[SiglaTribunal]] = None,
-                      qtd: int = 100,
-                      **kwargs) -> Dict:
+    def por_envolvido(
+        self,
+        cpf_cnpj: Optional[str] = None,
+        nome: Optional[str] = None,
+        ordena_por: Optional[CriterioOrdenacao] = None,
+        ordem: Optional[Ordem] = None,
+        tribunais: Optional[List[SiglaTribunal]] = None,
+        qtd: int = 100,
+        **kwargs,
+    ) -> Dict:
         """
         Busca os processos envolvendo uma pessoa ou instituição a partir de seu nome e/ou CPF/CNPJ.
 
@@ -173,14 +188,14 @@ class BuscaProcesso(Endpoint):
         >>> BuscaProcesso().por_envolvido(cpf_cnpj="07.838.351/0021.60") # doctest: +SKIP
         """
         data = {
-            'nome': nome,
-            'cpf_cnpj': cpf_cnpj,
-            'tribunais': tribunais,
+            "nome": nome,
+            "cpf_cnpj": cpf_cnpj,
+            "tribunais": tribunais,
         }
 
         params = {
-            'ordena_por': ordena_por.value if ordena_por else None,
-            'ordem': ordem.value if ordem else None,
+            "ordena_por": ordena_por.value if ordena_por else None,
+            "ordem": ordem.value if ordem else None,
         }
 
         first_response = self.methods.get(
@@ -189,14 +204,15 @@ class BuscaProcesso(Endpoint):
 
         return self._get_up_to(first_response, qtd)
 
-    def por_oab(self,
-                numero: Union[str, int],
-                estado: str,
-                ordena_por: Optional[CriterioOrdenacao] = None,
-                ordem: Optional[Ordem] = None,
-                qtd: int = 100,
-                **kwargs
-                ) -> Dict:
+    def por_oab(
+        self,
+        numero: Union[str, int],
+        estado: str,
+        ordena_por: Optional[CriterioOrdenacao] = None,
+        ordem: Optional[Ordem] = None,
+        qtd: int = 100,
+        **kwargs,
+    ) -> Dict:
         """
         Busca os processos de um advogado a partir de sua carteira da OAB.
         :param numero: o número da OAB
@@ -217,12 +233,12 @@ class BuscaProcesso(Endpoint):
         ...                         qtd=1) # doctest: +SKIP
         """
         data = {
-            'oab_numero': f"{numero}",
-            'oab_estado': estado,
+            "oab_numero": f"{numero}",
+            "oab_estado": estado,
         }
         params = {
-            'ordena_por': ordena_por.value if ordena_por else None,
-            'ordem': ordem.value if ordem else None,
+            "ordena_por": ordena_por.value if ordena_por else None,
+            "ordem": ordem.value if ordem else None,
         }
         first_response = self.methods.get(
             "advogado/processos", data=data, params=params
@@ -238,24 +254,26 @@ class BuscaProcesso(Endpoint):
         code do último request feito, e resposta['success'] é True se pelo menos um request
         foi bem sucedida, e False caso contrário.
         """
-        while 0 < len(resposta['resposta'].get('items', [])) < qtd:
-            cursor = resposta['resposta'].get('links', {}).get('next')
+        while 0 < len(resposta["resposta"].get("items", [])) < qtd:
+            cursor = resposta["resposta"].get("links", {}).get("next")
             if not cursor:
                 break
 
             next_response = self._consumir_cursor(cursor)
-            next_items = next_response['resposta'].get('items')
+            next_items = next_response["resposta"].get("items")
             if not next_items:
-                resposta['http_status'] = next_response['http_status']
+                resposta["http_status"] = next_response["http_status"]
                 break
 
-            resposta['resposta']['items'].extend(next_items)
+            resposta["resposta"]["items"].extend(next_items)
 
             # replace cursor with next cursor
-            resposta['resposta']['links']['next'] = next_response['resposta'].get('links', {}).get('next')
+            resposta["resposta"]["links"]["next"] = (
+                next_response["resposta"].get("links", {}).get("next")
+            )
 
-        if 'items' in resposta['resposta']:
-            resposta['resposta']['items'] = resposta['resposta']['items'][:qtd]
+        if "items" in resposta["resposta"]:
+            resposta["resposta"]["items"] = resposta["resposta"]["items"][:qtd]
 
         return resposta
 

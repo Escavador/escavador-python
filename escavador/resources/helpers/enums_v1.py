@@ -11,25 +11,25 @@ class TiposTermo(Enum):
 
 
 class TiposBusca(Enum):
-    BUSCA_POR_OAB = 'busca_por_oab'
-    BUSCA_POR_DOCUMENTO = 'busca_por_documento'
-    BUSCA_POR_NOME = 'busca_por_nome'
+    BUSCA_POR_OAB = "busca_por_oab"
+    BUSCA_POR_DOCUMENTO = "busca_por_documento"
+    BUSCA_POR_NOME = "busca_por_nome"
 
 
 class TiposMonitoramentosTribunal(Enum):
-    UNICO = 'UNICO'
-    NUMERO_DOCUMENTO = 'NUMDOC'
-    NOME = 'NOME'
+    UNICO = "UNICO"
+    NUMERO_DOCUMENTO = "NUMDOC"
+    NOME = "NOME"
 
 
 class TiposMonitoramentosDiario(Enum):
-    PROCESSO = 'processo'
-    TERMO = 'termo'
+    PROCESSO = "processo"
+    TERMO = "termo"
 
 
 class FrequenciaMonitoramentoTribunal(Enum):
-    DIARIA = 'DIARIA'
-    SEMANAL = 'SEMANAL'
+    DIARIA = "DIARIA"
+    SEMANAL = "SEMANAL"
 
 
 class StatusCallback(Enum):
