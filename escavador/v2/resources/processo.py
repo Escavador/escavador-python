@@ -21,12 +21,30 @@ class Processo(Endpoint):
     titulo_polo_ativo: str
     titulo_polo_passivo: str
     ano_inicio: int
-    data_ultima_verificacao: Optional[str] = None
-    data_ultima_movimentacao: Optional[str] = None
-    tempo_desde_ultima_verificacao: Optional[str] = None
     data_inicio: Optional[str] = None
+    data_ultima_movimentacao: Optional[str] = None
+    data_ultima_verificacao: Optional[str] = None
+    tempo_desde_ultima_verificacao: Optional[str] = None
     last_valid_cursor: str = ""  # link do cursor caso queira mais resultados, não é retornado pela API
     fontes: List["FonteProcesso"] = field(default_factory=list)
+
+    @classmethod
+    def from_json(cls, json_dict: Dict, ultimo_cursor: str = "") -> "Processo":
+        instance = cls(id=json_dict.get('id'),
+                       numero_cnj=json_dict.get('numero_cnj'),
+                       quantidade_movimentacoes=json_dict.get('quantidade_movimentacoes', 0),
+                       fontes_tribunais_estao_arquivadas=json_dict.get('fontes_tribunais_estao_arquivadas'),
+                       titulo_polo_ativo=json_dict.get('titulo_polo_ativo', ""),
+                       titulo_polo_passivo=json_dict.get('titulo_polo_passivo', ""),
+                       ano_inicio=json_dict.get('ano_inicio'),
+                       data_inicio=json_dict.get('data_inicio', None),
+                       data_ultima_movimentacao=json_dict.get('data_ultima_movimentacao', None),
+                       data_ultima_verificacao=json_dict.get('data_ultima_verificacao', None),
+                       tempo_desde_ultima_verificacao=json_dict.get('tempo_desde_ultima_verificacao', None),
+                       last_valid_cursor=ultimo_cursor
+                       )
+        instance.fontes += [FonteProcesso.from_json(fonte) for fonte in json_dict.get('fontes', [])]
+        return instance
 
     @staticmethod
     def por_numero(numero_cnj: str, **kwargs) -> Dict:
