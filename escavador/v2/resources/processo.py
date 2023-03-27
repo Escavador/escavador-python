@@ -11,9 +11,23 @@ from escavador.resources.helpers.enums_v2 import Ordem, CriterioOrdenacao, Sigla
 @dataclass
 class Processo(Endpoint):
     """
-    Oferece métodos para buscar processos e informações de processos no Escavador.
+    Representa um processo retornado pela API do Escavador.
 
-    Não é necessário instanciar esta classe, pois todos os métodos são estáticos.
+    Oferece métodos estáticos para buscar processos e suas movimentações.
+
+    :attr id: id do processo no sistema do Escavador
+    :attr numero_cnj: número único do CNJ do processo (ex: 0000000-00.0000.0.00.0000)
+    :attr quantidade_movimentacoes: quantidade de movimentações registrada no processo
+    :attr fontes_tribunais_estao_arquivadas: se True, todos os tribunais que são fontes desse processo já o arquivaram
+    :attr titulo_polo_ativo: título do polo ativo (parte que move a ação)
+    :attr titulo_polo_passivo: título do polo passivo (parte que responde à ação)
+    :attr ano_inicio: ano em que o processo foi iniciado
+    :attr data_inicio: data em que o processo foi iniciado
+    :attr data_ultima_movimentacao: data da última movimentação registrada no processo
+    :attr data_ultima_verificacao: data da última verificação do processo no sistema de origem
+    :attr tempo_desde_ultima_verificacao: tempo desde a última verificação do processo no sistema de origem.
+    :attr fontes: lista de fontes do processo
+    :attr last_valid_cursor: link do cursor caso queira mais resultados. Não é um atributo do processo, e sim da API.
     """
     methods = Method(api_version=2)
     id: int
@@ -336,6 +350,29 @@ class Processo(Endpoint):
 
 @dataclass
 class FonteProcesso:
+    """Uma fonte da qual foram extraídas as informações de um processo.
+
+    :attr id: id da fonte no sistema do Escavador
+    :attr descricao: descrição resumida da fonte (ex: "TJSP - 2º grau")
+    :attr nome: nome completo da fonte (ex: "Tribunal de Justiça de São Paulo")
+    :attr sigla: sigla da fonte (ex: "DJES")
+    :attr tipo: tipo da fonte (ex: "TRIBUNAL")
+    :attr grau: grau da instância do processo nessa fonte - 1 para 1º grau, 2 para 2º grau, 3 para 3º grau.
+    :attr grau_formatado: grau do processo por extenso (ex: "Primeiro grau")
+    :attr sistema: sistema de onde o processo foi extraído (ex: "ESAJ")
+    :attr data_inicio: data de início da tramitação do processo nessa fonte
+    :attr data_ultima_movimentacao: data da última movimentação registrada do processo nessa fonte
+    :attr data_ultima_verificacao: data da última verificação feita no sistema de origem pelo Escavador
+    :attr fisico: indica se o processo é físico ou digital
+    :attr segredo_justica: indica se o processo está sob segredo de justiça
+    :attr quantidade_movimentacoes: quantidade de movimentações do processo nessa fonte
+    :attr arquivado: indica se o processo está arquivado
+    :attr url: url do processo na fonte
+    :attr caderno: indica o caderno do diário oficial em que o processo foi publicado
+    :attr tribunal: informações do tribunal de origem do processo
+    :attr capa: informações da capa do processo
+    :attr envolvidos: pessoas e instituições envolvidas no processo
+    """
     id: int
     processo_fonte_id: int
     descricao: str
@@ -344,7 +381,6 @@ class FonteProcesso:
     grau: int
     grau_formatado: str
     tipo: str
-    uf: str
     data_inicio: str
     data_ultima_movimentacao: str
     fisico: bool
@@ -356,7 +392,7 @@ class FonteProcesso:
     caderno: Optional[str] = None  # é omitido caso nao seja diario atualmente, acho que devia vir null
     data_ultima_verificacao: Optional[str] = None
     tribunal: Optional["Tribunal"] = None  # é omitido caso nao seja tribunal atualmente, acho que devia vir null
-    capa: "CapaProcessoTribunal" = field(default=None, hash=False, compare=False)
+    capa: Optional["CapaProcessoTribunal"] = field(default=None, hash=False, compare=False)
     # é omitido caso nao seja tribunal atualmente,
     # acho que devia vir null
     envolvidos: List["Envolvido"] = field(default_factory=list, hash=False, compare=False)
@@ -373,7 +409,6 @@ class FonteProcesso:
                        grau=json_dict["grau"],
                        grau_formatado=json_dict["grau_formatado"],
                        tipo=json_dict["tipo"],
-                       uf=json_dict["uf"],
                        data_inicio=json_dict["data_inicio"],
                        data_ultima_movimentacao=json_dict["data_ultima_movimentacao"],
                        fisico=json_dict["fisico"],
@@ -388,13 +423,26 @@ class FonteProcesso:
                        capa=CapaProcessoTribunal.from_json(json_dict.get("capa", None)),
                        )
 
-        instance.envolvidos += [Envolvido.from_json(envolvido) for envolvido in json_dict.get("envolvidos", [])]
+        instance.envolvidos += [Envolvido.from_json(env) for env in json_dict.get("envolvidoss", []) if env]
 
         return instance
 
 
 @dataclass
 class CapaProcessoTribunal:
+    """Informações da capa de um processo de tribunal.
+
+    :attr assunto_principal_normalizado: assunto principal do processo, normalizado como objeto Assunto
+    :attr assuntos_normalizados: lista de assuntos do processo, normalizados como objeto Assunto
+    :attr classe: classe do processo naquele momento (ex: "Procedimento Comum")
+    :attr assunto: descrição resumida do assunto do processo
+    :attr area: área do processo (ex: "Cível")
+    :attr orgao_julgador: órgão julgador do processo naquela fonte
+    :attr data_distribuicao: data em que o processo foi distribuído
+    :attr data_arquivamento: data em que o processo foi arquivado, caso esteja arquivado
+    :attr valor_causa: valor monetário da causa do processo
+    :attr informacoes_complementares: conjunto de informações complementares
+    """
     assunto_principal_normalizado: Optional["Assunto"] = None
     assuntos_normalizados: List["Assunto"] = field(default_factory=list, hash=False, compare=False)
     classe: Optional[str] = None
@@ -411,6 +459,7 @@ class CapaProcessoTribunal:
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["CapaProcessoTribunal"]:
         if json_dict is None:
             return None
+
         instance = cls(assunto_principal_normalizado=Assunto.from_json(json_dict.get("assunto_principal_normalizado",
                                                                                      None)),
                        classe=json_dict.get("classe"),
@@ -421,15 +470,24 @@ class CapaProcessoTribunal:
                        data_arquivamento=json_dict.get("data_arquivamento"),
                        valor_causa=ValorCausa.from_json(json_dict.get("valor_causa", None)),
                        )
+
         instance.assuntos_normalizados += [Assunto.from_json(assunto)
                                            for assunto in json_dict.get("assuntos_normalizados", []) if assunto]
         instance.informacoes_complementares += [InformacaoComplementar.from_json(info)
                                                 for info in json_dict.get("informacoes_complementares", []) if info]
+
         return instance
 
 
 @dataclass
 class Assunto:
+    """O assunto de um processo em formato normalizado.
+
+    :attr id: id do assunto no sistema do Escavador
+    :attr nome: nome do assunto
+    :attr nome_com_pai: nome do assunto com o seu assunto "pai"
+    :attr path_completo: path completo do assunto, desde a raiz até o assunto mais específico
+    """
     id: int
     nome: str = field(hash=False, compare=False)
     nome_com_pai: str = field(hash=False, compare=False)
@@ -449,6 +507,11 @@ class Assunto:
 @total_ordering
 @dataclass
 class ValorCausa:
+    """Valor monetário da causa de um processo.
+
+    :attr valor: montante do valor da causa
+    :attr moeda: moeda em que o valor da causa está expresso
+    """
     valor: float
     moeda: str
 
@@ -472,34 +535,32 @@ class ValorCausa:
 
 @dataclass
 class InformacaoComplementar:
-    id: Optional[int] = None
-    dado: Optional[str] = None
-    processo: Optional[int] = None
-    created_at: Optional[str] = field(default=None, hash=False, compare=False)
-    updated_at: Optional[str] = field(default=None, hash=False, compare=False)
+    """Informações complementares de um processo.
 
-    # Esses campos separados são dois formatos que vêm no JSON, às vezes vem o de cima, às vezes o de baixo
-    # Era pra ser assim?
-
-    valor: Optional[str] = None
-    tipo: Optional[str] = None
+    :attr valor: valor da informação complementar
+    :attr tipo: tipo da informação complementar
+    """
+    valor: str
+    tipo: str
 
     @classmethod
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["InformacaoComplementar"]:
-        if json_dict is None or all(v is None for v in json_dict.values()):
+        if json_dict is None or "valor" not in json_dict or "tipo" not in json_dict:
             return None
-        return cls(id=json_dict.get("id"),
-                   dado=json_dict.get("dado"),
-                   processo=json_dict.get("processo"),
-                   created_at=json_dict.get("created_at"),
-                   updated_at=json_dict.get("updated_at"),
-                   valor=json_dict.get("valor"),
-                   tipo=json_dict.get("tipo"),
-                   )
+
+        return cls(valor=json_dict["valor"], tipo=json_dict["tipo"])
 
 
 @dataclass()
 class Movimentacao:
+    """Uma movimentação em um processo.
+
+    :attr id: id da movimentação no sistema do Escavador
+    :attr fonte: fonte de onde a movimentação foi extraída
+    :attr tipo: tipo de movimentação
+    :attr conteudo: conteúdo da movimentação
+    :attr data: data em que ocorreu
+    """
     id: int
     fonte: "FonteMovimentacao" = field(default=None, hash=False, compare=False)
     tipo: Optional[str] = None
@@ -520,6 +581,17 @@ class Movimentacao:
 
 @dataclass
 class FonteMovimentacao:
+    """Fonte de onde uma movimentação foi extraída.
+
+    :attr id: id da fonte no sistema do Escavador
+    :attr nome: nome completo da fonte (ex: "Tribunal de Justiça de São Paulo")
+    :attr sigla: sigla da fonte (ex: "DJES")
+    :attr tipo: tipo da fonte (ex: "TRIBUNAL")
+    :attr grau: grau da instância do processo nessa fonte - 1 para 1º grau, 2 para 2º grau, 3 para 3º grau.
+    :attr grau_formatado: grau do processo por extenso (ex: "Primeiro grau")
+    :attr caderno: caso a fonte seja um diário, o caderno em que a movimentação foi publicada
+    :attr tribunal: informações do tribunal da fonte, caso a fonte seja um tribunal
+    """
     id: int
     nome: Optional[str] = None
     tipo: Optional[str] = None
@@ -529,7 +601,6 @@ class FonteMovimentacao:
     caderno: Optional[str] = field(default=None, hash=False, compare=False)
     # é omitido caso nao seja diario atualmente, acho que devia vir null
     tribunal: Optional["Tribunal"] = field(default=None, hash=False, compare=False)
-
     # Tribunal atualmente não vem na resposta da API. Sugiro que seja retornado,
     # sendo o mesmo objeto Tribunal que vem em FonteProcesso
 
@@ -537,7 +608,7 @@ class FonteMovimentacao:
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["FonteMovimentacao"]:
         if json_dict is None:
             return None
-        return cls(id=json_dict["id"],
+        return cls(id=json_dict["fonte_id"],
                    nome=json_dict.get("nome"),
                    tipo=json_dict.get("tipo"),
                    sigla=json_dict.get("sigla"),
@@ -550,6 +621,14 @@ class FonteMovimentacao:
 
 @dataclass
 class Tribunal:
+    """Informações de um tribunal.
+
+    :attr id: id do tribunal no sistema do Escavador
+    :attr nome: nome completo do tribunal
+    :attr sigla: sigla do tribunal
+    :attr categoria: categoria do tribunal
+    :attr estados: lista de estados que o tribunal abrange
+    """
     id: int
     nome: str
     sigla: str
@@ -570,6 +649,22 @@ class Tribunal:
 
 @dataclass
 class Envolvido:
+    """Representação de um envolvido em um processo, seja ele um advogado, um polo, um juiz, ou um terceiro.
+
+    :attr id: id do envolvido no sistema do Escavador
+    :attr quantidade_processos: quantidade de processos onde o envolvido apareceu
+    :attr tipo_pessoa: tipo de pessoa do envolvido (ex: "FISICA")
+    :attr nome: nome do envolvido (ex: "João da Silva")
+    :attr nome_normalizado: nome do envolvido depois da normalização (como foi buscado no banco de dados)
+    :attr prefixo: prefixos do nome do envolvido (ex: "Dr.")
+    :attr sufixo: sufixos do nome do envolvido (ex: "Jr.")
+    :attr tipo: tipo do envolvido (ex: "Advogado")
+    :attr tipo_normalizado: tipo do envolvido padronizado pelo Escavador
+    :attr polo: polo do envolvido nesse processo (ex: "NENHUM" ou "ATIVO")
+    :attr cpf_cnpj: CPF ou CNPJ do envolvido
+    :attr advogados: lista de advogados do envolvido nessse processo
+    :attr oabs: lista de carteiras da OAB do envolvido, caso o envolvido seja um advogado
+    """
     id: int
     quantidade_processos: int
     tipo_pessoa: str
@@ -610,7 +705,12 @@ class Envolvido:
 
 @dataclass
 class Oab:
-    id: int
+    """Representação de uma carteira da OAB.
+
+    :attr numero: número da carteira da OAB
+    :attr uf: estado da carteira da OAB
+    :attr tipo: tipo da carteira da OAB (ex: "ADVOGADO")
+    """
     numero: int
     uf: str
     tipo: Optional[str] = None
@@ -619,8 +719,7 @@ class Oab:
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["Oab"]:
         if json_dict is None:
             return None
-        return cls(id=json_dict["id"],
-                   numero=json_dict["numero"],
+        return cls(numero=json_dict["numero"],
                    uf=json_dict["uf"],
                    tipo=json_dict.get("tipo"),
                    )
