@@ -21,11 +21,11 @@ class Processo(Endpoint):
     titulo_polo_ativo: str
     titulo_polo_passivo: str
     ano_inicio: int
-    data_ultima_verificacao: Optional[str] = field(default=None)
-    data_ultima_movimentacao: Optional[str] = field(default=None)
-    tempo_desde_ultima_verificacao: Optional[str] = field(default=None)
-    data_inicio: Optional[str] = field(default=None)
-    last_valid_cursor: str = field(default="")  # link do cursor caso queira mais resultados, não é retornado pela API
+    data_ultima_verificacao: Optional[str] = None
+    data_ultima_movimentacao: Optional[str] = None
+    tempo_desde_ultima_verificacao: Optional[str] = None
+    data_inicio: Optional[str] = None
+    last_valid_cursor: str = ""  # link do cursor caso queira mais resultados, não é retornado pela API
     fontes: List["FonteProcesso"] = field(default_factory=list)
 
     @staticmethod
@@ -326,29 +326,29 @@ class FonteProcesso:
     fisico: bool
     sistema: str
     quantidade_movimentacoes: int
-    capa: "CapaProcessoTribunal" = field(hash=False, compare=False)  # é omitido caso nao seja tribunal atualmente,
+    segredo_justica: Optional[bool] = None
+    arquivado: Optional[bool] = None
+    url: Optional[str] = None
+    caderno: Optional[str] = None  # é omitido caso nao seja diario atualmente, acho que devia vir null
+    data_ultima_verificacao: Optional[str] = None
+    tribunal: Optional["Tribunal"] = None  # é omitido caso nao seja tribunal atualmente, acho que devia vir null
+    capa: "CapaProcessoTribunal" = field(default=None, hash=False, compare=False)
+    # é omitido caso nao seja tribunal atualmente,
     # acho que devia vir null
-    tribunal: Optional["Tribunal"] = field(default=None)  # é omitido caso nao seja tribunal atualmente, acho que
-    # devia vir null
-    segredo_justica: Optional[bool] = field(default=None)
-    arquivado: Optional[bool] = field(default=None)
-    url: Optional[str] = field(default=None)
-    caderno: Optional[str] = field(default=None)  # é omitido caso nao seja diario atualmente, acho que devia vir null
-    data_ultima_verificacao: Optional[str] = field(default=None)
     envolvidos: List["Envolvido"] = field(default_factory=list, hash=False, compare=False)
 
 
 @dataclass
 class CapaProcessoTribunal:
-    assunto_principal_normalizado: Optional["Assunto"] = field(default=None)
+    assunto_principal_normalizado: Optional["Assunto"] = None
     assuntos_normalizados: List["Assunto"] = field(default_factory=list, hash=False, compare=False)
-    classe: Optional[str] = field(default=None)
-    assunto: Optional[str] = field(default=None)  # TODO: if None, get assunto_principal_normalizado.nome.upper()
-    area: Optional[str] = field(default=None)
-    orgao_julgador: Optional[str] = field(default=None)
-    data_distribuicao: Optional[str] = field(default=None)
-    data_arquivamento: Optional[str] = field(default=None)
-    valor_causa: Optional["ValorCausa"] = field(default=None)
+    classe: Optional[str] = None
+    assunto: Optional[str] = None  # TODO: if None, get assunto_principal_normalizado.nome.upper()
+    area: Optional[str] = None
+    orgao_julgador: Optional[str] = None
+    data_distribuicao: Optional[str] = None
+    data_arquivamento: Optional[str] = None
+    valor_causa: Optional["ValorCausa"] = None
     # Sempre vem na API, mas caso o conteudo seja null, seto como None aqui
     informacoes_complementares: List["InformacaoComplementar"] = field(default_factory=list)
 
@@ -372,36 +372,36 @@ class ValorCausa:
 
 
 class InformacaoComplementar:
-    id: Optional[int] = field(default=None)
-    dado: Optional[str] = field(default=None)
-    processo: Optional[int] = field(default=None)
+    id: Optional[int] = None
+    dado: Optional[str] = None
+    processo: Optional[int] = None
     created_at: Optional[str] = field(default=None, hash=False, compare=False)
     updated_at: Optional[str] = field(default=None, hash=False, compare=False)
 
     # Esses campos separados são dois formatos que vêm no JSON, às vezes vem o de cima, às vezes o de baixo
     # Era pra ser assim?
 
-    valor: Optional[str] = field(default=None)
-    tipo: Optional[str] = field(default=None)
+    valor: Optional[str] = None
+    tipo: Optional[str] = None
 
 
 @dataclass()
 class Movimentacao:
     id: int
-    fonte: "FonteMovimentacao" = field(hash=False, compare=False)
-    tipo: Optional[str] = field(default=None)
-    conteudo: str = field(default="")  # TODO: confirmar se é sempre válido [ex: caso segredo de justiça]
-    data: Optional[str] = field(default=None)
+    fonte: "FonteMovimentacao" = field(default=None, hash=False, compare=False)
+    tipo: Optional[str] = None
+    conteudo: str = ""
+    data: Optional[str] = None
 
 
 @dataclass
 class FonteMovimentacao:
     id: int
-    nome: Optional[str] = field(default=None)
-    tipo: Optional[str] = field(default=None)
-    sigla: Optional[str] = field(default=None)
-    grau: Optional[int] = field(default=None)
-    grau_formatado: str = field(default="")
+    nome: Optional[str] = None
+    tipo: Optional[str] = None
+    sigla: Optional[str] = None
+    grau: Optional[int] = None
+    grau_formatado: str = ""
     caderno: Optional[str] = field(default=None, hash=False, compare=False)
     # é omitido caso nao seja diario atualmente, acho que devia vir null
     tribunal: Optional["Tribunal"] = field(default=None, hash=False, compare=False)
@@ -414,7 +414,7 @@ class Tribunal:
     id: int
     nome: str
     sigla: str
-    categoria: Optional[str] = field(default=None)
+    categoria: Optional[str] = None
     estados: List[str] = field(default_factory=list, hash=False, compare=False)  # Será adicionado à API depois
 
 
@@ -422,14 +422,14 @@ class Envolvido:
     id: int
     quantidade_processos: int
     tipo_pessoa: str
-    nome: Optional[str] = field(default=None)
-    nome_normalizado: Optional[str] = field(default=None)
-    prefixo: Optional[str] = field(default=None)
-    sufixo: Optional[str] = field(default=None)
-    tipo: Optional[str] = field(default=None)
-    tipo_normalizado: Optional[str] = field(default=None)
-    polo: Optional[str] = field(default=None)
-    cpf_cnpj: Optional[str] = field(default=None)
+    nome: Optional[str] = None
+    nome_normalizado: Optional[str] = None
+    prefixo: Optional[str] = None
+    sufixo: Optional[str] = None
+    tipo: Optional[str] = None
+    tipo_normalizado: Optional[str] = None
+    polo: Optional[str] = None
+    cpf_cnpj: Optional[str] = None
     advogados: List["Envolvido"] = field(default_factory=list, hash=False, compare=False)
     oabs: List["Oab"] = field(default_factory=list)
 
@@ -438,4 +438,4 @@ class Oab:
     id: int
     numero: int
     uf: str
-    tipo: Optional[str] = field(default=None)
+    tipo: Optional[str] = None
