@@ -17,7 +17,7 @@ class FailedRequest(Exception):
     message: str
     errors: Dict
 
-    def __init__(self, status: int, code: str = "", message: str = "", errors: Optional[Dict] = None):
+    def __init__(self, status: int, code: str = "", message: str = "", errors: Optional[Dict] = None, **kwargs):
         self.status = status
         self.code = code
         self.message = message
