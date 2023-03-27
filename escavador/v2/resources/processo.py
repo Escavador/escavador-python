@@ -366,7 +366,6 @@ class ValorCausa:
     valor: str
     moeda: str
 
-    # TODO: Definir getter para valor formatado
     @property
     def valor_formatado(self):
         return f"{self.moeda} {round(float(self.valor), 2)} "
