@@ -1,8 +1,8 @@
 import re
+from escavador.exceptions import FailedRequest
 from functools import total_ordering
-
 from dataclasses import dataclass, field
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Union, Any, Callable
 from escavador.method import Method
 from escavador.resources.helpers.endpoint import Endpoint
 from escavador.resources.helpers.enums_v2 import Ordem, CriterioOrdenacao, SiglaTribunal
@@ -67,28 +67,32 @@ class Processo(Endpoint):
         return instance
 
     @staticmethod
-    def por_numero(numero_cnj: str, **kwargs) -> Dict:
+    def por_numero(numero_cnj: str, **kwargs) -> Union["Processo", FailedRequest]:
         """
         Busca os dados de um processo pelo seu número único do CNJ.
         :param numero_cnj: o número único do CNJ do processo
-        :return: dict com os campos ['resposta], ['status'] e ['success'].
+        :return: o processo encontrado, ou uma exception caso não seja encontrado
 
         >>> Processo.por_numero("0000000-00.0000.0.00.0000") # doctest: +SKIP
         """
 
-        return Processo.methods.get(
+        resposta = Processo.methods.get(
             f"processos/numero_cnj/{numero_cnj}", **kwargs
         )
 
+        if not resposta['sucesso']:
+            conteudo = resposta.get('resposta', {})
+            return FailedRequest(status=resposta['http_status'], **conteudo)
+
+        return Processo.from_json(resposta['resposta'])
+
     @staticmethod
-    def movimentacoes(numero_cnj: str, qtd: int = 100, **kwargs) -> Dict:
+    def movimentacoes(numero_cnj: str, qtd: int = 100, **kwargs) -> Union[List["Movimentacao"], FailedRequest]:
         """
         Busca as movimentações de um processo pelo seu número único do CNJ.
         :param numero_cnj: o número único do CNJ do processo
         :param qtd: quantidade desejada de movimentações a ser retornada pela query
-        :return: uma resposta com no máximo `qtd` resultados, onde resposta['status'] é o status
-        code do último request feito, e resposta['success'] é True se pelo menos um request
-        foi bem sucedida, e False caso contrário.
+        :return: uma lista de movimentacoes com no máximo `qtd` resultados, ou uma exception caso ocorra algum erro
 
         >>> Processo.movimentacoes("0000000-00.0000.0.00.0000") # doctest: +SKIP
 
@@ -99,7 +103,12 @@ class Processo(Endpoint):
         first_response = Processo.methods.get(
             f"processos/numero_cnj/{numero_cnj}/movimentacoes", data=data, **kwargs
         )
-        return Processo._get_up_to(first_response, qtd)
+
+        if not first_response['sucesso']:
+            conteudo = first_response.get('resposta', {})
+            return FailedRequest(status=first_response['http_status'], **conteudo)
+
+        return _get_up_to(first_response, qtd, constructor=Movimentacao.from_json)
 
     @staticmethod
     def por_nome(
@@ -109,7 +118,7 @@ class Processo(Endpoint):
             tribunais: Optional[List[SiglaTribunal]] = None,
             qtd: int = 100,
             **kwargs,
-    ) -> Dict:
+    ) -> Union[List["Processo"], FailedRequest]:
         """
         Busca os processos envolvendo uma pessoa ou empresa a partir do seu nome.
         :param nome: o nome da pessoa ou empresa
@@ -146,7 +155,7 @@ class Processo(Endpoint):
             tribunais: Optional[List[SiglaTribunal]] = None,
             qtd: int = 100,
             **kwargs,
-    ) -> Dict:
+    ) -> Union[List["Processo"], FailedRequest]:
         """
         Busca os processos envolvendo uma pessoa a partir de seu CPF.
         :param cpf: o CPF da pessoa
@@ -183,7 +192,7 @@ class Processo(Endpoint):
             tribunais: Optional[List[SiglaTribunal]] = None,
             qtd: int = 100,
             **kwargs,
-    ) -> Dict:
+    ) -> Union[List["Processo"], FailedRequest]:
         """
         Busca os processos envolvendo uma instituição a partir de seu CNPJ.
         :param cnpj: o CNPJ da instituição
@@ -221,7 +230,7 @@ class Processo(Endpoint):
             tribunais: Optional[List[SiglaTribunal]] = None,
             qtd: int = 100,
             **kwargs,
-    ) -> Dict:
+    ) -> Union[List["Processo"], FailedRequest]:
         """
         Busca os processos envolvendo uma pessoa ou instituição a partir de seu nome e/ou CPF/CNPJ.
 
@@ -262,17 +271,21 @@ class Processo(Endpoint):
             "envolvido/processos", data=data, params=params, **kwargs
         )
 
-        return Processo._get_up_to(first_response, qtd)
+        if not first_response['sucesso']:
+            conteudo = first_response.get('resposta', {})
+            return FailedRequest(status=first_response['http_status'], **conteudo)
+
+        return _get_up_to(first_response, qtd, Processo.from_json)
 
     @staticmethod
     def por_oab(
-            numero: Optional[str, int],
+            numero: Union[str, int],
             estado: str,
             ordena_por: Optional[CriterioOrdenacao] = None,
             ordem: Optional[Ordem] = None,
             qtd: int = 100,
             **kwargs,
-    ) -> Dict:
+    ) -> Union[List["Processo"], FailedRequest]:
         """
         Busca os processos de um advogado a partir de sua carteira da OAB.
         :param numero: o número da OAB
@@ -300,52 +313,58 @@ class Processo(Endpoint):
             "ordena_por": ordena_por.value if ordena_por else None,
             "ordem": ordem.value if ordem else None,
         }
+
         first_response = Processo.methods.get(
             "advogado/processos", data=data, params=params, **kwargs
         )
 
-        return Processo._get_up_to(first_response, qtd)
+        if not first_response['sucesso']:
+            conteudo = first_response.get('resposta', {})
+            return FailedRequest(status=first_response['http_status'], **conteudo)
 
-    @staticmethod
-    def _get_up_to(resposta: Dict, qtd: int) -> Dict:
-        """Obtém os próximos resultados de uma busca até atingir a quantidade desejada ou erro
-        :param resposta: a resposta da primeira requisição
-        :param qtd: a quantidade de resultados desejada
-        :return: uma resposta extendida com até `qtd` resultados, onde resposta['status'] é o status
-        code do último request feito, e resposta['success'] é True se pelo menos um request
-        foi bem sucedida, e False caso contrário.
-        """
-        while 0 < len(resposta["resposta"].get("items", [])) < qtd:
-            cursor = resposta["resposta"].get("links", {}).get("next")
-            if not cursor:
-                break
+        return _get_up_to(first_response, qtd, Processo.from_json)
 
-            next_response = Processo._consumir_cursor(cursor)
-            next_items = next_response["resposta"].get("items")
-            if not next_items:
-                resposta["http_status"] = next_response["http_status"]
-                break
 
-            resposta["resposta"]["items"].extend(next_items)
+def _consumir_cursor(cursor: str) -> Dict:
+    """Consome um cursor para obter os próximos resultados de uma busca
+    :param cursor: url do cursor a ser consumido
+    :return: um dicionário com a resposta da requisição
+    """
+    endpoint_cursor = re.sub(r".*/api/v\d/", "", cursor)
+    return Processo.methods.get(endpoint_cursor)
 
-            # replace cursor with next cursor
-            resposta["resposta"]["links"]["next"] = (
-                next_response["resposta"].get("links", {}).get("next")
-            )
 
-        if "items" in resposta["resposta"]:
-            resposta["resposta"]["items"] = resposta["resposta"]["items"][:qtd]
+def _get_up_to(resposta: Dict, qtd: int, constructor: Callable) -> Any:
+    """Obtém os próximos resultados de uma busca até atingir a quantidade desejada ou erro
+    :param resposta: a resposta da primeira requisição
+    :param qtd: a quantidade de resultados desejada
+    :return: uma resposta extendida com até `qtd` resultados, onde resposta['status'] é o status
+    code do último request feito, e resposta['success'] é True se pelo menos um request
+    foi bem sucedida, e False caso contrário.
+    """
+    while 0 < len(resposta["resposta"].get("items", [])) < qtd:
+        cursor = resposta["resposta"].get("links", {}).get("next")
+        if not cursor:
+            break
 
-        return resposta
+        next_response = _consumir_cursor(cursor)
+        next_items = next_response["resposta"].get("items")
+        if not next_items:
+            resposta["http_status"] = next_response["http_status"]
+            break
 
-    @staticmethod
-    def _consumir_cursor(cursor: str) -> Dict:
-        """Consome um cursor para obter os próximos resultados de uma busca
-        :param cursor: url do cursor a ser consumido
-        :return: um dicionário com a resposta da requisição
-        """
-        endpoint_cursor = re.sub(r".*/api/v\d/", "", cursor)
-        return Processo.methods.get(endpoint_cursor)
+        resposta["resposta"]["items"].extend(next_items)
+
+        # replace cursor with next cursor
+        resposta["resposta"]["links"]["next"] = (
+            next_response["resposta"].get("links", {}).get("next")
+        )
+
+    if "items" in resposta["resposta"]:
+        resposta["resposta"]["items"] = resposta["resposta"]["items"][:qtd]
+        return map(constructor, resposta["resposta"]["items"])
+
+    return resposta
 
 
 @dataclass
@@ -398,7 +417,7 @@ class FonteProcesso:
     envolvidos: List["Envolvido"] = field(default_factory=list, hash=False, compare=False)
 
     @classmethod
-    def from_json(cls, json_dict: Optional[Dict]) -> Optional[None, "FonteProcesso"]:
+    def from_json(cls, json_dict: Optional[Dict]) -> Optional["FonteProcesso"]:
         if json_dict is None:
             return None
         instance = cls(id=json_dict["id"],
@@ -423,7 +442,7 @@ class FonteProcesso:
                        capa=CapaProcessoTribunal.from_json(json_dict.get("capa", None)),
                        )
 
-        instance.envolvidos += [Envolvido.from_json(env) for env in json_dict.get("envolvidoss", []) if env]
+        instance.envolvidos += [Envolvido.from_json(env) for env in json_dict.get("envolvidos", []) if env]
 
         return instance
 
@@ -521,7 +540,7 @@ class ValorCausa:
 
     @classmethod
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["ValorCausa"]:
-        if json_dict is None or ("valor" not in json_dict and "moeda" not in json_dict):
+        if json_dict is None or not json_dict.get("valor") or not json_dict.get("moeda"):
             return None
 
         return cls(valor=float(json_dict["valor"]), moeda=json_dict["moeda"])
@@ -601,6 +620,7 @@ class FonteMovimentacao:
     caderno: Optional[str] = field(default=None, hash=False, compare=False)
     # é omitido caso nao seja diario atualmente, acho que devia vir null
     tribunal: Optional["Tribunal"] = field(default=None, hash=False, compare=False)
+
     # Tribunal atualmente não vem na resposta da API. Sugiro que seja retornado,
     # sendo o mesmo objeto Tribunal que vem em FonteProcesso
 
@@ -665,9 +685,8 @@ class Envolvido:
     :attr advogados: lista de advogados do envolvido nessse processo
     :attr oabs: lista de carteiras da OAB do envolvido, caso o envolvido seja um advogado
     """
-    id: int
-    quantidade_processos: int
     tipo_pessoa: str
+    quantidade_processos: int
     nome: Optional[str] = None
     nome_normalizado: Optional[str] = None
     prefixo: Optional[str] = None
@@ -676,16 +695,15 @@ class Envolvido:
     tipo_normalizado: Optional[str] = None
     polo: Optional[str] = None
     cpf_cnpj: Optional[str] = None
-    advogados: List["Envolvido"] = field(default_factory=list, hash=False, compare=False)
     oabs: List["Oab"] = field(default_factory=list)
+    advogados: List["Envolvido"] = field(default_factory=list, hash=False, compare=False)
 
     @classmethod
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["Envolvido"]:
         if json_dict is None:
             return None
-        return cls(id=json_dict["id"],
+        return cls(tipo_pessoa=json_dict["tipo_pessoa"],
                    quantidade_processos=json_dict["quantidade_processos"],
-                   tipo_pessoa=json_dict["tipo_pessoa"],
                    nome=json_dict.get("nome"),
                    nome_normalizado=json_dict.get("nome_normalizado"),
                    prefixo=json_dict.get("prefixo"),
@@ -694,8 +712,8 @@ class Envolvido:
                    tipo_normalizado=json_dict.get("tipo_normalizado"),
                    polo=json_dict.get("polo"),
                    cpf_cnpj=json_dict.get("cpf_cnpj"),
-                   advogados=[Envolvido.from_json(a) for a in json_dict.get("advogados", []) if a],
                    oabs=[Oab.from_json(o) for o in json_dict.get("oabs", []) if o],
+                   advogados=[Envolvido.from_json(a) for a in json_dict.get("advogados", []) if a],
                    )
 
     @property
