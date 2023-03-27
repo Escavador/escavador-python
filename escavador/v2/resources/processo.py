@@ -34,9 +34,9 @@ class Processo(Endpoint):
     numero_cnj: str
     quantidade_movimentacoes: int
     fontes_tribunais_estao_arquivadas: bool
-    titulo_polo_ativo: str
-    titulo_polo_passivo: str
     ano_inicio: int
+    titulo_polo_ativo: Optional[str] = None
+    titulo_polo_passivo: Optional[str] = None
     data_inicio: Optional[str] = None
     data_ultima_movimentacao: Optional[str] = None
     data_ultima_verificacao: Optional[str] = None
@@ -53,8 +53,8 @@ class Processo(Endpoint):
                        numero_cnj=json_dict.get('numero_cnj'),
                        quantidade_movimentacoes=json_dict.get('quantidade_movimentacoes', 0),
                        fontes_tribunais_estao_arquivadas=json_dict.get('fontes_tribunais_estao_arquivadas'),
-                       titulo_polo_ativo=json_dict.get('titulo_polo_ativo', ""),
-                       titulo_polo_passivo=json_dict.get('titulo_polo_passivo', ""),
+                       titulo_polo_ativo=json_dict.get('titulo_polo_ativo'),
+                       titulo_polo_passivo=json_dict.get('titulo_polo_passivo'),
                        ano_inicio=json_dict.get('ano_inicio'),
                        data_inicio=json_dict.get('data_inicio', None),
                        data_ultima_movimentacao=json_dict.get('data_ultima_movimentacao', None),
@@ -361,7 +361,6 @@ def _get_up_to(resposta: Dict, qtd: int, constructor: Callable) -> Any:
     return resposta
 
 
-
 @dataclass
 class FonteProcesso:
     """Uma fonte da qual foram extraídas as informações de um processo.
@@ -403,18 +402,17 @@ class FonteProcesso:
     segredo_justica: Optional[bool] = None
     arquivado: Optional[bool] = None
     url: Optional[str] = None
-    caderno: Optional[str] = None  # é omitido caso nao seja diario atualmente, acho que devia vir null
+    caderno: Optional[str] = None
     data_ultima_verificacao: Optional[str] = None
-    tribunal: Optional["Tribunal"] = None  # é omitido caso nao seja tribunal atualmente, acho que devia vir null
+    tribunal: Optional["Tribunal"] = None
     capa: Optional["CapaProcessoTribunal"] = field(default=None, hash=False, compare=False)
-    # é omitido caso nao seja tribunal atualmente,
-    # acho que devia vir null
     envolvidos: List["Envolvido"] = field(default_factory=list, hash=False, compare=False)
 
     @classmethod
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["FonteProcesso"]:
         if json_dict is None:
             return None
+
         instance = cls(id=json_dict["id"],
                        processo_fonte_id=json_dict["processo_fonte_id"],
                        descricao=json_dict["descricao"],
@@ -437,7 +435,7 @@ class FonteProcesso:
                        capa=CapaProcessoTribunal.from_json(json_dict.get("capa", None)),
                        )
 
-        instance.envolvidos += [Envolvido.from_json(env) for env in json_dict.get("envolvidos", []) if env]
+        instance.envolvidos += [Envolvido.from_json(env) for env in json_dict.get("envolvidos") or [] if env]
 
         return instance
 
@@ -466,7 +464,6 @@ class CapaProcessoTribunal:
     data_distribuicao: Optional[str] = None
     data_arquivamento: Optional[str] = None
     valor_causa: Optional["ValorCausa"] = None
-    # Sempre vem na API, mas caso o conteudo seja null, seto como None aqui
     informacoes_complementares: List["InformacaoComplementar"] = field(default_factory=list)
 
     @classmethod
@@ -486,7 +483,7 @@ class CapaProcessoTribunal:
                        )
 
         instance.assuntos_normalizados += [Assunto.from_json(assunto)
-                                           for assunto in json_dict.get("assuntos_normalizados", []) if assunto]
+                                           for assunto in json_dict.get("assuntos_normalizados") or [] if assunto]
         instance.informacoes_complementares += [InformacaoComplementar.from_json(info)
                                                 for info in json_dict.get("informacoes_complementares") or [] if info]
 
@@ -511,6 +508,7 @@ class Assunto:
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["Assunto"]:
         if json_dict is None:
             return None
+
         return cls(id=json_dict["id"],
                    nome=json_dict["nome"],
                    nome_com_pai=json_dict["nome_com_pai"],
@@ -541,10 +539,12 @@ class ValorCausa:
         return cls(valor=float(json_dict["valor"]), moeda=json_dict["moeda"])
 
     def __eq__(self, other):
-        return self.valor == other.valor and self.moeda == other.moeda
+        if isinstance(other, ValorCausa):
+            return self.valor == other.valor and self.moeda == other.moeda
+        return False
 
     def __lt__(self, other):
-        return self.valor < other.valor
+        return self.valor < other.valor if isinstance(other, ValorCausa) else False
 
 
 @dataclass
@@ -576,8 +576,8 @@ class Movimentacao:
     :attr data: data em que ocorreu
     """
     id: int
+    data: str
     tipo: Optional[str] = None
-    data: Optional[str] = None
     conteudo: str = ""
     fonte: "FonteMovimentacao" = field(default=None, hash=False, compare=False)
 
@@ -585,11 +585,12 @@ class Movimentacao:
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["Movimentacao"]:
         if json_dict is None:
             return None
+
         return cls(id=json_dict["id"],
                    fonte=FonteMovimentacao.from_json(json_dict.get("fonte", None)),
                    tipo=json_dict.get("tipo"),
                    conteudo=json_dict.get("conteudo"),
-                   data=json_dict.get("data"),
+                   data=json_dict.get["data"],
                    )
 
 
@@ -613,16 +614,13 @@ class FonteMovimentacao:
     grau: Optional[int] = None
     grau_formatado: str = ""
     caderno: Optional[str] = field(default=None, hash=False, compare=False)
-    # é omitido caso nao seja diario atualmente, acho que devia vir null
     tribunal: Optional["Tribunal"] = field(default=None, hash=False, compare=False)
-
-    # Tribunal atualmente não vem na resposta da API. Sugiro que seja retornado,
-    # sendo o mesmo objeto Tribunal que vem em FonteProcesso
 
     @classmethod
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["FonteMovimentacao"]:
         if json_dict is None:
             return None
+
         return cls(id=json_dict["fonte_id"],
                    nome=json_dict.get("nome"),
                    tipo=json_dict.get("tipo"),
@@ -630,7 +628,7 @@ class FonteMovimentacao:
                    grau=json_dict.get("grau"),
                    grau_formatado=json_dict.get("grau_formatado"),
                    caderno=json_dict.get("caderno"),
-                   tribunal=Tribunal.from_json(json_dict.get("tribunal", None)),
+                   tribunal=Tribunal.from_json(json_dict.get("tribunal")),
                    )
 
 
@@ -654,6 +652,7 @@ class Tribunal:
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["Tribunal"]:
         if json_dict is None:
             return None
+
         return cls(id=json_dict["id"],
                    nome=json_dict["nome"],
                    sigla=json_dict["sigla"],
@@ -676,20 +675,23 @@ class Envolvido:
     :attr tipo: tipo do envolvido (ex: "Advogado")
     :attr tipo_normalizado: tipo do envolvido padronizado pelo Escavador
     :attr polo: polo do envolvido nesse processo (ex: "NENHUM" ou "ATIVO")
-    :attr cpf_cnpj: CPF ou CNPJ do envolvido
+    :attr documento: documento do envolvido (ex: "123.456.789-00" ou "12.345.678/0001-90")
+    :attr cpf: CPF do envolvido, caso o envolvido seja uma pessoa física
+    :attr cnpj: CNPJ do envolvido, caso o envolvido seja uma pessoa jurídica
     :attr advogados: lista de advogados do envolvido nessse processo
     :attr oabs: lista de carteiras da OAB do envolvido, caso o envolvido seja um advogado
     """
+    tipo: str
+    tipo_normalizado: str
     tipo_pessoa: str
     quantidade_processos: int
+    polo: str
     nome: Optional[str] = None
     nome_normalizado: Optional[str] = None
     prefixo: Optional[str] = None
     sufixo: Optional[str] = None
-    tipo: Optional[str] = None
-    tipo_normalizado: Optional[str] = None
-    polo: Optional[str] = None
-    cpf_cnpj: Optional[str] = None
+    cpf: Optional[str] = None
+    cnpj: Optional[str] = None
     oabs: List["Oab"] = field(default_factory=list)
     advogados: List["Envolvido"] = field(default_factory=list, hash=False, compare=False)
 
@@ -697,23 +699,25 @@ class Envolvido:
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["Envolvido"]:
         if json_dict is None:
             return None
+
         return cls(tipo_pessoa=json_dict["tipo_pessoa"],
                    quantidade_processos=json_dict["quantidade_processos"],
                    nome=json_dict.get("nome"),
                    nome_normalizado=json_dict.get("nome_normalizado"),
                    prefixo=json_dict.get("prefixo"),
                    sufixo=json_dict.get("sufixo"),
-                   tipo=json_dict.get("tipo"),
-                   tipo_normalizado=json_dict.get("tipo_normalizado"),
-                   polo=json_dict.get("polo"),
-                   cpf_cnpj=json_dict.get("cpf_cnpj"),
+                   tipo=json_dict["tipo"],
+                   tipo_normalizado=json_dict["tipo_normalizado"],
+                   polo=json_dict["polo"],
+                   cpf=json_dict.get("cpf"),
+                   cnpj=json_dict.get("cnpj"),
                    oabs=[Oab.from_json(o) for o in json_dict.get("oabs", []) if o],
                    advogados=[Envolvido.from_json(a) for a in json_dict.get("advogados", []) if a],
                    )
 
     @property
     def documento(self) -> Optional[str]:
-        return self.cpf_cnpj
+        return self.cpf or self.cnpj
 
 
 @dataclass
@@ -726,13 +730,14 @@ class Oab:
     """
     numero: int
     uf: str
-    tipo: Optional[str] = None
+    tipo: str
 
     @classmethod
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["Oab"]:
         if json_dict is None:
             return None
+
         return cls(numero=json_dict["numero"],
                    uf=json_dict["uf"],
-                   tipo=json_dict.get("tipo"),
+                   tipo=json_dict["tipo"],
                    )
