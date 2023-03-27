@@ -92,7 +92,7 @@ class Processo(Endpoint):
         Busca as movimentações de um processo pelo seu número único do CNJ.
         :param numero_cnj: o número único do CNJ do processo
         :param qtd: quantidade desejada de movimentações a ser retornada pela query
-        :return: uma lista de movimentacoes com no máximo `qtd` resultados, ou uma exception caso ocorra algum erro
+        :return: uma lista de movimentacoes com no máximo `qtd` resultados, ou FailedRequest caso ocorra algum erro
 
         >>> Processo.movimentacoes("0000000-00.0000.0.00.0000") # doctest: +SKIP
 
@@ -126,9 +126,7 @@ class Processo(Endpoint):
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
         :param qtd: quantidade desejada de processos a ser retornada pela query
-        :return: uma resposta com no máximo `qtd` resultados, onde resposta['status'] é o status
-        code do último request feito, e resposta['success'] é True se pelo menos um request
-        foi bem sucedida, e False caso contrário.
+        :return: uma lista de processos com no máximo `qtd` resultados, ou FailedRequest caso ocorra algum erro
 
         >>> Processo.por_nome("Escavador Engenharia e Construcoes Ltda",
         ...                   ordena_por=CriterioOrdenacao.INICIO,
@@ -163,9 +161,7 @@ class Processo(Endpoint):
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
         :param qtd: quantidade desejada de processos a ser retornada pela query
-        :return: uma resposta com no máximo `qtd` resultados, onde resposta['status'] é o status
-        code do último request feito, e resposta['success'] é True se pelo menos um request
-        foi bem sucedida, e False caso contrário.
+        :return: uma lista de processos com no máximo `qtd` resultados, ou FailedRequest caso ocorra algum erro
 
         >>> Processo.por_cpf("12345678999",
         ...                  ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
@@ -200,9 +196,7 @@ class Processo(Endpoint):
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
         :param qtd: quantidade desejada de processos a ser retornada pela query
-        :return: uma resposta com no máximo `qtd` resultados, onde resposta['status'] é o status
-        code do último request feito, e resposta['success'] é True se pelo menos um request
-        foi bem sucedida, e False caso contrário.
+        :return: uma lista de processos com no máximo `qtd` resultados, ou FailedRequest caso ocorra algum erro
 
         >>> Processo.por_cnpj("07.838.351/0021.60",
         ...                        ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
@@ -244,9 +238,7 @@ class Processo(Endpoint):
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
         :param qtd: quantidade desejada de processos a ser retornada pela query
-        :return: uma resposta com no máximo `qtd` resultados, onde resposta['status'] é o status
-        code do último request feito, e resposta['success'] é True se pelo menos um request
-        foi bem sucedida, e False caso contrário.
+        :return: uma lista de processos com no máximo `qtd` resultados, ou FailedRequest caso ocorra algum erro
 
         >>> Processo.por_envolvido(nome='Escavador Engenharia e Construcoes Ltda',
         ...                             ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
@@ -293,9 +285,7 @@ class Processo(Endpoint):
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
         :param qtd: quantidade desejada de processos a ser retornada pela query
-        :return: uma resposta com no máximo `qtd` resultados, onde resposta['status'] é o status
-        code do último request feito, e resposta['success'] é True se pelo menos um request
-        foi bem sucedida, e False caso contrário.
+        :return: uma lista de processos com no máximo `qtd` resultados, ou FailedRequest caso ocorra algum erro
 
         >>> Processo.por_oab(1234, "AC") # doctest: +SKIP
 
@@ -361,10 +351,15 @@ def _get_up_to(resposta: Dict, qtd: int, constructor: Callable) -> Any:
         )
 
     if "items" in resposta["resposta"]:
-        resposta["resposta"]["items"] = resposta["resposta"]["items"][:qtd]
-        return map(constructor, resposta["resposta"]["items"])
+        items = resposta["resposta"]["items"][:qtd]
+        cursor = resposta["resposta"].get("links", {}).get("next", "")
+        processos = [constructor(item) for item in items]
+        for processo in processos:
+            processo.last_valid_cursor = cursor
+        return processos
 
     return resposta
+
 
 
 @dataclass
@@ -493,7 +488,7 @@ class CapaProcessoTribunal:
         instance.assuntos_normalizados += [Assunto.from_json(assunto)
                                            for assunto in json_dict.get("assuntos_normalizados", []) if assunto]
         instance.informacoes_complementares += [InformacaoComplementar.from_json(info)
-                                                for info in json_dict.get("informacoes_complementares", []) if info]
+                                                for info in json_dict.get("informacoes_complementares") or [] if info]
 
         return instance
 
@@ -581,10 +576,10 @@ class Movimentacao:
     :attr data: data em que ocorreu
     """
     id: int
-    fonte: "FonteMovimentacao" = field(default=None, hash=False, compare=False)
     tipo: Optional[str] = None
-    conteudo: str = ""
     data: Optional[str] = None
+    conteudo: str = ""
+    fonte: "FonteMovimentacao" = field(default=None, hash=False, compare=False)
 
     @classmethod
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["Movimentacao"]:
