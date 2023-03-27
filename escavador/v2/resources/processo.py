@@ -13,8 +13,8 @@ class Processo(Endpoint):
 
     Não é necessário instanciar esta classe, pois todos os métodos são estáticos.
     """
-    id: int
     methods = Method(api_version=2)
+    id: int
     numero_cnj: str  # pode acontecer de não ter número único?
     quantidade_movimentacoes: int
     fontes_tribunais_estao_arquivadas: bool
@@ -365,7 +365,11 @@ class Assunto:
 class ValorCausa:
     valor: str
     moeda: str
+
     # TODO: Definir getter para valor formatado
+    @property
+    def valor_formatado(self):
+        return f"{self.moeda} {round(float(self.valor), 2)} "
 
 
 class InformacaoComplementar:
@@ -399,7 +403,8 @@ class FonteMovimentacao:
     sigla: Optional[str] = field(default=None)
     grau: Optional[int] = field(default=None)
     grau_formatado: str = field(default="")
-    caderno: Optional[str] = field(default=None, hash=False, compare=False)  # é omitido caso nao seja diario atualmente, acho que devia vir null
+    caderno: Optional[str] = field(default=None, hash=False, compare=False)
+    # é omitido caso nao seja diario atualmente, acho que devia vir null
     tribunal: Optional["Tribunal"] = field(default=None, hash=False, compare=False)
     # Tribunal atualmente não vem na resposta da API. Sugiro que seja retornado,
     # sendo o mesmo objeto Tribunal que vem em FonteProcesso
@@ -412,3 +417,26 @@ class Tribunal:
     sigla: str
     categoria: Optional[str] = field(default=None)
     estados: List[str] = field(default_factory=list, hash=False, compare=False)  # Será adicionado à API depois
+
+
+class Envolvido:
+    id: int
+    quantidade_processos: int
+    tipo_pessoa: str
+    nome: Optional[str] = field(default=None)
+    nome_normalizado: Optional[str] = field(default=None)
+    prefixo: Optional[str] = field(default=None)
+    sufixo: Optional[str] = field(default=None)
+    tipo: Optional[str] = field(default=None)
+    tipo_normalizado: Optional[str] = field(default=None)
+    polo: Optional[str] = field(default=None)
+    cpf_cnpj: Optional[str] = field(default=None)
+    advogados: List["Envolvido"] = field(default_factory=list, hash=False, compare=False)
+    oabs: List["Oab"] = field(default_factory=list)
+
+
+class Oab:
+    id: int
+    numero: int
+    uf: str
+    tipo: Optional[str] = field(default=None)
