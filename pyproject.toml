@@ -21,6 +21,8 @@ python-dotenv = "^0.19.2"
 importlib_metadata = "*"
 ratelimit = "*"
 dataclasses = "*"
+importlib = "*"
+importlib_metadata = "*"
 
 [tool.poetry.dev-dependencies]
 
