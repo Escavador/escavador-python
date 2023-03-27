@@ -13,18 +13,19 @@ class Processo(Endpoint):
 
     Não é necessário instanciar esta classe, pois todos os métodos são estáticos.
     """
+    id: int
     methods = Method(api_version=2)
-    numero_cnj: str
-    data_ultima_movimentacao: str  # TODO: acho que nao é optional, mas verificar
+    numero_cnj: str  # pode acontecer de não ter número único?
     quantidade_movimentacoes: int
     fontes_tribunais_estao_arquivadas: bool
-    data_ultima_verificacao: str
-    tempo_desde_ultima_verificacao: str
-    titulo_polo_ativo: Optional[str] = field(default=None)
-    titulo_polo_passivo: Optional[str] = field(default=None)
-    ano_inicio: Optional[int] = field(default=None)
+    titulo_polo_ativo: str
+    titulo_polo_passivo: str
+    ano_inicio: int
+    data_ultima_verificacao: Optional[str] = field(default=None)
+    data_ultima_movimentacao: Optional[str] = field(default=None)
+    tempo_desde_ultima_verificacao: Optional[str] = field(default=None)
     data_inicio: Optional[str] = field(default=None)
-    last_valid_cursor: str = field(default="")  # link do cursor caso queira pegar mais resultados
+    last_valid_cursor: str = field(default="")  # link do cursor caso queira mais resultados, não é retornado pela API
     fontes: List["FonteProcesso"] = field(default_factory=list)
 
     @staticmethod
@@ -324,25 +325,27 @@ class FonteProcesso:
     data_ultima_movimentacao: str
     fisico: bool
     sistema: str
-    capa: "CapaProcessoTribunal" = field(hash=False, compare=False) # é omitido caso nao seja tribunal atualmente, acho que devia vir null
     quantidade_movimentacoes: int
+    capa: "CapaProcessoTribunal" = field(hash=False, compare=False)  # é omitido caso nao seja tribunal atualmente,
+    # acho que devia vir null
+    tribunal: Optional["Tribunal"] = field(default=None)  # é omitido caso nao seja tribunal atualmente, acho que
+    # devia vir null
     segredo_justica: Optional[bool] = field(default=None)
     arquivado: Optional[bool] = field(default=None)
-    tribunal: Optional["Tribunal"] = field(default=None) # é omitido caso nao seja tribunal atualmente, acho que devia vir null
     url: Optional[str] = field(default=None)
-    caderno: Optional[str] = field(default=None) # é omitido caso nao seja diario atualmente, acho que devia vir null
+    caderno: Optional[str] = field(default=None)  # é omitido caso nao seja diario atualmente, acho que devia vir null
     data_ultima_verificacao: Optional[str] = field(default=None)
     envolvidos: List["Envolvido"] = field(default_factory=list, hash=False, compare=False)
 
 
 @dataclass
 class CapaProcessoTribunal:
-    classe: str
-    assunto: str  # TODO: if None, get assunto_principal_normalizado.nome.upper()
-    assuntos_normalizados: List["Assunto"]
-    assunto_principal_normalizado: "Assunto"
+    assunto_principal_normalizado: Optional["Assunto"] = field(default=None)
+    assuntos_normalizados: List["Assunto"] = field(default_factory=list, hash=False, compare=False)
+    classe: Optional[str] = field(default=None)
+    assunto: Optional[str] = field(default=None)  # TODO: if None, get assunto_principal_normalizado.nome.upper()
     area: Optional[str] = field(default=None)
-    orgao_julgador: Optional[str] = field(default=None)  # TODO: manter optional ou usar empty string?
+    orgao_julgador: Optional[str] = field(default=None)
     data_distribuicao: Optional[str] = field(default=None)
     data_arquivamento: Optional[str] = field(default=None)
     valor_causa: Optional["ValorCausa"] = field(default=None)
@@ -355,51 +358,51 @@ class Assunto:
     id: int
     nome: str = field(hash=False, compare=False)
     nome_com_pai: str = field(hash=False, compare=False)
-    path_completo: str = field(hash=False, compare=False)
+    path_completo: str
 
 
 @dataclass
 class ValorCausa:
     valor: str
     moeda: str
-    valor_formatado: Optional[str] = field(hash=False, compare=False) # R$ 0.000,00
+    # TODO: Definir getter para valor formatado
 
 
 class InformacaoComplementar:
-    id: Optional[int]
-    dado: Optional[str]
-    processo: Optional[int]
-    created_at: Optional[str]
-    updated_at: Optional[str]
+    id: Optional[int] = field(default=None)
+    dado: Optional[str] = field(default=None)
+    processo: Optional[int] = field(default=None)
+    created_at: Optional[str] = field(default=None, hash=False, compare=False)
+    updated_at: Optional[str] = field(default=None, hash=False, compare=False)
 
     # Esses campos separados são dois formatos que vêm no JSON, às vezes vem o de cima, às vezes o de baixo
     # Era pra ser assim?
 
-    valor: Optional[str]
-    tipo: Optional[str]
+    valor: Optional[str] = field(default=None)
+    tipo: Optional[str] = field(default=None)
 
 
 @dataclass()
 class Movimentacao:
     id: int
-    data: str
-    tipo: Optional[str]  # TODO: confirmar se é sempre válido ou é omitido/null
-    conteudo: Optional[str]  # TODO: confirmar se é sempre válido [ex: caso segredo de justiça]
-    fonte: "FonteMovimentacao"
+    fonte: "FonteMovimentacao" = field(hash=False, compare=False)
+    tipo: Optional[str] = field(default=None)
+    conteudo: str = field(default="")  # TODO: confirmar se é sempre válido [ex: caso segredo de justiça]
+    data: Optional[str] = field(default=None)
 
 
 @dataclass
 class FonteMovimentacao:
     id: int
-    nome: str
-    sigla: str
-    grau: int
-    grau_formatado: str
-    tipo: str
-    caderno: Optional[str] # é omitido caso nao seja diario atualmente, acho que devia vir null
-    tribunal: Optional["Tribunal"]
-    # Tribunal atualmente não vem na resposta da API
-    # Sugestão: fazer a API retornar, sendo o mesmo objeto Tribunal que vem em FonteProcesso
+    nome: Optional[str] = field(default=None)
+    tipo: Optional[str] = field(default=None)
+    sigla: Optional[str] = field(default=None)
+    grau: Optional[int] = field(default=None)
+    grau_formatado: str = field(default="")
+    caderno: Optional[str] = field(default=None, hash=False, compare=False)  # é omitido caso nao seja diario atualmente, acho que devia vir null
+    tribunal: Optional["Tribunal"] = field(default=None, hash=False, compare=False)
+    # Tribunal atualmente não vem na resposta da API. Sugiro que seja retornado,
+    # sendo o mesmo objeto Tribunal que vem em FonteProcesso
 
 
 @dataclass
@@ -408,4 +411,4 @@ class Tribunal:
     nome: str
     sigla: str
     categoria: Optional[str] = field(default=None)
-    estados: List[str] = field(default_factory=list, hash=False, compare=False) # Falta adicionar à API
+    estados: List[str] = field(default_factory=list, hash=False, compare=False)  # Será adicionado à API depois
