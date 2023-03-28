@@ -526,10 +526,7 @@ class ValorCausa:
     """
     valor: float
     moeda: str
-
-    @property
-    def valor_formatado(self):
-        return f"{self.moeda} {round(self.valor, 2)}"
+    valor_formatado: str
 
     @classmethod
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["ValorCausa"]:
@@ -544,7 +541,10 @@ class ValorCausa:
         return False
 
     def __lt__(self, other):
-        return self.valor < other.valor if isinstance(other, ValorCausa) else False
+        return self.valor < other.valor if isinstance(other, ValorCausa) and self.moeda == other.moeda else False
+
+    def __str__(self):
+        return self.valor_formatado
 
 
 @dataclass
