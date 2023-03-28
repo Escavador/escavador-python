@@ -35,7 +35,6 @@ class Processo(Endpoint):
     """
 
     methods = Method(api_version=2)
-    id: int
     numero_cnj: str
     quantidade_movimentacoes: int
     fontes_tribunais_estao_arquivadas: bool
@@ -60,7 +59,6 @@ class Processo(Endpoint):
             return None
 
         instance = cls(
-            id=json_dict.get("id"),
             numero_cnj=json_dict.get("numero_cnj"),
             quantidade_movimentacoes=json_dict.get("quantidade_movimentacoes", 0),
             fontes_tribunais_estao_arquivadas=json_dict.get(
