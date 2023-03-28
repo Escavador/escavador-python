@@ -29,6 +29,7 @@ class Processo(Endpoint):
     :attr fontes: lista de fontes do processo
     :attr last_valid_cursor: link do cursor caso queira mais resultados. Não é um atributo do processo, e sim da API.
     """
+
     methods = Method(api_version=2)
     id: int
     numero_cnj: str
@@ -45,24 +46,35 @@ class Processo(Endpoint):
     fontes: List["FonteProcesso"] = field(default_factory=list)
 
     @classmethod
-    def from_json(cls, json_dict: Optional[Dict], ultimo_cursor: str = "") -> Optional["Processo"]:
+    def from_json(
+        cls, json_dict: Optional[Dict], ultimo_cursor: str = ""
+    ) -> Optional["Processo"]:
         if json_dict is None:
             return None
 
-        instance = cls(id=json_dict.get('id'),
-                       numero_cnj=json_dict.get('numero_cnj'),
-                       quantidade_movimentacoes=json_dict.get('quantidade_movimentacoes', 0),
-                       fontes_tribunais_estao_arquivadas=json_dict.get('fontes_tribunais_estao_arquivadas'),
-                       titulo_polo_ativo=json_dict.get('titulo_polo_ativo'),
-                       titulo_polo_passivo=json_dict.get('titulo_polo_passivo'),
-                       ano_inicio=json_dict.get('ano_inicio'),
-                       data_inicio=json_dict.get('data_inicio', None),
-                       data_ultima_movimentacao=json_dict.get('data_ultima_movimentacao', None),
-                       data_ultima_verificacao=json_dict.get('data_ultima_verificacao', None),
-                       tempo_desde_ultima_verificacao=json_dict.get('tempo_desde_ultima_verificacao', None),
-                       last_valid_cursor=ultimo_cursor
-                       )
-        instance.fontes += [FonteProcesso.from_json(fonte) for fonte in json_dict.get('fontes', []) if fonte]
+        instance = cls(
+            id=json_dict.get("id"),
+            numero_cnj=json_dict.get("numero_cnj"),
+            quantidade_movimentacoes=json_dict.get("quantidade_movimentacoes", 0),
+            fontes_tribunais_estao_arquivadas=json_dict.get(
+                "fontes_tribunais_estao_arquivadas"
+            ),
+            titulo_polo_ativo=json_dict.get("titulo_polo_ativo"),
+            titulo_polo_passivo=json_dict.get("titulo_polo_passivo"),
+            ano_inicio=json_dict.get("ano_inicio"),
+            data_inicio=json_dict.get("data_inicio", None),
+            data_ultima_movimentacao=json_dict.get("data_ultima_movimentacao", None),
+            data_ultima_verificacao=json_dict.get("data_ultima_verificacao", None),
+            tempo_desde_ultima_verificacao=json_dict.get(
+                "tempo_desde_ultima_verificacao", None
+            ),
+            last_valid_cursor=ultimo_cursor,
+        )
+        instance.fontes += [
+            FonteProcesso.from_json(fonte)
+            for fonte in json_dict.get("fontes", [])
+            if fonte
+        ]
 
         return instance
 
@@ -76,18 +88,18 @@ class Processo(Endpoint):
         >>> Processo.por_numero("0000000-00.0000.0.00.0000") # doctest: +SKIP
         """
 
-        resposta = Processo.methods.get(
-            f"processos/numero_cnj/{numero_cnj}", **kwargs
-        )
+        resposta = Processo.methods.get(f"processos/numero_cnj/{numero_cnj}", **kwargs)
 
-        if not resposta['sucesso']:
-            conteudo = resposta.get('resposta', {})
-            return FailedRequest(status=resposta['http_status'], **conteudo)
+        if not resposta["sucesso"]:
+            conteudo = resposta.get("resposta", {})
+            return FailedRequest(status=resposta["http_status"], **conteudo)
 
-        return Processo.from_json(resposta['resposta'])
+        return Processo.from_json(resposta["resposta"])
 
     @staticmethod
-    def movimentacoes(numero_cnj: str, qtd: int = 100, **kwargs) -> Union[List["Movimentacao"], FailedRequest]:
+    def movimentacoes(
+        numero_cnj: str, qtd: int = 100, **kwargs
+    ) -> Union[List["Movimentacao"], FailedRequest]:
         """
         Busca as movimentações de um processo pelo seu número único do CNJ.
         :param numero_cnj: o número único do CNJ do processo
@@ -104,20 +116,20 @@ class Processo(Endpoint):
             f"processos/numero_cnj/{numero_cnj}/movimentacoes", data=data, **kwargs
         )
 
-        if not first_response['sucesso']:
-            conteudo = first_response.get('resposta', {})
-            return FailedRequest(status=first_response['http_status'], **conteudo)
+        if not first_response["sucesso"]:
+            conteudo = first_response.get("resposta", {})
+            return FailedRequest(status=first_response["http_status"], **conteudo)
 
         return _get_up_to(first_response, qtd, constructor=Movimentacao.from_json)
 
     @staticmethod
     def por_nome(
-            nome: str,
-            ordena_por: Optional[CriterioOrdenacao] = None,
-            ordem: Optional[Ordem] = None,
-            tribunais: Optional[List[SiglaTribunal]] = None,
-            qtd: int = 100,
-            **kwargs,
+        nome: str,
+        ordena_por: Optional[CriterioOrdenacao] = None,
+        ordem: Optional[Ordem] = None,
+        tribunais: Optional[List[SiglaTribunal]] = None,
+        qtd: int = 100,
+        **kwargs,
     ) -> Union[List["Processo"], FailedRequest]:
         """
         Busca os processos envolvendo uma pessoa ou empresa a partir do seu nome.
@@ -147,12 +159,12 @@ class Processo(Endpoint):
 
     @staticmethod
     def por_cpf(
-            cpf: str,
-            ordena_por: Optional[CriterioOrdenacao] = None,
-            ordem: Optional[Ordem] = None,
-            tribunais: Optional[List[SiglaTribunal]] = None,
-            qtd: int = 100,
-            **kwargs,
+        cpf: str,
+        ordena_por: Optional[CriterioOrdenacao] = None,
+        ordem: Optional[Ordem] = None,
+        tribunais: Optional[List[SiglaTribunal]] = None,
+        qtd: int = 100,
+        **kwargs,
     ) -> Union[List["Processo"], FailedRequest]:
         """
         Busca os processos envolvendo uma pessoa a partir de seu CPF.
@@ -182,12 +194,12 @@ class Processo(Endpoint):
 
     @staticmethod
     def por_cnpj(
-            cnpj: str,
-            ordena_por: Optional[CriterioOrdenacao] = None,
-            ordem: Optional[Ordem] = None,
-            tribunais: Optional[List[SiglaTribunal]] = None,
-            qtd: int = 100,
-            **kwargs,
+        cnpj: str,
+        ordena_por: Optional[CriterioOrdenacao] = None,
+        ordem: Optional[Ordem] = None,
+        tribunais: Optional[List[SiglaTribunal]] = None,
+        qtd: int = 100,
+        **kwargs,
     ) -> Union[List["Processo"], FailedRequest]:
         """
         Busca os processos envolvendo uma instituição a partir de seu CNPJ.
@@ -217,13 +229,13 @@ class Processo(Endpoint):
 
     @staticmethod
     def por_envolvido(
-            cpf_cnpj: Optional[str] = None,
-            nome: Optional[str] = None,
-            ordena_por: Optional[CriterioOrdenacao] = None,
-            ordem: Optional[Ordem] = None,
-            tribunais: Optional[List[SiglaTribunal]] = None,
-            qtd: int = 100,
-            **kwargs,
+        cpf_cnpj: Optional[str] = None,
+        nome: Optional[str] = None,
+        ordena_por: Optional[CriterioOrdenacao] = None,
+        ordem: Optional[Ordem] = None,
+        tribunais: Optional[List[SiglaTribunal]] = None,
+        qtd: int = 100,
+        **kwargs,
     ) -> Union[List["Processo"], FailedRequest]:
         """
         Busca os processos envolvendo uma pessoa ou instituição a partir de seu nome e/ou CPF/CNPJ.
@@ -263,20 +275,20 @@ class Processo(Endpoint):
             "envolvido/processos", data=data, params=params, **kwargs
         )
 
-        if not first_response['sucesso']:
-            conteudo = first_response.get('resposta', {})
-            return FailedRequest(status=first_response['http_status'], **conteudo)
+        if not first_response["sucesso"]:
+            conteudo = first_response.get("resposta", {})
+            return FailedRequest(status=first_response["http_status"], **conteudo)
 
         return _get_up_to(first_response, qtd, Processo.from_json)
 
     @staticmethod
     def por_oab(
-            numero: Union[str, int],
-            estado: str,
-            ordena_por: Optional[CriterioOrdenacao] = None,
-            ordem: Optional[Ordem] = None,
-            qtd: int = 100,
-            **kwargs,
+        numero: Union[str, int],
+        estado: str,
+        ordena_por: Optional[CriterioOrdenacao] = None,
+        ordem: Optional[Ordem] = None,
+        qtd: int = 100,
+        **kwargs,
     ) -> Union[List["Processo"], FailedRequest]:
         """
         Busca os processos de um advogado a partir de sua carteira da OAB.
@@ -308,9 +320,9 @@ class Processo(Endpoint):
             "advogado/processos", data=data, params=params, **kwargs
         )
 
-        if not first_response['sucesso']:
-            conteudo = first_response.get('resposta', {})
-            return FailedRequest(status=first_response['http_status'], **conteudo)
+        if not first_response["sucesso"]:
+            conteudo = first_response.get("resposta", {})
+            return FailedRequest(status=first_response["http_status"], **conteudo)
 
         return _get_up_to(first_response, qtd, Processo.from_json)
 
@@ -386,6 +398,7 @@ class FonteProcesso:
     :attr capa: informações da capa do processo
     :attr envolvidos: pessoas e instituições envolvidas no processo
     """
+
     id: int
     processo_fonte_id: int
     descricao: str
@@ -405,37 +418,44 @@ class FonteProcesso:
     caderno: Optional[str] = None
     data_ultima_verificacao: Optional[str] = None
     tribunal: Optional["Tribunal"] = None
-    capa: Optional["CapaProcessoTribunal"] = field(default=None, hash=False, compare=False)
-    envolvidos: List["Envolvido"] = field(default_factory=list, hash=False, compare=False)
+    capa: Optional["CapaProcessoTribunal"] = field(
+        default=None, hash=False, compare=False
+    )
+    envolvidos: List["Envolvido"] = field(
+        default_factory=list, hash=False, compare=False
+    )
 
     @classmethod
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["FonteProcesso"]:
         if json_dict is None:
             return None
 
-        instance = cls(id=json_dict["id"],
-                       processo_fonte_id=json_dict["processo_fonte_id"],
-                       descricao=json_dict["descricao"],
-                       nome=json_dict["nome"],
-                       sigla=json_dict["sigla"],
-                       grau=json_dict["grau"],
-                       grau_formatado=json_dict["grau_formatado"],
-                       tipo=json_dict["tipo"],
-                       data_inicio=json_dict["data_inicio"],
-                       data_ultima_movimentacao=json_dict["data_ultima_movimentacao"],
-                       fisico=json_dict["fisico"],
-                       sistema=json_dict["sistema"],
-                       quantidade_movimentacoes=json_dict["quantidade_movimentacoes"],
-                       segredo_justica=json_dict.get("segredo_justica"),
-                       arquivado=json_dict.get("arquivado"),
-                       url=json_dict.get("url"),
-                       caderno=json_dict.get("caderno"),
-                       data_ultima_verificacao=json_dict.get("data_ultima_verificacao"),
-                       tribunal=Tribunal.from_json(json_dict.get("tribunal", None)),
-                       capa=CapaProcessoTribunal.from_json(json_dict.get("capa", None)),
-                       )
+        instance = cls(
+            id=json_dict["id"],
+            processo_fonte_id=json_dict["processo_fonte_id"],
+            descricao=json_dict["descricao"],
+            nome=json_dict["nome"],
+            sigla=json_dict["sigla"],
+            grau=json_dict["grau"],
+            grau_formatado=json_dict["grau_formatado"],
+            tipo=json_dict["tipo"],
+            data_inicio=json_dict["data_inicio"],
+            data_ultima_movimentacao=json_dict["data_ultima_movimentacao"],
+            fisico=json_dict["fisico"],
+            sistema=json_dict["sistema"],
+            quantidade_movimentacoes=json_dict["quantidade_movimentacoes"],
+            segredo_justica=json_dict.get("segredo_justica"),
+            arquivado=json_dict.get("arquivado"),
+            url=json_dict.get("url"),
+            caderno=json_dict.get("caderno"),
+            data_ultima_verificacao=json_dict.get("data_ultima_verificacao"),
+            tribunal=Tribunal.from_json(json_dict.get("tribunal", None)),
+            capa=CapaProcessoTribunal.from_json(json_dict.get("capa", None)),
+        )
 
-        instance.envolvidos += [Envolvido.from_json(env) for env in json_dict.get("envolvidos") or [] if env]
+        instance.envolvidos += [
+            Envolvido.from_json(env) for env in json_dict.get("envolvidos") or [] if env
+        ]
 
         return instance
 
@@ -455,8 +475,11 @@ class CapaProcessoTribunal:
     :attr valor_causa: valor monetário da causa do processo
     :attr informacoes_complementares: conjunto de informações complementares
     """
+
     assunto_principal_normalizado: Optional["Assunto"] = None
-    assuntos_normalizados: List["Assunto"] = field(default_factory=list, hash=False, compare=False)
+    assuntos_normalizados: List["Assunto"] = field(
+        default_factory=list, hash=False, compare=False
+    )
     classe: Optional[str] = None
     assunto: Optional[str] = None
     area: Optional[str] = None
@@ -464,28 +487,38 @@ class CapaProcessoTribunal:
     data_distribuicao: Optional[str] = None
     data_arquivamento: Optional[str] = None
     valor_causa: Optional["ValorCausa"] = None
-    informacoes_complementares: List["InformacaoComplementar"] = field(default_factory=list)
+    informacoes_complementares: List["InformacaoComplementar"] = field(
+        default_factory=list
+    )
 
     @classmethod
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["CapaProcessoTribunal"]:
         if json_dict is None:
             return None
 
-        instance = cls(assunto_principal_normalizado=Assunto.from_json(json_dict.get("assunto_principal_normalizado",
-                                                                                     None)),
-                       classe=json_dict.get("classe"),
-                       assunto=json_dict.get("assunto"),
-                       area=json_dict.get("area"),
-                       orgao_julgador=json_dict.get("orgao_julgador"),
-                       data_distribuicao=json_dict.get("data_distribuicao"),
-                       data_arquivamento=json_dict.get("data_arquivamento"),
-                       valor_causa=ValorCausa.from_json(json_dict.get("valor_causa", None)),
-                       )
+        instance = cls(
+            assunto_principal_normalizado=Assunto.from_json(
+                json_dict.get("assunto_principal_normalizado", None)
+            ),
+            classe=json_dict.get("classe"),
+            assunto=json_dict.get("assunto"),
+            area=json_dict.get("area"),
+            orgao_julgador=json_dict.get("orgao_julgador"),
+            data_distribuicao=json_dict.get("data_distribuicao"),
+            data_arquivamento=json_dict.get("data_arquivamento"),
+            valor_causa=ValorCausa.from_json(json_dict.get("valor_causa", None)),
+        )
 
-        instance.assuntos_normalizados += [Assunto.from_json(assunto)
-                                           for assunto in json_dict.get("assuntos_normalizados") or [] if assunto]
-        instance.informacoes_complementares += [InformacaoComplementar.from_json(info)
-                                                for info in json_dict.get("informacoes_complementares") or [] if info]
+        instance.assuntos_normalizados += [
+            Assunto.from_json(assunto)
+            for assunto in json_dict.get("assuntos_normalizados") or []
+            if assunto
+        ]
+        instance.informacoes_complementares += [
+            InformacaoComplementar.from_json(info)
+            for info in json_dict.get("informacoes_complementares") or []
+            if info
+        ]
 
         return instance
 
@@ -499,6 +532,7 @@ class Assunto:
     :attr nome_com_pai: nome do assunto com o seu assunto "pai"
     :attr path_completo: path completo do assunto, desde a raiz até o assunto mais específico
     """
+
     id: int
     nome: str = field(hash=False, compare=False)
     nome_com_pai: str = field(hash=False, compare=False)
@@ -509,11 +543,12 @@ class Assunto:
         if json_dict is None:
             return None
 
-        return cls(id=json_dict["id"],
-                   nome=json_dict["nome"],
-                   nome_com_pai=json_dict["nome_com_pai"],
-                   path_completo=json_dict["path_completo"],
-                   )
+        return cls(
+            id=json_dict["id"],
+            nome=json_dict["nome"],
+            nome_com_pai=json_dict["nome_com_pai"],
+            path_completo=json_dict["path_completo"],
+        )
 
 
 @total_ordering
@@ -524,16 +559,26 @@ class ValorCausa:
     :attr valor: montante do valor da causa
     :attr moeda: moeda em que o valor da causa está expresso
     """
+
     valor: float
     moeda: str
     valor_formatado: str
 
     @classmethod
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["ValorCausa"]:
-        if json_dict is None or not json_dict.get("valor") or not json_dict.get("moeda") or not json_dict.get("valor_formatado"):
+        if (
+            json_dict is None
+            or not json_dict.get("valor")
+            or not json_dict.get("moeda")
+            or not json_dict.get("valor_formatado")
+        ):
             return None
 
-        return cls(valor=float(json_dict["valor"]), moeda=json_dict["moeda"], valor_formatado=json_dict["valor_formatado"])
+        return cls(
+            valor=float(json_dict["valor"]),
+            moeda=json_dict["moeda"],
+            valor_formatado=json_dict["valor_formatado"],
+        )
 
     def __eq__(self, other):
         if isinstance(other, ValorCausa):
@@ -541,7 +586,11 @@ class ValorCausa:
         return False
 
     def __lt__(self, other):
-        return self.valor < other.valor if isinstance(other, ValorCausa) and self.moeda == other.moeda else False
+        return (
+            self.valor < other.valor
+            if isinstance(other, ValorCausa) and self.moeda == other.moeda
+            else False
+        )
 
     def __str__(self):
         return self.valor_formatado
@@ -554,6 +603,7 @@ class InformacaoComplementar:
     :attr valor: valor da informação complementar
     :attr tipo: tipo da informação complementar
     """
+
     valor: str
     tipo: str
 
@@ -575,6 +625,7 @@ class Movimentacao:
     :attr conteudo: conteúdo da movimentação
     :attr data: data em que ocorreu
     """
+
     id: int
     data: str
     tipo: Optional[str] = None
@@ -586,12 +637,13 @@ class Movimentacao:
         if json_dict is None:
             return None
 
-        return cls(id=json_dict["id"],
-                   fonte=FonteMovimentacao.from_json(json_dict.get("fonte", None)),
-                   tipo=json_dict.get("tipo"),
-                   conteudo=json_dict.get("conteudo"),
-                   data=json_dict.get["data"],
-                   )
+        return cls(
+            id=json_dict["id"],
+            fonte=FonteMovimentacao.from_json(json_dict.get("fonte", None)),
+            tipo=json_dict.get("tipo"),
+            conteudo=json_dict.get("conteudo"),
+            data=json_dict.get["data"],
+        )
 
 
 @dataclass
@@ -607,6 +659,7 @@ class FonteMovimentacao:
     :attr caderno: caso a fonte seja um diário, o caderno em que a movimentação foi publicada
     :attr tribunal: informações do tribunal da fonte, caso a fonte seja um tribunal
     """
+
     id: int
     nome: Optional[str] = None
     tipo: Optional[str] = None
@@ -621,15 +674,16 @@ class FonteMovimentacao:
         if json_dict is None:
             return None
 
-        return cls(id=json_dict["fonte_id"],
-                   nome=json_dict.get("nome"),
-                   tipo=json_dict.get("tipo"),
-                   sigla=json_dict.get("sigla"),
-                   grau=json_dict.get("grau"),
-                   grau_formatado=json_dict.get("grau_formatado"),
-                   caderno=json_dict.get("caderno"),
-                   tribunal=Tribunal.from_json(json_dict.get("tribunal")),
-                   )
+        return cls(
+            id=json_dict["fonte_id"],
+            nome=json_dict.get("nome"),
+            tipo=json_dict.get("tipo"),
+            sigla=json_dict.get("sigla"),
+            grau=json_dict.get("grau"),
+            grau_formatado=json_dict.get("grau_formatado"),
+            caderno=json_dict.get("caderno"),
+            tribunal=Tribunal.from_json(json_dict.get("tribunal")),
+        )
 
 
 @dataclass
@@ -642,23 +696,27 @@ class Tribunal:
     :attr categoria: categoria do tribunal
     :attr estados: lista de estados que o tribunal abrange
     """
+
     id: int
     nome: str
     sigla: str
     categoria: Optional[str] = None
-    estados: List[str] = field(default_factory=list, hash=False, compare=False)  # Será adicionado à API depois
+    estados: List[str] = field(
+        default_factory=list, hash=False, compare=False
+    )  # Será adicionado à API depois
 
     @classmethod
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["Tribunal"]:
         if json_dict is None:
             return None
 
-        return cls(id=json_dict["id"],
-                   nome=json_dict["nome"],
-                   sigla=json_dict["sigla"],
-                   categoria=json_dict.get("categoria"),
-                   estados=json_dict.get("estados", []),
-                   )
+        return cls(
+            id=json_dict["id"],
+            nome=json_dict["nome"],
+            sigla=json_dict["sigla"],
+            categoria=json_dict.get("categoria"),
+            estados=json_dict.get("estados", []),
+        )
 
 
 @dataclass
@@ -681,6 +739,7 @@ class Envolvido:
     :attr advogados: lista de advogados do envolvido nessse processo
     :attr oabs: lista de carteiras da OAB do envolvido, caso o envolvido seja um advogado
     """
+
     tipo: str
     tipo_normalizado: str
     tipo_pessoa: str
@@ -693,27 +752,32 @@ class Envolvido:
     cpf: Optional[str] = None
     cnpj: Optional[str] = None
     oabs: List["Oab"] = field(default_factory=list)
-    advogados: List["Envolvido"] = field(default_factory=list, hash=False, compare=False)
+    advogados: List["Envolvido"] = field(
+        default_factory=list, hash=False, compare=False
+    )
 
     @classmethod
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["Envolvido"]:
         if json_dict is None:
             return None
 
-        return cls(tipo_pessoa=json_dict["tipo_pessoa"],
-                   quantidade_processos=json_dict["quantidade_processos"],
-                   nome=json_dict.get("nome"),
-                   nome_normalizado=json_dict.get("nome_normalizado"),
-                   prefixo=json_dict.get("prefixo"),
-                   sufixo=json_dict.get("sufixo"),
-                   tipo=json_dict["tipo"],
-                   tipo_normalizado=json_dict["tipo_normalizado"],
-                   polo=json_dict["polo"],
-                   cpf=json_dict.get("cpf"),
-                   cnpj=json_dict.get("cnpj"),
-                   oabs=[Oab.from_json(o) for o in json_dict.get("oabs", []) if o],
-                   advogados=[Envolvido.from_json(a) for a in json_dict.get("advogados", []) if a],
-                   )
+        return cls(
+            tipo_pessoa=json_dict["tipo_pessoa"],
+            quantidade_processos=json_dict["quantidade_processos"],
+            nome=json_dict.get("nome"),
+            nome_normalizado=json_dict.get("nome_normalizado"),
+            prefixo=json_dict.get("prefixo"),
+            sufixo=json_dict.get("sufixo"),
+            tipo=json_dict["tipo"],
+            tipo_normalizado=json_dict["tipo_normalizado"],
+            polo=json_dict["polo"],
+            cpf=json_dict.get("cpf"),
+            cnpj=json_dict.get("cnpj"),
+            oabs=[Oab.from_json(o) for o in json_dict.get("oabs", []) if o],
+            advogados=[
+                Envolvido.from_json(a) for a in json_dict.get("advogados", []) if a
+            ],
+        )
 
     @property
     def documento(self) -> Optional[str]:
@@ -728,6 +792,7 @@ class Oab:
     :attr uf: estado da carteira da OAB
     :attr tipo: tipo da carteira da OAB (ex: "ADVOGADO")
     """
+
     numero: int
     uf: str
     tipo: str
@@ -737,7 +802,8 @@ class Oab:
         if json_dict is None:
             return None
 
-        return cls(numero=json_dict["numero"],
-                   uf=json_dict["uf"],
-                   tipo=json_dict["tipo"],
-                   )
+        return cls(
+            numero=json_dict["numero"],
+            uf=json_dict["uf"],
+            tipo=json_dict["tipo"],
+        )
