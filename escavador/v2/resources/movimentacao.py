@@ -68,7 +68,6 @@ class Movimentacao:
     fonte: FonteMovimentacao = field(default=None, hash=False, compare=False)
     last_valid_cursor: str = field(default="", repr=False, hash=False)
 
-
     @classmethod
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["Movimentacao"]:
         if json_dict is None:

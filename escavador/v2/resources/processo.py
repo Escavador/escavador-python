@@ -47,7 +47,9 @@ class Processo(Endpoint):
     data_ultima_verificacao: Optional[str] = None
     tempo_desde_ultima_verificacao: Optional[str] = None
     fontes: List["FonteProcesso"] = field(default_factory=list)
-    last_valid_cursor: str = field(default="", repr=False, hash=False)  # link do cursor caso queira mais resultados.
+    last_valid_cursor: str = field(
+        default="", repr=False, hash=False
+    )  # link do cursor caso queira mais resultados.
     # Não faz parte do processo na API.
 
     @classmethod
