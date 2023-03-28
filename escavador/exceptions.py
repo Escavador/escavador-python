@@ -8,6 +8,9 @@ class ApiKeyNotFoundException(KeyError):
 class FailedRequest(Exception):
     """Exceção lançada quando a API retorna um erro.
 
+    Pode ser comparada com uma string representando seu código de erro, ou com um inteiro representando seu
+    código de status da resposta.
+
     :attr status_code: código de status da resposta
     :attr mensagem: mensagem de erro
     :attr erros: detalhamento dos erros encontrados
@@ -33,6 +36,6 @@ class FailedRequest(Exception):
         if isinstance(other, int):
             return self.status == other
         elif isinstance(other, str):
-            return self.code == other
+            return self.code.upper() == other.upper()
         else:
             return isinstance(other, FailedRequest) and self.code == other.code
