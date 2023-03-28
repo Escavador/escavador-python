@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional
+from typing import Dict, Optional
 
 
 class ApiKeyNotFoundException(KeyError):
@@ -27,4 +27,12 @@ class FailedRequest(Exception):
         return f"Erro {self.code} ({self.status}): {self.message}"
 
     def __repr__(self):
-        return self.__str__()
+        return f"{self.__str__()}\n{self.errors}"
+
+    def __eq__(self, other):
+        if isinstance(other, int):
+            return self.status == other
+        elif isinstance(other, str):
+            return self.code == other
+        else:
+            return isinstance(other, FailedRequest) and self.code == other.code
