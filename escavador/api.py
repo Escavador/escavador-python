@@ -1,9 +1,8 @@
 import os
-from typing import Dict, Union, Optional
+from typing import Dict, Union
 
 import requests
 
-import escavador
 from escavador.exceptions import ApiKeyNotFoundException
 from urllib import parse
 from dotenv import load_dotenv

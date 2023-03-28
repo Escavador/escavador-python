@@ -1,11 +1,15 @@
-import re
-from escavador.exceptions import FailedRequest
 from functools import total_ordering
 from dataclasses import dataclass, field
-from typing import Optional, Dict, List, Union, Any, Callable
+from typing import Optional, Dict, List, Union
+
+from escavador.exceptions import FailedRequest
 from escavador.method import Method
 from escavador.resources.helpers.endpoint import Endpoint
 from escavador.resources.helpers.enums_v2 import Ordem, CriterioOrdenacao, SiglaTribunal
+from escavador.resources.helpers.consume_cursor import get_up_to
+from escavador.v2.resources.movimentacao import Movimentacao
+from escavador.v2.resources.tribunal import Tribunal
+from escavador.v2.resources.envolvido import Envolvido
 
 
 @dataclass
@@ -27,7 +31,7 @@ class Processo(Endpoint):
     :attr data_ultima_verificacao: data da última verificação do processo no sistema de origem
     :attr tempo_desde_ultima_verificacao: tempo desde a última verificação do processo no sistema de origem.
     :attr fontes: lista de fontes do processo
-    :attr last_valid_cursor: link do cursor caso queira mais resultados. Não é um atributo do processo, e sim da API.
+    :attr last_valid_cursor: link do cursor caso queira mais resultados. Não é um atributo do processo.
     """
 
     methods = Method(api_version=2)
@@ -42,8 +46,9 @@ class Processo(Endpoint):
     data_ultima_movimentacao: Optional[str] = None
     data_ultima_verificacao: Optional[str] = None
     tempo_desde_ultima_verificacao: Optional[str] = None
-    last_valid_cursor: str = ""  # link do cursor caso queira mais resultados. Não faz parte do processo na API
     fontes: List["FonteProcesso"] = field(default_factory=list)
+    last_valid_cursor: str = field(default="", repr=False, hash=False)  # link do cursor caso queira mais resultados.
+    # Não faz parte do processo na API.
 
     @classmethod
     def from_json(
@@ -100,12 +105,12 @@ class Processo(Endpoint):
     @staticmethod
     def movimentacoes(
         numero_cnj: str, qtd: int = 100, **kwargs
-    ) -> Union[List["Movimentacao"], FailedRequest]:
+    ) -> Union[List[Movimentacao], FailedRequest]:
         """
         Busca as movimentações de um processo pelo seu número único do CNJ.
 
         :param numero_cnj: o número único do CNJ do processo
-        :param qtd: quantidade desejada de movimentações a ser retornada pela query
+        :param qtd: quantidade desejada de movimentações a ser retornada
         :return: uma lista de movimentacoes com no máximo `qtd` resultados, ou FailedRequest caso ocorra algum erro
 
         >>> Processo.movimentacoes("0000000-00.0000.0.00.0000") # doctest: +SKIP
@@ -122,7 +127,7 @@ class Processo(Endpoint):
             conteudo = first_response.get("resposta", {})
             return FailedRequest(status=first_response["http_status"], **conteudo)
 
-        return _get_up_to(first_response, qtd, constructor=Movimentacao.from_json)
+        return get_up_to(first_response, qtd, constructor=Movimentacao.from_json)
 
     @staticmethod
     def por_nome(
@@ -140,7 +145,7 @@ class Processo(Endpoint):
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
-        :param qtd: quantidade desejada de processos a ser retornada pela query
+        :param qtd: quantidade desejada de processos a ser retornada
         :return: uma lista de processos com no máximo `qtd` resultados, ou FailedRequest caso ocorra algum erro
 
         >>> Processo.por_nome("Escavador Engenharia e Construcoes Ltda",
@@ -176,7 +181,7 @@ class Processo(Endpoint):
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
-        :param qtd: quantidade desejada de processos a ser retornada pela query
+        :param qtd: quantidade desejada de processos a ser retornada
         :return: uma lista de processos com no máximo `qtd` resultados, ou FailedRequest caso ocorra algum erro
 
         >>> Processo.por_cpf("12345678999",
@@ -212,7 +217,7 @@ class Processo(Endpoint):
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
-        :param qtd: quantidade desejada de processos a ser retornada pela query
+        :param qtd: quantidade desejada de processos a ser retornada
         :return: uma lista de processos com no máximo `qtd` resultados, ou FailedRequest caso ocorra algum erro
 
         >>> Processo.por_cnpj("07.838.351/0021.60",
@@ -254,7 +259,7 @@ class Processo(Endpoint):
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
-        :param qtd: quantidade desejada de processos a ser retornada pela query
+        :param qtd: quantidade desejada de processos a ser retornada
         :return: uma lista de processos com no máximo `qtd` resultados, ou FailedRequest caso ocorra algum erro
 
         >>> Processo.por_envolvido(nome='Escavador Engenharia e Construcoes Ltda',
@@ -284,7 +289,7 @@ class Processo(Endpoint):
             conteudo = first_response.get("resposta", {})
             return FailedRequest(status=first_response["http_status"], **conteudo)
 
-        return _get_up_to(first_response, qtd, Processo.from_json)
+        return get_up_to(first_response, qtd, Processo.from_json)
 
     @staticmethod
     def por_oab(
@@ -302,7 +307,7 @@ class Processo(Endpoint):
         :param estado: o estado de origem da OAB
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
-        :param qtd: quantidade desejada de processos a ser retornada pela query
+        :param qtd: quantidade desejada de processos a ser retornada
         :return: uma lista de processos com no máximo `qtd` resultados, ou FailedRequest caso ocorra algum erro
 
         >>> Processo.por_oab(1234, "AC") # doctest: +SKIP
@@ -330,53 +335,7 @@ class Processo(Endpoint):
             conteudo = first_response.get("resposta", {})
             return FailedRequest(status=first_response["http_status"], **conteudo)
 
-        return _get_up_to(first_response, qtd, Processo.from_json)
-
-
-def _consumir_cursor(cursor: str) -> Dict:
-    """Consome um cursor para obter os próximos resultados de uma busca
-    :param cursor: url do cursor a ser consumido
-    :return: um dicionário com a resposta da requisição
-    """
-    endpoint_cursor = re.sub(r".*/api/v\d/", "", cursor)
-    return Processo.methods.get(endpoint_cursor)
-
-
-def _get_up_to(resposta: Dict, qtd: int, constructor: Callable) -> Any:
-    """Obtém os próximos resultados de uma busca até atingir a quantidade desejada ou erro
-    :param resposta: a resposta da primeira requisição
-    :param qtd: a quantidade de resultados desejada
-    :return: uma resposta extendida com até `qtd` resultados, onde resposta['status'] é o status
-    code do último request feito, e resposta['success'] é True se pelo menos um request
-    foi bem sucedida, e False caso contrário.
-    """
-    while 0 < len(resposta["resposta"].get("items", [])) < qtd:
-        cursor = resposta["resposta"].get("links", {}).get("next")
-        if not cursor:
-            break
-
-        next_response = _consumir_cursor(cursor)
-        next_items = next_response["resposta"].get("items")
-        if not next_items:
-            resposta["http_status"] = next_response["http_status"]
-            break
-
-        resposta["resposta"]["items"].extend(next_items)
-
-        # replace cursor with next cursor
-        resposta["resposta"]["links"]["next"] = (
-            next_response["resposta"].get("links", {}).get("next")
-        )
-
-    if "items" in resposta["resposta"]:
-        items = resposta["resposta"]["items"][:qtd]
-        cursor = resposta["resposta"].get("links", {}).get("next", "")
-        processos = [constructor(item) for item in items]
-        for processo in processos:
-            processo.last_valid_cursor = cursor
-        return processos
-
-    return resposta
+        return get_up_to(first_response, qtd, Processo.from_json)
 
 
 @dataclass
@@ -619,197 +578,3 @@ class InformacaoComplementar:
             return None
 
         return cls(valor=json_dict["valor"], tipo=json_dict["tipo"])
-
-
-@dataclass()
-class Movimentacao:
-    """Uma movimentação em um processo.
-
-    :attr id: id da movimentação no sistema do Escavador
-    :attr fonte: fonte de onde a movimentação foi extraída
-    :attr tipo: tipo de movimentação
-    :attr conteudo: conteúdo da movimentação
-    :attr data: data em que ocorreu
-    """
-
-    id: int
-    data: str
-    tipo: Optional[str] = None
-    conteudo: str = ""
-    fonte: "FonteMovimentacao" = field(default=None, hash=False, compare=False)
-
-    @classmethod
-    def from_json(cls, json_dict: Optional[Dict]) -> Optional["Movimentacao"]:
-        if json_dict is None:
-            return None
-
-        return cls(
-            id=json_dict["id"],
-            fonte=FonteMovimentacao.from_json(json_dict.get("fonte", None)),
-            tipo=json_dict.get("tipo"),
-            conteudo=json_dict.get("conteudo"),
-            data=json_dict.get["data"],
-        )
-
-
-@dataclass
-class FonteMovimentacao:
-    """Fonte de onde uma movimentação foi extraída.
-
-    :attr id: id da fonte no sistema do Escavador
-    :attr nome: nome completo da fonte (ex: "Tribunal de Justiça de São Paulo")
-    :attr sigla: sigla da fonte (ex: "DJES")
-    :attr tipo: tipo da fonte (ex: "TRIBUNAL")
-    :attr grau: grau da instância do processo nessa fonte - 1 para 1º grau, 2 para 2º grau, 3 para 3º grau.
-    :attr grau_formatado: grau do processo por extenso (ex: "Primeiro grau")
-    :attr caderno: caso a fonte seja um diário, o caderno em que a movimentação foi publicada
-    :attr tribunal: informações do tribunal da fonte, caso a fonte seja um tribunal
-    """
-
-    id: int
-    nome: Optional[str] = None
-    tipo: Optional[str] = None
-    sigla: Optional[str] = None
-    grau: Optional[int] = None
-    grau_formatado: str = ""
-    caderno: Optional[str] = field(default=None, hash=False, compare=False)
-    tribunal: Optional["Tribunal"] = field(default=None, hash=False, compare=False)
-
-    @classmethod
-    def from_json(cls, json_dict: Optional[Dict]) -> Optional["FonteMovimentacao"]:
-        if json_dict is None:
-            return None
-
-        return cls(
-            id=json_dict["fonte_id"],
-            nome=json_dict.get("nome"),
-            tipo=json_dict.get("tipo"),
-            sigla=json_dict.get("sigla"),
-            grau=json_dict.get("grau"),
-            grau_formatado=json_dict.get("grau_formatado"),
-            caderno=json_dict.get("caderno"),
-            tribunal=Tribunal.from_json(json_dict.get("tribunal")),
-        )
-
-
-@dataclass
-class Tribunal:
-    """Informações de um tribunal.
-
-    :attr id: id do tribunal no sistema do Escavador
-    :attr nome: nome completo do tribunal
-    :attr sigla: sigla do tribunal
-    :attr categoria: categoria do tribunal
-    :attr estados: lista de estados que o tribunal abrange
-    """
-
-    id: int
-    nome: str
-    sigla: str
-    categoria: Optional[str] = None
-    estados: List[str] = field(
-        default_factory=list, hash=False, compare=False
-    )  # Será adicionado à API depois
-
-    @classmethod
-    def from_json(cls, json_dict: Optional[Dict]) -> Optional["Tribunal"]:
-        if json_dict is None:
-            return None
-
-        return cls(
-            id=json_dict["id"],
-            nome=json_dict["nome"],
-            sigla=json_dict["sigla"],
-            categoria=json_dict.get("categoria"),
-            estados=json_dict.get("estados", []),
-        )
-
-
-@dataclass
-class Envolvido:
-    """Representação de um envolvido em um processo, seja ele um advogado, um polo, um juiz, ou um terceiro.
-
-    :attr id: id do envolvido no sistema do Escavador
-    :attr quantidade_processos: quantidade de processos onde o envolvido apareceu
-    :attr tipo_pessoa: tipo de pessoa do envolvido (ex: "FISICA")
-    :attr nome: nome do envolvido (ex: "João da Silva")
-    :attr nome_normalizado: nome do envolvido depois da normalização (como foi buscado no banco de dados)
-    :attr prefixo: prefixos do nome do envolvido (ex: "Dr.")
-    :attr sufixo: sufixos do nome do envolvido (ex: "Jr.")
-    :attr tipo: tipo do envolvido (ex: "Advogado")
-    :attr tipo_normalizado: tipo do envolvido padronizado pelo Escavador
-    :attr polo: polo do envolvido nesse processo (ex: "NENHUM" ou "ATIVO")
-    :attr documento: documento do envolvido (ex: "123.456.789-00" ou "12.345.678/0001-90")
-    :attr cpf: CPF do envolvido, caso o envolvido seja uma pessoa física
-    :attr cnpj: CNPJ do envolvido, caso o envolvido seja uma pessoa jurídica
-    :attr advogados: lista de advogados do envolvido nessse processo
-    :attr oabs: lista de carteiras da OAB do envolvido, caso o envolvido seja um advogado
-    """
-
-    tipo: str
-    tipo_normalizado: str
-    tipo_pessoa: str
-    quantidade_processos: int
-    polo: str
-    nome: Optional[str] = None
-    nome_normalizado: Optional[str] = None
-    prefixo: Optional[str] = None
-    sufixo: Optional[str] = None
-    cpf: Optional[str] = None
-    cnpj: Optional[str] = None
-    oabs: List["Oab"] = field(default_factory=list)
-    advogados: List["Envolvido"] = field(
-        default_factory=list, hash=False, compare=False
-    )
-
-    @classmethod
-    def from_json(cls, json_dict: Optional[Dict]) -> Optional["Envolvido"]:
-        if json_dict is None:
-            return None
-
-        return cls(
-            tipo_pessoa=json_dict["tipo_pessoa"],
-            quantidade_processos=json_dict["quantidade_processos"],
-            nome=json_dict.get("nome"),
-            nome_normalizado=json_dict.get("nome_normalizado"),
-            prefixo=json_dict.get("prefixo"),
-            sufixo=json_dict.get("sufixo"),
-            tipo=json_dict["tipo"],
-            tipo_normalizado=json_dict["tipo_normalizado"],
-            polo=json_dict["polo"],
-            cpf=json_dict.get("cpf"),
-            cnpj=json_dict.get("cnpj"),
-            oabs=[Oab.from_json(o) for o in json_dict.get("oabs", []) if o],
-            advogados=[
-                Envolvido.from_json(a) for a in json_dict.get("advogados", []) if a
-            ],
-        )
-
-    @property
-    def documento(self) -> Optional[str]:
-        return self.cpf or self.cnpj
-
-
-@dataclass
-class Oab:
-    """Representação de uma carteira da OAB.
-
-    :attr numero: número da carteira da OAB
-    :attr uf: estado da carteira da OAB
-    :attr tipo: tipo da carteira da OAB (ex: "ADVOGADO")
-    """
-
-    numero: int
-    uf: str
-    tipo: str
-
-    @classmethod
-    def from_json(cls, json_dict: Optional[Dict]) -> Optional["Oab"]:
-        if json_dict is None:
-            return None
-
-        return cls(
-            numero=json_dict["numero"],
-            uf=json_dict["uf"],
-            tipo=json_dict["tipo"],
-        )
