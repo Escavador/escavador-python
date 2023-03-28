@@ -64,8 +64,8 @@ if resultado_busca['resposta']['status'] == 'SUCESSO':
 [Consultando processos de um advogado usando sua OAB](https://api.escavador.com/v2/docs/#processos-de-um-advogado-por-oab)
 
 ```py
-
 from escavador import CriterioOrdenacao, Ordem
+from escavador.exceptions import FailedRequest
 from escavador.v2 import Processo
 
 busca = Processo.por_oab(numero=12345,
@@ -74,18 +74,16 @@ busca = Processo.por_oab(numero=12345,
                          ordem=Ordem.DESC,
                          qtd=1)
 
-if not busca['success'] or not busca['resposta']['itens']:
-    erro = busca['resposta']['code']
-    mensagem = busca['resposta']['message']
-    erros_especificos = busca['resposta']['errors']  # dict
-    if not erro:
-        print("Não foi encontrado nenhum processo para o advogado informado")
-    else:
-        raise Exception(f"Error code {erro}: {mensagem}")
+if isinstance(busca, FailedRequest):
+    # É possível imprimir ou elevar o erro
+    # print(busca)
+    raise busca
+elif not busca:
+    print("Nenhum processo encontrado")
 else:
-    processo = busca['resposta']['itens'].pop()
-    print(f"{processo['numero_cnj']} - {processo['fontes'][0]['tipo']}:")
-    print(f"Iniciado em {processo['ano_inicio']}, última movimentação em {processo['data_ultima_movimentacao']}.")
+    processo = busca.pop()
+    print(f"{processo.numero_cnj} - {processo.fontes[0].descricao}:")
+    print(f"Iniciado em {processo.ano_inicio}, última movimentação em {processo.data_ultima_movimentacao}.")
 ```
 
 ### Buscando as movimentações de um processo usando a API V2
@@ -93,14 +91,23 @@ else:
 
 ```py
 from escavador import SiglaTribunal
+from escavador.exceptions import FailedRequest
 from escavador.v2 import Processo
 
 busca = Processo.movimentacoes(numero_processo="0078700-86.2008.5.17.0009", tribunais=[SiglaTribunal.TJPE], qtd=100)
 
-if busca['success']:
-    for movimentacao in busca['resposta']['itens']:
-        print(f"{movimentacao['data']} - {movimentacao['tipo']}:")
-        print(f"{movimentacao['conteudo']}")
+if isinstance(busca, FailedRequest):
+    # É possível imprimir ou elevar o erro
+    # print(busca)
+    raise busca
+elif not busca:
+    print("Nenhuma movimentação encontrada")
+
+else:
+    for movimentacao in busca:
+        print(f"{movimentacao.data} - {movimentacao.tipo}:")
+        print(f"{movimentacao.conteudo}")
+        print()
 ```
 
 ### Criando Monitoramentos na API V1
