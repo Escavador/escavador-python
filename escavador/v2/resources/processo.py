@@ -39,12 +39,12 @@ class Processo(Endpoint):
     quantidade_movimentacoes: int
     fontes_tribunais_estao_arquivadas: bool
     ano_inicio: int
+    data_ultima_verificacao: str
+    tempo_desde_ultima_verificacao: str
+    data_ultima_movimentacao: str
     titulo_polo_ativo: Optional[str] = None
     titulo_polo_passivo: Optional[str] = None
     data_inicio: Optional[str] = None
-    data_ultima_movimentacao: Optional[str] = None
-    data_ultima_verificacao: Optional[str] = None
-    tempo_desde_ultima_verificacao: Optional[str] = None
     fontes: List["FonteProcesso"] = field(default_factory=list)
     last_valid_cursor: str = field(
         default="", repr=False, hash=False
@@ -348,14 +348,14 @@ class FonteProcesso:
     :attr sigla: sigla da fonte (ex: "DJES")
     :attr tipo: tipo da fonte (ex: "TRIBUNAL")
     :attr grau: grau da instância do processo nessa fonte - 1 para 1º grau, 2 para 2º grau, 3 para 3º grau.
-    :attr grau_formatado: grau do processo por extenso (ex: "Primeiro grau")
+    :attr grau_formatado: grau do processo por extenso (ex: "Primeiro Grau")
     :attr sistema: sistema de onde o processo foi extraído (ex: "ESAJ")
     :attr data_inicio: data de início da tramitação do processo nessa fonte
     :attr data_ultima_movimentacao: data da última movimentação registrada do processo nessa fonte
     :attr data_ultima_verificacao: data da última verificação feita no sistema de origem pelo Escavador
-    :attr fisico: indica se o processo é físico ou digital
-    :attr segredo_justica: indica se o processo está sob segredo de justiça
     :attr quantidade_movimentacoes: quantidade de movimentações do processo nessa fonte
+    :attr fisico: indica se o processo é físico ou eletrônico
+    :attr segredo_justica: indica se o processo está sob segredo de justiça
     :attr arquivado: indica se o processo está arquivado
     :attr url: url do processo na fonte
     :attr caderno: indica o caderno do diário oficial em que o processo foi publicado
@@ -369,9 +369,9 @@ class FonteProcesso:
     descricao: str
     nome: str
     sigla: str
+    tipo: str
     grau: int
     grau_formatado: str
-    tipo: str
     data_inicio: str
     data_ultima_movimentacao: str
     fisico: bool
@@ -411,7 +411,7 @@ class FonteProcesso:
             quantidade_movimentacoes=json_dict["quantidade_movimentacoes"],
             segredo_justica=json_dict.get("segredo_justica"),
             arquivado=json_dict.get("arquivado"),
-            url=json_dict.get("url"),
+            url=json_dict["url"],
             caderno=json_dict.get("caderno"),
             data_ultima_verificacao=json_dict.get("data_ultima_verificacao"),
             tribunal=Tribunal.from_json(json_dict.get("tribunal", None)),
@@ -463,15 +463,15 @@ class CapaProcessoTribunal:
 
         instance = cls(
             assunto_principal_normalizado=Assunto.from_json(
-                json_dict.get("assunto_principal_normalizado", None)
+                json_dict["assunto_principal_normalizado"]
             ),
-            classe=json_dict.get("classe"),
-            assunto=json_dict.get("assunto"),
-            area=json_dict.get("area"),
-            orgao_julgador=json_dict.get("orgao_julgador"),
-            data_distribuicao=json_dict.get("data_distribuicao"),
-            data_arquivamento=json_dict.get("data_arquivamento"),
-            valor_causa=ValorCausa.from_json(json_dict.get("valor_causa", None)),
+            classe=json_dict["classe"],
+            assunto=json_dict["assunto"],
+            area=json_dict["area"],
+            orgao_julgador=json_dict["orgao_julgador"],
+            data_distribuicao=json_dict["data_distribuicao"],
+            data_arquivamento=json_dict["data_arquivamento"],
+            valor_causa=ValorCausa.from_json(json_dict["valor_causa"]),
         )
 
         instance.assuntos_normalizados += [
