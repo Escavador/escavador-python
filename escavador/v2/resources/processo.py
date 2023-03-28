@@ -530,10 +530,10 @@ class ValorCausa:
 
     @classmethod
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["ValorCausa"]:
-        if json_dict is None or not json_dict.get("valor") or not json_dict.get("moeda"):
+        if json_dict is None or not json_dict.get("valor") or not json_dict.get("moeda") or not json_dict.get("valor_formatado"):
             return None
 
-        return cls(valor=float(json_dict["valor"]), moeda=json_dict["moeda"])
+        return cls(valor=float(json_dict["valor"]), moeda=json_dict["moeda"], valor_formatado=json_dict["valor_formatado"])
 
     def __eq__(self, other):
         if isinstance(other, ValorCausa):
