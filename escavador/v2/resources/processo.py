@@ -82,6 +82,7 @@ class Processo(Endpoint):
     def por_numero(numero_cnj: str, **kwargs) -> Union["Processo", FailedRequest]:
         """
         Busca os dados de um processo pelo seu número único do CNJ.
+
         :param numero_cnj: o número único do CNJ do processo
         :return: o processo encontrado, ou uma exception caso não seja encontrado
 
@@ -102,6 +103,7 @@ class Processo(Endpoint):
     ) -> Union[List["Movimentacao"], FailedRequest]:
         """
         Busca as movimentações de um processo pelo seu número único do CNJ.
+
         :param numero_cnj: o número único do CNJ do processo
         :param qtd: quantidade desejada de movimentações a ser retornada pela query
         :return: uma lista de movimentacoes com no máximo `qtd` resultados, ou FailedRequest caso ocorra algum erro
@@ -133,6 +135,7 @@ class Processo(Endpoint):
     ) -> Union[List["Processo"], FailedRequest]:
         """
         Busca os processos envolvendo uma pessoa ou empresa a partir do seu nome.
+
         :param nome: o nome da pessoa ou empresa
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
@@ -168,6 +171,7 @@ class Processo(Endpoint):
     ) -> Union[List["Processo"], FailedRequest]:
         """
         Busca os processos envolvendo uma pessoa a partir de seu CPF.
+
         :param cpf: o CPF da pessoa
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
@@ -203,6 +207,7 @@ class Processo(Endpoint):
     ) -> Union[List["Processo"], FailedRequest]:
         """
         Busca os processos envolvendo uma instituição a partir de seu CNPJ.
+
         :param cnpj: o CNPJ da instituição
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
@@ -292,6 +297,7 @@ class Processo(Endpoint):
     ) -> Union[List["Processo"], FailedRequest]:
         """
         Busca os processos de um advogado a partir de sua carteira da OAB.
+
         :param numero: o número da OAB
         :param estado: o estado de origem da OAB
         :param ordena_por: critério de ordenação
