@@ -48,12 +48,12 @@ class Envolvido:
     :attr oabs: lista de carteiras da OAB do envolvido, caso o envolvido seja um advogado
     """
 
-    tipo: str
+    nome: Optional[str]
+    tipo: Optional[str]
     tipo_normalizado: str
     tipo_pessoa: str
     quantidade_processos: int
     polo: str
-    nome: Optional[str] = None
     nome_normalizado: Optional[str] = None
     prefixo: Optional[str] = None
     sufixo: Optional[str] = None
@@ -72,7 +72,7 @@ class Envolvido:
         return cls(
             tipo_pessoa=json_dict["tipo_pessoa"],
             quantidade_processos=json_dict["quantidade_processos"],
-            nome=json_dict.get("nome"),
+            nome=json_dict["nome"],
             nome_normalizado=json_dict.get("nome_normalizado"),
             prefixo=json_dict.get("prefixo"),
             sufixo=json_dict.get("sufixo"),

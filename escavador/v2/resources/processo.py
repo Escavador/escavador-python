@@ -49,6 +49,7 @@ class Processo(Endpoint):
     last_valid_cursor: str = field(
         default="", repr=False, hash=False
     )  # link do cursor caso queira mais resultados.
+
     # Não faz parte do processo na API.
 
     @classmethod
@@ -427,7 +428,7 @@ class FonteProcesso:
 
 @dataclass
 class CapaProcessoTribunal:
-    """Informações da capa de um processo de tribunal.
+    """Informações da capa de um processo em uma fonte, quando foi extraído de um tribunal.
 
     :attr assunto_principal_normalizado: assunto principal do processo, normalizado como objeto Assunto
     :attr assuntos_normalizados: lista de assuntos do processo, normalizados como objeto Assunto
@@ -453,7 +454,7 @@ class CapaProcessoTribunal:
     data_arquivamento: Optional[str] = None
     valor_causa: Optional["ValorCausa"] = None
     informacoes_complementares: List["InformacaoComplementar"] = field(
-        default_factory=list
+        default_factory=list, hash=False, compare=False
     )
 
     @classmethod
@@ -493,9 +494,9 @@ class Assunto:
     """O assunto de um processo em formato normalizado.
 
     :attr id: id do assunto no sistema do Escavador
-    :attr nome: nome do assunto
-    :attr nome_com_pai: nome do assunto com o seu assunto "pai"
-    :attr path_completo: path completo do assunto, desde a raiz até o assunto mais específico
+    :attr nome: descrição do assunto em específico
+    :attr nome_com_pai: descrição do assunto e seu pai (mais genérico)
+    :attr path_completo: path completo do assunto, desde a raiz menos específica até o assunto em específico
     """
 
     id: int
@@ -523,6 +524,7 @@ class ValorCausa:
 
     :attr valor: montante do valor da causa
     :attr moeda: moeda em que o valor da causa está expresso
+    :attr valor_formatado: valor da causa formatado
     """
 
     valor: float
@@ -531,18 +533,30 @@ class ValorCausa:
 
     @classmethod
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["ValorCausa"]:
-        if (
-            json_dict is None
-            or not json_dict.get("valor")
-            or not json_dict.get("moeda")
-            or not json_dict.get("valor_formatado")
-        ):
+        if json_dict is None or json_dict.get("valor") is None:
             return None
 
         return cls(
             valor=float(json_dict["valor"]),
-            moeda=json_dict["moeda"],
-            valor_formatado=json_dict["valor_formatado"],
+            moeda=json_dict["moeda"] or "R$",
+            valor_formatado=json_dict["valor_formatado"] or cls._formatar_valor(json_dict["valor"], json_dict["moeda"]),
+        )
+
+    @staticmethod
+    def _formatar_valor(valor: float, moeda: str) -> str:
+        """Formata um valor monetário para o formato brasileiro."""
+        inteiros, centavos = f"{valor:.2f}".split(".")
+        return (
+            f"{moeda} "
+            + "".join(
+                reversed(
+                    [
+                        f"{x}{'' if i % 3 and i else '.'}"
+                        for i, x in enumerate(reversed(inteiros))
+                    ]
+                )
+            ).strip(".")
+            + f",{centavos}"
         )
 
     def __eq__(self, other):
@@ -565,8 +579,8 @@ class ValorCausa:
 class InformacaoComplementar:
     """Informações complementares de um processo.
 
-    :attr valor: valor da informação complementar
-    :attr tipo: tipo da informação complementar
+    :attr valor: texto da informação
+    :attr tipo: tipo ou significado da informação
     """
 
     valor: str
