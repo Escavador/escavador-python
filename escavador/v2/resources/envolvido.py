@@ -54,7 +54,6 @@ class Envolvido:
     tipo_pessoa: str
     quantidade_processos: int
     polo: str
-    nome_normalizado: Optional[str] = None
     prefixo: Optional[str] = None
     sufixo: Optional[str] = None
     cpf: Optional[str] = None
@@ -73,7 +72,6 @@ class Envolvido:
             tipo_pessoa=json_dict["tipo_pessoa"],
             quantidade_processos=json_dict["quantidade_processos"],
             nome=json_dict["nome"],
-            nome_normalizado=json_dict.get("nome_normalizado"),
             prefixo=json_dict.get("prefixo"),
             sufixo=json_dict.get("sufixo"),
             tipo=json_dict["tipo"],
