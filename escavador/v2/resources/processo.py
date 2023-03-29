@@ -289,7 +289,9 @@ class Processo(Endpoint):
             conteudo = first_response.get("resposta", {})
             return FailedRequest(status=first_response["http_status"], **conteudo)
 
-        envolvido_encontrado = EnvolvidoEncontrado.from_json(first_response['resposta'].get("envolvido_encontrado"))
+        envolvido_encontrado = EnvolvidoEncontrado.from_json(
+            first_response["resposta"].get("envolvido_encontrado")
+        )
 
         return envolvido_encontrado, get_up_to(first_response, qtd, Processo.from_json)
 
@@ -540,7 +542,8 @@ class ValorCausa:
         return cls(
             valor=float(json_dict["valor"]),
             moeda=json_dict["moeda"] or "R$",
-            valor_formatado=json_dict["valor_formatado"] or cls._formatar_valor(json_dict["valor"], json_dict["moeda"]),
+            valor_formatado=json_dict["valor_formatado"]
+            or cls._formatar_valor(json_dict["valor"], json_dict["moeda"]),
         )
 
     @staticmethod
