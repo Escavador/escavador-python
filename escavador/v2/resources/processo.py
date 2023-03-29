@@ -1,6 +1,6 @@
 from functools import total_ordering
 from dataclasses import dataclass, field
-from typing import Optional, Dict, List, Union
+from typing import Optional, Dict, List, Union, Tuple
 
 from escavador.exceptions import FailedRequest
 from escavador.method import Method
@@ -9,7 +9,7 @@ from escavador.resources.helpers.enums_v2 import Ordem, CriterioOrdenacao, Sigla
 from escavador.resources.helpers.consume_cursor import get_up_to
 from escavador.v2.resources.movimentacao import Movimentacao
 from escavador.v2.resources.tribunal import Tribunal
-from escavador.v2.resources.envolvido import Envolvido
+from escavador.v2.resources.envolvido import Envolvido, EnvolvidoEncontrado
 
 
 @dataclass
@@ -48,9 +48,7 @@ class Processo(Endpoint):
     fontes: List["FonteProcesso"] = field(default_factory=list)
     last_valid_cursor: str = field(
         default="", repr=False, hash=False
-    )  # link do cursor caso queira mais resultados.
-
-    # Não faz parte do processo na API.
+    )  # link do cursor caso queira mais resultados. Não faz parte do processo na API.
 
     @classmethod
     def from_json(
@@ -247,7 +245,7 @@ class Processo(Endpoint):
         tribunais: Optional[List[SiglaTribunal]] = None,
         qtd: int = 100,
         **kwargs,
-    ) -> Union[List["Processo"], FailedRequest]:
+    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], List["Processo"]], FailedRequest]:
         """
         Busca os processos envolvendo uma pessoa ou instituição a partir de seu nome e/ou CPF/CNPJ.
 
@@ -261,7 +259,8 @@ class Processo(Endpoint):
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
         :param qtd: quantidade desejada de processos a ser retornada
-        :return: uma lista de processos com no máximo `qtd` resultados, ou FailedRequest caso ocorra algum erro
+        :return: um dict com os dados do envolvido encontrado e uma lista de processos com no máximo `qtd` resultados,
+        ou FailedRequest caso ocorra algum erro
 
         >>> Processo.por_envolvido(nome='Escavador Engenharia e Construcoes Ltda',
         ...                             ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
@@ -290,7 +289,9 @@ class Processo(Endpoint):
             conteudo = first_response.get("resposta", {})
             return FailedRequest(status=first_response["http_status"], **conteudo)
 
-        return get_up_to(first_response, qtd, Processo.from_json)
+        envolvido_encontrado = EnvolvidoEncontrado.from_json(first_response['resposta'].get("envolvido_encontrado"))
+
+        return envolvido_encontrado, get_up_to(first_response, qtd, Processo.from_json)
 
     @staticmethod
     def por_oab(

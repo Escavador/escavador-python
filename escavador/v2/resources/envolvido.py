@@ -90,3 +90,21 @@ class Envolvido:
     @property
     def documento(self) -> Optional[str]:
         return self.cpf or self.cnpj
+
+
+@dataclass(frozen=True)
+class EnvolvidoEncontrado:
+    nome: str
+    tipo_pessoa: str
+    quantidade_processos: int
+
+    @classmethod
+    def from_json(cls, json_dict: Optional[Dict]) -> Optional["EnvolvidoEncontrado"]:
+        if json_dict is None:
+            return None
+
+        return cls(
+            nome=json_dict["nome"],
+            tipo_pessoa=json_dict["tipo_pessoa"],
+            quantidade_processos=json_dict["quantidade_processos"],
+        )
