@@ -1,5 +1,14 @@
 from dataclasses import dataclass, field
-from typing import Optional, List, Dict
+
+from typing import Optional, List, Dict, Tuple, Union, TYPE_CHECKING, Type
+
+from escavador.exceptions import FailedRequest
+from escavador.resources.helpers.enums_v2 import CriterioOrdenacao, Ordem, SiglaTribunal
+from escavador.resources.helpers.endpoint import DataEndpoint
+from escavador.resources.helpers.consume_cursor import consumir_cursor, json_to_class
+
+if TYPE_CHECKING:
+    from escavador.v2 import Processo
 
 
 @dataclass
@@ -28,7 +37,54 @@ class Oab:
 
 
 @dataclass
-class Envolvido:
+class EnvolvidoEncontrado:
+    """Representação do envolvido encontrado na busca por envolvido.
+
+    :attr nome: nome do envolvido
+    :attr tipo_pessoa: tipo de pessoa do envolvido (ex: "FISICA")
+    :attr quantidade_processos: quantidade de processos onde o envolvido apareceu
+    :attr last_valid_cursor: cursor válido para a próxima página de resultados
+    """
+
+    nome: str
+    tipo_pessoa: str
+    quantidade_processos: int
+    last_valid_cursor: str = field(default="None", hash=False, compare=False)
+    _classe_buscada: Type["DataEndpoint"] = field(default=None, hash=False, compare=False)
+
+    @classmethod
+    def from_json(cls, json_dict: Optional[Dict], last_cursor: str = "", classe_buscada: Type["DataEndpoint"] = None) -> Optional["EnvolvidoEncontrado"]:
+        if json_dict is None:
+            return None
+
+        return cls(
+            nome=json_dict["nome"],
+            tipo_pessoa=json_dict["tipo_pessoa"],
+            quantidade_processos=json_dict["quantidade_processos"],
+            last_valid_cursor=last_cursor,
+            _classe_buscada=classe_buscada,
+        )
+
+    def continuar_busca(self) -> Union[List["DataEndpoint"], FailedRequest]:
+        """Retorna mais resultados para a busca que gerou o objeto atual.
+
+        :return: lista contendo a próxima página de resultados, ou FailedRequest em caso de erro
+        """
+        if self.last_valid_cursor and self._classe_buscada:
+            resposta = consumir_cursor(self.last_valid_cursor)
+
+            if not resposta["sucesso"]:
+                conteudo = resposta.get("resposta", {})
+                return FailedRequest(status=resposta["http_status"], **conteudo)
+
+            self.last_valid_cursor = resposta["resposta"].get("links", {}).get("next", "")
+            return json_to_class(resposta, self._classe_buscada.from_json, add_cursor=True)
+
+        return []
+
+
+@dataclass
+class Envolvido(DataEndpoint):
     """Representação de um envolvido em um processo, seja ele um advogado, um polo, um juiz, ou um terceiro.
 
     :attr id: id do envolvido no sistema do Escavador
@@ -46,6 +102,7 @@ class Envolvido:
     :attr cnpj: CNPJ do envolvido, caso o envolvido seja uma pessoa jurídica
     :attr advogados: lista de advogados do envolvido nessse processo
     :attr oabs: lista de carteiras da OAB do envolvido, caso o envolvido seja um advogado
+    :attr last_valid_cursor: último cursor válido para a próxima página de resultados
     """
 
     nome: Optional[str]
@@ -62,9 +119,12 @@ class Envolvido:
     advogados: List["Envolvido"] = field(
         default_factory=list, hash=False, compare=False
     )
+    last_valid_cursor: str = field(default="", hash=False, compare=False)
 
     @classmethod
-    def from_json(cls, json_dict: Optional[Dict]) -> Optional["Envolvido"]:
+    def from_json(
+        cls, json_dict: Optional[Dict], ultimo_cursor: str = ""
+    ) -> Optional["Envolvido"]:
         if json_dict is None:
             return None
 
@@ -89,20 +149,33 @@ class Envolvido:
     def documento(self) -> Optional[str]:
         return self.cpf or self.cnpj
 
-
-@dataclass(frozen=True)
-class EnvolvidoEncontrado:
-    nome: str
-    tipo_pessoa: str
-    quantidade_processos: int
-
     @classmethod
-    def from_json(cls, json_dict: Optional[Dict]) -> Optional["EnvolvidoEncontrado"]:
-        if json_dict is None:
-            return None
+    def processos(
+        cls,
+        cpf_cnpj: Optional[str] = None,
+        nome: Optional[str] = None,
+        ordena_por: Optional[CriterioOrdenacao] = None,
+        ordem: Optional[Ordem] = None,
+        tribunais: Optional[List[SiglaTribunal]] = None,
+        **kwargs
+    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], List["Processo"]], FailedRequest]:
+        """Busca os processos envolvendo uma pessoa ou instituição a partir de seu nome e/ou CPF/CNPJ.
 
-        return cls(
-            nome=json_dict["nome"],
-            tipo_pessoa=json_dict["tipo_pessoa"],
-            quantidade_processos=json_dict["quantidade_processos"],
+        :param cpf_cnpj: CPF ou CNPJ do envolvido
+        :param nome: nome do envolvido
+        :param ordena_por: critério de ordenação dos resultados
+        :param ordem: ordem de ordenação dos resultados
+        :param tribunais: lista de tribunais para filtrar os resultados
+        :return tupla com os dados do envolvido encontrado e uma lista de processos,
+        ou FailedRequest caso ocorra algum erro
+        """
+        from escavador.v2 import Processo
+
+        return Processo.por_envolvido(
+            cpf_cnpj=cpf_cnpj,
+            nome=nome,
+            ordena_por=ordena_por,
+            ordem=ordem,
+            tribunais=tribunais,
+            **kwargs
         )

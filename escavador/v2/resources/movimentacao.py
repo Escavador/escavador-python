@@ -3,7 +3,8 @@ from typing import Optional, Dict, Union, List, TYPE_CHECKING
 
 from escavador.exceptions import FailedRequest
 from escavador.v2.resources.tribunal import Tribunal
-
+from resources.helpers.consume_cursor import consumir_cursor, json_to_class
+from resources.helpers.endpoint import DataEndpoint
 
 if TYPE_CHECKING:
     from escavador.v2 import Processo
@@ -30,7 +31,7 @@ class FonteMovimentacao:
     grau: Optional[int] = None
     grau_formatado: str = ""
     caderno: Optional[str] = field(default=None, hash=False, compare=False)
-    tribunal: Optional["Tribunal"] = field(default=None, hash=False, compare=False)
+    tribunal: Optional[Tribunal] = field(default=None, hash=False, compare=False)
 
     @classmethod
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["FonteMovimentacao"]:
@@ -50,7 +51,7 @@ class FonteMovimentacao:
 
 
 @dataclass
-class Movimentacao:
+class Movimentacao(DataEndpoint):
     """Uma movimentação em um processo.
 
     :attr id: id da movimentação no sistema do Escavador
@@ -69,7 +70,9 @@ class Movimentacao:
     last_valid_cursor: str = field(default="", repr=False, hash=False)
 
     @classmethod
-    def from_json(cls, json_dict: Optional[Dict]) -> Optional["Movimentacao"]:
+    def from_json(
+        cls, json_dict: Optional[Dict], ultimo_cursor: str = ""
+    ) -> Optional["Movimentacao"]:
         if json_dict is None:
             return None
 
@@ -79,6 +82,7 @@ class Movimentacao:
             tipo=json_dict.get("tipo"),
             conteudo=json_dict.get("conteudo"),
             data=json_dict["data"],
+            last_valid_cursor=ultimo_cursor,
         )
 
     @staticmethod
@@ -90,12 +94,32 @@ class Movimentacao:
         Alias do método `Processo.movimentacoes`.
 
         :param processo: número do processo ou instância de Processo
-        :param qtd: quantidade desejada de processos a ser retornada
+        :return: lista de movimentações ou FailedRequest
+
+        >>> Processo.movimentacoes("0000000-00.0000.0.00.0000") # doctest: +SKIP
         """
-        from escavador.v2.resources.processo import Processo
+        from escavador.v2 import Processo
 
         return (
-            Processo.movimentacoes(processo.numero_cnj, qtd=qtd)
+            Processo.movimentacoes(processo.numero_cnj, **kwargs)
             if isinstance(processo, Processo)
-            else Processo.movimentacoes(processo, qtd=qtd)
+            else Processo.movimentacoes(processo, **kwargs)
         )
+
+    def continuar_busca(self) -> Union[List["Movimentacao"], FailedRequest]:
+        """Retorna mais resultados para a busca que gerou a movimentação atual.
+
+        :return: lista de movimentações ou FailedRequest
+
+        >>> Processo.movimentacoes("0000000-00.0000.0.00.0000") # doctest: +SKIP
+        """
+        if self.last_valid_cursor:
+            resposta = consumir_cursor(self.last_valid_cursor)
+
+            if not resposta["sucesso"]:
+                conteudo = resposta.get("resposta", {})
+                return FailedRequest(status=resposta["http_status"], **conteudo)
+
+            return json_to_class(resposta, self.from_json, add_cursor=True)
+
+        return []

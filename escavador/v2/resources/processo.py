@@ -3,17 +3,16 @@ from dataclasses import dataclass, field
 from typing import Optional, Dict, List, Union, Tuple
 
 from escavador.exceptions import FailedRequest
-from escavador.method import Method
-from escavador.resources.helpers.endpoint import Endpoint
+from escavador.resources.helpers.endpoint import DataEndpoint
 from escavador.resources.helpers.enums_v2 import Ordem, CriterioOrdenacao, SiglaTribunal
-from escavador.resources.helpers.consume_cursor import get_up_to
+from escavador.resources.helpers.consume_cursor import json_to_class, consumir_cursor
 from escavador.v2.resources.movimentacao import Movimentacao
 from escavador.v2.resources.tribunal import Tribunal
 from escavador.v2.resources.envolvido import Envolvido, EnvolvidoEncontrado
 
 
 @dataclass
-class Processo(Endpoint):
+class Processo(DataEndpoint):
     """
     Representa um processo retornado pela API do Escavador.
 
@@ -34,7 +33,6 @@ class Processo(Endpoint):
     :attr last_valid_cursor: link do cursor caso queira mais resultados. Não é um atributo do processo.
     """
 
-    methods = Method(api_version=2)
     numero_cnj: str
     quantidade_movimentacoes: int
     fontes_tribunais_estao_arquivadas: bool
@@ -46,9 +44,7 @@ class Processo(Endpoint):
     titulo_polo_passivo: Optional[str] = None
     data_inicio: Optional[str] = None
     fontes: List["FonteProcesso"] = field(default_factory=list)
-    last_valid_cursor: str = field(
-        default="", repr=False, hash=False
-    )  # link do cursor caso queira mais resultados. Não faz parte do processo na API.
+    last_valid_cursor: str = field(default="", repr=False, hash=False)
 
     @classmethod
     def from_json(
@@ -99,22 +95,21 @@ class Processo(Endpoint):
             conteudo = resposta.get("resposta", {})
             return FailedRequest(status=resposta["http_status"], **conteudo)
 
-        return Processo.from_json(resposta["resposta"])
+        return Processo.from_json(
+            resposta["resposta"], resposta.get("links", {}).get("next", "")
+        )
 
     @staticmethod
     def movimentacoes(
-        numero_cnj: str, qtd: int = 100, **kwargs
+        numero_cnj: str, **kwargs
     ) -> Union[List[Movimentacao], FailedRequest]:
         """
         Busca as movimentações de um processo pelo seu número único do CNJ.
 
         :param numero_cnj: o número único do CNJ do processo
-        :param qtd: quantidade desejada de movimentações a ser retornada
-        :return: uma lista de movimentacoes com no máximo `qtd` resultados, ou FailedRequest caso ocorra algum erro
+        :return: uma lista de movimentacoes, ou FailedRequest caso ocorra algum erro
 
         >>> Processo.movimentacoes("0000000-00.0000.0.00.0000") # doctest: +SKIP
-
-        >>> Processo.movimentacoes("0000000-00.0000.0.00.0000", qtd=10) # doctest: +SKIP
         """
         data = kwargs
 
@@ -126,7 +121,9 @@ class Processo(Endpoint):
             conteudo = first_response.get("resposta", {})
             return FailedRequest(status=first_response["http_status"], **conteudo)
 
-        return get_up_to(first_response, qtd, constructor=Movimentacao.from_json)
+        return json_to_class(
+            first_response, constructor=Movimentacao.from_json, add_cursor=True
+        )
 
     @staticmethod
     def por_nome(
@@ -134,7 +131,6 @@ class Processo(Endpoint):
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
-        qtd: int = 100,
         **kwargs,
     ) -> Union[List["Processo"], FailedRequest]:
         """
@@ -144,23 +140,20 @@ class Processo(Endpoint):
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
-        :param qtd: quantidade desejada de processos a ser retornada
-        :return: uma lista de processos com no máximo `qtd` resultados, ou FailedRequest caso ocorra algum erro
+        :return: uma lista de processos, ou FailedRequest caso ocorra algum erro
+
+        >>> Processo.por_nome("Escavador Engenharia e Construcoes Ltda") # doctest: +SKIP
 
         >>> Processo.por_nome("Escavador Engenharia e Construcoes Ltda",
         ...                   ordena_por=CriterioOrdenacao.INICIO,
         ...                   ordem=Ordem.DESC,
-        ...                   tribunais=[SiglaTribunal.CNJ, SiglaTribunal.TRT10],
-        ...                   qtd=1) # doctest: +SKIP
-
-        >>> Processo.por_nome("Escavador Engenharia e Construcoes Ltda") # doctest: +SKIP
+        ...                   tribunais=[SiglaTribunal.CNJ, SiglaTribunal.TRT10]) # doctest: +SKIP
         """
         return Processo.por_envolvido(
             nome=nome,
             ordena_por=ordena_por,
             ordem=ordem,
             tribunais=tribunais,
-            qtd=qtd,
             **kwargs,
         )
 
@@ -170,7 +163,6 @@ class Processo(Endpoint):
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
-        qtd: int = 100,
         **kwargs,
     ) -> Union[List["Processo"], FailedRequest]:
         """
@@ -180,23 +172,20 @@ class Processo(Endpoint):
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
-        :param qtd: quantidade desejada de processos a ser retornada
-        :return: uma lista de processos com no máximo `qtd` resultados, ou FailedRequest caso ocorra algum erro
+        :return: uma lista de processos, ou FailedRequest caso ocorra algum erro
+
+        >>> Processo.por_cpf("123.456.789-99") # doctest: +SKIP
 
         >>> Processo.por_cpf("12345678999",
         ...                  ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
         ...                  ordem=Ordem.ASC,
-        ...                  tribunais=[SiglaTribunal.STF],
-        ...                  qtd=200) # doctest: +SKIP
-
-        >>> Processo.por_cpf("123.456.789-99") # doctest: +SKIP
+        ...                  tribunais=[SiglaTribunal.STF]) # doctest: +SKIP
         """
         return Processo.por_envolvido(
             cpf_cnpj=cpf,
             ordena_por=ordena_por,
             ordem=ordem,
             tribunais=tribunais,
-            qtd=qtd,
             **kwargs,
         )
 
@@ -206,7 +195,6 @@ class Processo(Endpoint):
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
-        qtd: int = 100,
         **kwargs,
     ) -> Union[List["Processo"], FailedRequest]:
         """
@@ -216,23 +204,20 @@ class Processo(Endpoint):
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
-        :param qtd: quantidade desejada de processos a ser retornada
-        :return: uma lista de processos com no máximo `qtd` resultados, ou FailedRequest caso ocorra algum erro
+        :return: uma lista de processos, ou FailedRequest caso ocorra algum erro
+
+        >>> Processo.por_cnpj("07838351002160") # doctest: +SKIP
 
         >>> Processo.por_cnpj("07.838.351/0021.60",
         ...                        ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
         ...                        ordem=Ordem.ASC,
-        ...                        tribunais=[SiglaTribunal.TJBA, SiglaTribunal.TRF1],
-        ...                        qtd=1) # doctest: +SKIP
-
-        >>> Processo.por_cnpj("07838351002160") # doctest: +SKIP
+        ...                        tribunais=[SiglaTribunal.TJBA, SiglaTribunal.TRF1]) # doctest: +SKIP
         """
         return Processo.por_envolvido(
             cpf_cnpj=cnpj,
             ordena_por=ordena_por,
             ordem=ordem,
             tribunais=tribunais,
-            qtd=qtd,
             **kwargs,
         )
 
@@ -243,32 +228,27 @@ class Processo(Endpoint):
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
-        qtd: int = 100,
         **kwargs,
     ) -> Union[Tuple[Optional[EnvolvidoEncontrado], List["Processo"]], FailedRequest]:
         """
         Busca os processos envolvendo uma pessoa ou instituição a partir de seu nome e/ou CPF/CNPJ.
 
-        Caso seja necessário múltiplos requests para obter a quantidade de processos desejada e algum
-        erro ocorra em um request intermediário, a função retorna todos os processos obtidos até o
-        momento com o o status code do erro ocorrido nesse último request.
+        É possível filtrar
 
         :param nome: o nome da pessoa ou instituição. Obrigatório se não for informado o CPF/CNPJ
         :param cpf_cnpj: o CPF/CNPJ da pessoa ou instituição. Obrigatório se não for informado o nome
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
-        :param qtd: quantidade desejada de processos a ser retornada
-        :return: um dict com os dados do envolvido encontrado e uma lista de processos com no máximo `qtd` resultados,
+        :return: tupla com os dados do envolvido encontrado e uma lista de processos,
         ou FailedRequest caso ocorra algum erro
+
+        >>> Processo.por_envolvido(cpf_cnpj="07.838.351/0021.60") # doctest: +SKIP
 
         >>> Processo.por_envolvido(nome='Escavador Engenharia e Construcoes Ltda',
         ...                             ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
         ...                             ordem=Ordem.ASC,
-        ...                             tribunais=[SiglaTribunal.TJBA],
-        ...                             qtd=1) # doctest: +SKIP
-
-        >>> Processo.por_envolvido(cpf_cnpj="07.838.351/0021.60") # doctest: +SKIP
+        ...                             tribunais=[SiglaTribunal.TJBA]) # doctest: +SKIP
         """
         data = {
             "nome": nome,
@@ -290,10 +270,14 @@ class Processo(Endpoint):
             return FailedRequest(status=first_response["http_status"], **conteudo)
 
         envolvido_encontrado = EnvolvidoEncontrado.from_json(
-            first_response["resposta"].get("envolvido_encontrado")
+            first_response["resposta"].get("envolvido_encontrado"),
+            last_cursor=first_response["resposta"].get("links", {}).get("next", ""),
+            classe_buscada=Processo,
         )
 
-        return envolvido_encontrado, get_up_to(first_response, qtd, Processo.from_json)
+        return envolvido_encontrado, json_to_class(
+            first_response, Processo.from_json, add_cursor=True
+        )
 
     @staticmethod
     def por_oab(
@@ -301,7 +285,6 @@ class Processo(Endpoint):
         estado: str,
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
-        qtd: int = 100,
         **kwargs,
     ) -> Union[List["Processo"], FailedRequest]:
         """
@@ -311,16 +294,14 @@ class Processo(Endpoint):
         :param estado: o estado de origem da OAB
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
-        :param qtd: quantidade desejada de processos a ser retornada
-        :return: uma lista de processos com no máximo `qtd` resultados, ou FailedRequest caso ocorra algum erro
+        :return: uma lista de processos, ou FailedRequest caso ocorra algum erro
 
         >>> Processo.por_oab(1234, "AC") # doctest: +SKIP
 
         >>> Processo.por_oab(numero="12345",
-        ...                       estado="SP",
-        ...                       ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
-        ...                       ordem=Ordem.DESC,
-        ...                       qtd=1) # doctest: +SKIP
+        ...                  estado="SP",
+        ...                  ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
+        ...                  ordem=Ordem.DESC) # doctest: +SKIP
         """
         data = {
             "oab_numero": f"{numero}",
@@ -339,7 +320,23 @@ class Processo(Endpoint):
             conteudo = first_response.get("resposta", {})
             return FailedRequest(status=first_response["http_status"], **conteudo)
 
-        return get_up_to(first_response, qtd, Processo.from_json)
+        return json_to_class(first_response, Processo.from_json, add_cursor=True)
+
+    def continuar_busca(self) -> Union[List["Processo"], FailedRequest]:
+        """Retorna mais resultados para a busca que gerou o processo atual.
+
+        :return: lista de processos ou FailedRequest
+        """
+        if self.last_valid_cursor:
+            resposta = consumir_cursor(self.last_valid_cursor)
+
+            if not resposta["sucesso"]:
+                conteudo = resposta.get("resposta", {})
+                return FailedRequest(status=resposta["http_status"], **conteudo)
+
+            return json_to_class(resposta, self.from_json, add_cursor=True)
+
+        return []
 
 
 @dataclass
@@ -386,13 +383,11 @@ class FonteProcesso:
     url: Optional[str] = None
     caderno: Optional[str] = None
     data_ultima_verificacao: Optional[str] = None
-    tribunal: Optional["Tribunal"] = None
+    tribunal: Optional[Tribunal] = None
     capa: Optional["CapaProcessoTribunal"] = field(
         default=None, hash=False, compare=False
     )
-    envolvidos: List["Envolvido"] = field(
-        default_factory=list, hash=False, compare=False
-    )
+    envolvidos: List[Envolvido] = field(default_factory=list, hash=False, compare=False)
 
     @classmethod
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["FonteProcesso"]:
