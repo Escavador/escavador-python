@@ -1,13 +1,13 @@
 import os
-from typing import Dict, Union
-
 import requests
 
-from escavador.exceptions import ApiKeyNotFoundException
+from typing import Dict, Union
+from importlib_metadata import version
 from urllib import parse
 from dotenv import load_dotenv
-from importlib_metadata import version
 from ratelimit import limits
+
+from escavador.exceptions import ApiKeyNotFoundException
 
 load_dotenv()
 
