@@ -1,3 +1,11 @@
+"""O SDK em Python da API do Escavador
+
+Documentação disponível:
+
+- API V1 docs: https://api.escavador.com/v1/docs/
+- API V2 docs: https://api.escavador.com/v2/docs/
+- README do SDK: https://github.com/Escavador/escavador-python#readme
+"""
 import escavador.v1
 import escavador.v2
 
