@@ -56,11 +56,11 @@ class Api(object):
         self, method: str, url: str, data: Dict = None, params: Dict = None, **kwargs
     ) -> Union[Dict, bytes]:
         """
-        Executa um request HTML para a API
+        Executa um request HTTP para a API
 
         Keyword arguments extras são adicionados ao corpo da requisição (json)
 
-        :param method: método HTML
+        :param method: método HTTP
         :param url: slug do endpoint a ser chamado
         :param data: dados a serem enviados no formato json
         :param params: parâmetros a serem enviados na URL
