@@ -87,7 +87,7 @@ class Movimentacao(DataEndpoint):
 
     @staticmethod
     def movimentacoes(
-        processo: Union["Processo", str], qtd: int = 100, **kwargs
+        processo: Union["Processo", str], **kwargs
     ) -> Union[List["Movimentacao"], FailedRequest]:
         """Busca as movimentações de um processo.
 
