@@ -65,49 +65,39 @@ if resultado_busca['resposta']['status'] == 'SUCESSO':
 
 ```py
 from escavador import CriterioOrdenacao, Ordem
-from escavador.exceptions import FailedRequest
 from escavador.v2 import Processo
 
 busca = Processo.por_oab(numero=12345,
                          estado="SP",
                          ordena_por=CriterioOrdenacao.INICIO,
-                         ordem=Ordem.DESC,
-                         qtd=1)
+                         ordem=Ordem.DESC)
 
-if isinstance(busca, FailedRequest):
-    # É possível imprimir ou elevar o erro
-    # print(busca)
-    raise busca
-elif not busca:
-    print("Nenhum processo encontrado")
-else:
+try:
     processo = busca.pop()
-    print(f"{processo.numero_cnj} - {processo.fontes[0].descricao}:")
-    print(f"Iniciado em {processo.ano_inicio}, última movimentação em {processo.data_ultima_movimentacao}.")
+    print(f"{processo.numero_cnj}: {processo.titulo_polo_ativo} X {processo.titulo_polo_passivo}")
+except AttributeError:
+    # Tentou dar .pop() em um FailedRequest.
+    print(busca) # É possível imprimir ou elevar o erro.
 ```
 
 ### Buscando as movimentações de um processo usando a API V2
 [Consultando movimentações de um processo](https://api.escavador.com/v2/docs/#movimentaes-de-um-processo)
 
 ```py
-from escavador import SiglaTribunal
-from escavador.exceptions import FailedRequest
 from escavador.v2 import Processo
 
-busca = Processo.movimentacoes(numero_processo="0078700-86.2008.5.17.0009", tribunais=[SiglaTribunal.TJPE], qtd=100)
+resultado = Processo.movimentacoes(numero_processo="0000000-00.0000.0.00.0000")
 
-if isinstance(busca, FailedRequest):
-    # É possível imprimir ou elevar o erro
-    # print(busca)
-    raise busca
-elif not busca:
-    print("Nenhuma movimentação encontrada")
-
-else:
-    for movimentacao in busca:
+try:
+    for movimentacao in resultado:
         print(f"{movimentacao.data} - {movimentacao.tipo}:")
         print(f"{movimentacao.conteudo}")
         print()
+    
+    mais_movimentacoes = resultado[0].continuar_busca()
+except TypeError:
+    # Não é possível iterar sobre FailedRequest.
+    print(resultado) # É possível imprimir ou elevar o erro.
 ```
 
 ### Criando Monitoramentos na API V1
@@ -116,8 +106,8 @@ from escavador import MonitoramentoTribunal, MonitoramentoDiario, TiposMonitoram
 
 # Monitoramento nos sisteams dos Tribunais
 monitoramento_tribunal = MonitoramentoTribunal().criar(tipo_monitoramento=TiposMonitoramentosTribunal.UNICO,
-                                                       valor="8809061-58.2022.8.10.3695",
-                                                       tribunal='TJSP',
+                                                       valor="0000000-00.0000.0.00.0000",
+                                                       tribunal="TJSP",
                                                        frequencia=FrequenciaMonitoramentoTribunal.SEMANAL)
 
 # Monitoramento em Diários Oficiais
@@ -133,6 +123,7 @@ tribunais_disponiveis = Tribunal().sistemas_disponiveis()
 
 ### Módulos Disponíveis e Referência da API
 
+#### V1:
 | Módulo                | Link API                                                             |
 |-----------------------|----------------------------------------------------------------------|
 | Busca                 | https://api.escavador.com/v1/docs/#busca                             |
@@ -148,4 +139,10 @@ tribunais_disponiveis = Tribunal().sistemas_disponiveis()
 | Pessoa                | https://api.escavador.com/v1/docs/#pessoas                           |
 | Tribunal              | https://api.escavador.com/v1/docs/#tribunais                         |
 | Saldo                 | https://api.escavador.com/v1/docs/#saldo-da-api                      |
-| v2.Processo      | https://api.escavador.com/v2/docs/#processos                         |
+
+
+#### V2:
+
+| Módulo                | Link API                                                             |
+|-----------------------|----------------------------------------------------------------------|
+| v2.Processo           | https://api.escavador.com/v2/docs/#processos                         |
