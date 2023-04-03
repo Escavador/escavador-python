@@ -92,7 +92,7 @@ elif resultado_busca['resposta']['status'] == 'PENDENTE':
     id_async = resultado_busca['resposta']['id']
 ```
 
-É recomendado que se utilize o callback ao invés de continuamente consultar o resultado de uma busca assíncrona. É possível consultar os seus callbacks cadastrados em massa utilizando a classe `Callback`.
+É recomendado que se utilize o callback ao invés de continuamente consultar o resultado. Entretanto, é possível consultar em massa os seus callbacks cadastrados utilizando a classe `Callback`.
 
 O módulo `server` da biblioteca `http` oferece uma interface simples para receber callbacks. Basta definir o recebimento de requests `POST` conformando com [a documentação do conteúdo dos callbacks](https://api.escavador.com/v1/docs/#detalhes-dos-callbacks).
 
