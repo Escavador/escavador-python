@@ -3,8 +3,8 @@ from typing import Optional, Dict, Union, List, TYPE_CHECKING
 
 from escavador.exceptions import FailedRequest
 from escavador.v2.resources.tribunal import Tribunal
-from resources.helpers.consume_cursor import consumir_cursor, json_to_class
-from resources.helpers.endpoint import DataEndpoint
+from escavador.resources.helpers.consume_cursor import consumir_cursor, json_to_class
+from escavador.resources.helpers.endpoint import DataEndpoint
 
 if TYPE_CHECKING:
     from escavador.v2 import Processo
