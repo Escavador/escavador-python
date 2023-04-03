@@ -39,7 +39,7 @@ class Callback(Endpoint):
     def marcarRecebido(self, ids: List) -> Dict:
         """
         Marca callbacks como recebidos
-        :param ids:lista com ids dos callbacks que serão marcardos como recebidos
+        :param ids:lista com ids dos callbacks que serão marcados como recebidos
         :return: Dict
         """
 
