@@ -33,34 +33,8 @@ Para obter seu token da API, acesse o [painel de tokens](https://api.escavador.c
 
 ## Exemplos
 
-### Buscando um processo assíncronamente usando a API V1
-[Buscando informações do processo no sistema do Tribunal](https://api.escavador.com/v1/docs/#pesquisar-processo-no-site-do-tribunal-assncrono) (Assíncrono)
-```py
-from escavador import Processo, BuscaAssincrona
-import time
-
-resultado_busca = Processo().informacoes_no_tribunal("0078700-86.2008.5.17.0009")  # Gera uma busca assíncrona
-
-while resultado_busca['resposta']['status'] == 'PENDENTE':
-    # Aguarda para checar novamente
-    print("Está pendente")
-    time.sleep(20)
-
-    id_async = resultado_busca['resposta']['id']
-    resultado_busca = BuscaAssincrona().por_id(id_async)
-
-# Checa a saida do processso
-if resultado_busca['resposta']['status'] == 'ERRO':
-    print("Deu erro, tentar novamente")
-    exit(0)
-
-if resultado_busca['resposta']['status'] == 'SUCESSO':
-    busca_async = resultado_busca['resposta']
-    for instancia in busca_async['resposta']['instancias']:
-        print(instancia['assunto'])  # Imprime os assuntos das instâncias do processo
-```
-
 ### Consultando o processo mais recente de um advogado usando a API V2
+
 [Consultando processos de um advogado usando sua OAB](https://api.escavador.com/v2/docs/#processos-de-um-advogado-por-oab)
 
 ```py
@@ -89,18 +63,62 @@ from escavador.v2 import Processo
 resultado = Processo.movimentacoes(numero_processo="0000000-00.0000.0.00.0000")
 
 try:
-    for movimentacao in resultado:
-        print(f"{movimentacao.data} - {movimentacao.tipo}:")
-        print(f"{movimentacao.conteudo}")
-        print()
-    
-    mais_movimentacoes = resultado[0].continuar_busca()
+    while resultado:
+        for movimentacao in resultado:
+            print(f"{movimentacao.data} - {movimentacao.tipo}:")
+            print(f"{movimentacao.conteudo}")
+            print()
+        resultado = resultado[0].continuar_busca() # Solicita mais movimentações.
+
 except TypeError:
     # Não é possível iterar sobre FailedRequest.
     print(resultado) # É possível imprimir ou elevar o erro.
 ```
 
+### Solicitar busca assíncrona de processo usando a API V1
+[Buscando informações do processo no sistema do Tribunal](https://api.escavador.com/v1/docs/#pesquisar-processo-no-site-do-tribunal-assncrono) (Assíncrono)
+```py
+from escavador import Processo
+
+resultado_busca = Processo().informacoes_no_tribunal("0000000-00.0000.0.00.0000")  # Gera uma busca assíncrona
+
+if resultado_busca['resposta']['status'] == 'SUCESSO':
+    for instancia in resultado_busca['resposta']['resposta']['instancias']:
+        print(instancia['assunto'])
+
+elif resultado_busca['resposta']['status'] == 'PENDENTE':
+    # O ID de uma busca assíncrona pode ser usado para consultar seu status 
+    # ou identificar a requisição originária ao receber o callback no seu servidor.
+    id_async = resultado_busca['resposta']['id']
+```
+
+É recomendado que se utilize o callback ao invés de continuamente consultar o resultado de uma busca assíncrona. É possível consultar os seus callbacks cadastrados em massa utilizando a classe `Callback`.
+
+O módulo `server` da biblioteca `http` oferece uma interface simples para receber callbacks. Basta definir o recebimento de requests `POST` conformando com [a documentação do conteúdo dos callbacks](https://api.escavador.com/v1/docs/#detalhes-dos-callbacks).
+
+### Consultar manualmente o status de uma busca assíncrona previamente solicitada
+
+Embora não seja recomendado devido à possibilidade de saturação do seu limite de requisições por minuto, é possível consultar periodicamente o status de uma busca assíncrona.
+
+```py
+from escavador import BuscaAssincrona
+from time import sleep
+
+while True:
+    resultado_busca = BuscaAssincrona().por_id(id_async)
+    if resultado_busca['resposta']['status'] != 'PENDENTE':
+        break
+    sleep(15)
+
+if resultado_busca['resposta']['status'] == 'SUCESSO':
+    # Os dados consultados estarão disponíveis no campo ['resposta']['resposta']
+    pass
+elif resultado_busca['resposta']['status'] == 'ERRO':
+    print("Algo deu errado, tente novamente mais tarde.")
+```
+
 ### Criando Monitoramentos na API V1
+
 ```py
 from escavador import MonitoramentoTribunal, MonitoramentoDiario, TiposMonitoramentosTribunal, TiposMonitoramentosDiario,FrequenciaMonitoramentoTribunal
 
@@ -115,6 +133,7 @@ monitoramento_diario = MonitoramentoDiario().criar(TiposMonitoramentosDiario.PRO
 ```
 
 ### Consultando os Tribunais e sistemas disponíveis para a API V1
+
 ```py
 from escavador import Tribunal
 
