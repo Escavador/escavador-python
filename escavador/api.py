@@ -5,7 +5,7 @@ import escavador
 from escavador.exceptions import ApiKeyNotFoundException
 from urllib import parse
 from dotenv import load_dotenv
-from importlib.metadata import version
+from importlib_metadata import version
 
 load_dotenv()
 

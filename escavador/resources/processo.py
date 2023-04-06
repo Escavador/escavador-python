@@ -1,8 +1,8 @@
-from __future__ import annotations
+# from __future__ import annotations
 from escavador.resources.helpers.endpoint import Endpoint
 from escavador.resources.helpers.enums import TiposBusca
 from escavador.resources.helpers.documento import Documento
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Union
 
 
 class Processo(Endpoint):
@@ -119,7 +119,7 @@ class Processo(Endpoint):
         return self.methods.post(f"tribunal/{origem.upper()}/busca-por-oab/async", data=data)
 
     def busca_em_lote_no_tribunal(self, tipo_busca: TiposBusca, origens: List[str], *, send_callback: Optional[bool] = None,
-                      numero_oab: Optional[str | int] = None, estado_oab: Optional[str] = None,
+                      numero_oab: Union[str, int, None] = None, estado_oab: Optional[str] = None,
                       numero_documento: Optional[str] = None, nome: Optional[str] = None) -> Dict:
         """
         Cria buscas do mesmo tipo para todos os tribunais enviados
@@ -147,7 +147,7 @@ class Processo(Endpoint):
 
         return self.methods.post("tribunal/async/lote", data=data)
 
-    def processos_por_oab_em_diarios(self, estado_oab: str, numero_oab: str | int, *, page: Optional[int] = None) -> Dict:
+    def processos_por_oab_em_diarios(self, estado_oab: str, numero_oab: Union[str, int], *, page: Optional[int] = None) -> Dict:
         """
         Busca processos que estão nos Diários Oficiais do Escavador que estão relacionados ao OAB informado
         :param page: número da página
