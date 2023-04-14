@@ -1,5 +1,3 @@
-import json
-
 from escavador.resources.helpers.endpoint import Endpoint
 from escavador.resources.helpers.documento import Documento
 from typing import Optional, Dict, List
