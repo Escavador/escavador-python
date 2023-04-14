@@ -1,6 +1,6 @@
 from escavador.resources.helpers.endpoint import Endpoint
 from escavador.resources.helpers.documento import Documento
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 from datetime import  datetime
 
 
@@ -8,17 +8,20 @@ class Jurisprudencia(Endpoint):
 
     def filtros_busca_jurisprudencia(self) -> Dict:
         """
-        Lista de filtros disponíveis para a busca de jurisprudências
+        Lista de filtros disponíveis para a busca de jurisprudências,
+        Para cada item da lista de filtros, o campo filtro representa a chave (key) da query.
+        No campo opcoes, listamos todas as opções de valor para aquele filtro, e, para cada opção,
+         o campo valor representa o valor (value) da query.
         :return: Dict
         """
         return self.methods.get("jurisprudencias")
 
     def busca_por_jurisprudencias(self, termo: str, *, ordena_por: Optional[str] = None, de_data: Optional[datetime] = None,
                                   ate_data: Optional[datetime] = None, pagina: Optional[int] = None,
-                                  filtro: Optional[str] = None) -> Dict:
+                                  filtros: Optional[List[Dict]] = None) -> Dict:
         """
         Traz a lista paginada dos itens encontrados na busca.
-        :param filtro: Um dos filtros listados pelo método filtros_busca_jurisprudencia()
+        :param filtros: filtros listados pelo método filtros_busca_jurisprudencia()
         :param pagina: lista os itens de uma página
         :param ate_data: filtra os resultados com data de julgamento limite até a data informada
         :param de_data: filtra os resultados com data de julgamento a partir da data informada
@@ -33,8 +36,11 @@ class Jurisprudencia(Endpoint):
             'de_data': de_data.strftime("%Y%m%d") if de_data else None,
             'ate_data': ate_data.strftime("%Y%m%d") if ate_data else None,
             'pagina': pagina,
-            'filtro': filtro
         }
+
+        if filtros:
+            for filtro in filtros:
+                data.update(filtro)
 
         return self.methods.get('jurisprudencias/busca', data=data)
 
