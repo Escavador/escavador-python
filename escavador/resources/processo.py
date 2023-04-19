@@ -229,7 +229,7 @@ class Processo(Endpoint):
         """
         conteudo = self.methods.get(link_pdf)
 
-        if conteudo['sucesso'] is True:
-            return Documento.get_pdf(conteudo, path, nome_arquivo)
-        else:
+        if type(conteudo) is dict:
             return conteudo
+        else:
+            return Documento.get_pdf(conteudo, path, nome_arquivo)

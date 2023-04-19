@@ -36,7 +36,7 @@ class DiarioOficial(Endpoint):
         """
         conteudo = self.methods.get(f"diarios/{id_diario}/pdf/pagina/{page}/baixar")
 
-        if conteudo['sucesso'] is True:
-            return Documento.get_pdf(conteudo, path, nome_arquivo)
-        else:
+        if type(conteudo) is dict:
             return conteudo
+        else:
+            return Documento.get_pdf(conteudo, path, nome_arquivo)
