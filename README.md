@@ -46,12 +46,9 @@ busca = Processo.por_oab(numero=12345,
                          ordena_por=CriterioOrdenacao.INICIO,
                          ordem=Ordem.DESC)
 
-try:
-    processo = busca.pop()
-    print(f"{processo.numero_cnj}: {processo.titulo_polo_ativo} X {processo.titulo_polo_passivo}")
-except AttributeError:
-    # Tentou dar .pop() em um FailedRequest.
-    print(busca) # É possível imprimir ou elevar o erro.
+processo = busca.pop()
+
+print(f"{processo.numero_cnj}: {processo.titulo_polo_ativo} X {processo.titulo_polo_passivo}")
 ```
 
 ### Buscando as movimentações de um processo usando a API V2
@@ -60,19 +57,14 @@ except AttributeError:
 ```py
 from escavador.v2 import Processo
 
-resultado = Processo.movimentacoes(numero_processo="0000000-00.0000.0.00.0000")
+resultado = Processo.movimentacoes(numero_cnj="0000000-00.0000.0.00.0000")
 
-try:
-    while resultado:
-        for movimentacao in resultado:
-            print(f"{movimentacao.data} - {movimentacao.tipo}:")
-            print(f"{movimentacao.conteudo}")
-            print()
-        resultado = resultado[0].continuar_busca() # Solicita mais movimentações.
-
-except TypeError:
-    # Não é possível iterar sobre FailedRequest.
-    print(resultado) # É possível imprimir ou elevar o erro.
+while resultado:
+    for movimentacao in resultado:
+        print(f"{movimentacao.data} - {movimentacao.tipo}:")
+        print(f"{movimentacao.conteudo}")
+        print()
+    resultado = resultado[0].continuar_busca() # Solicita mais movimentações.
 ```
 
 ### Solicitar busca assíncrona de processo usando a API V1
