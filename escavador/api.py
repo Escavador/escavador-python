@@ -24,19 +24,29 @@ class Api(object):
     )
 
     def __init__(self, version):
+        global __APIKEY__
         if version not in SUPPORTED_VERSIONS:
             raise ValueError("Versão da API inválida")
 
         self.base_url = f"https://api.escavador.com/api/v{version}/"
 
-        self.api_key = __APIKEY__
-        if self.api_key is None:
+        if __APIKEY__ is None:
             try:
-                self.api_key = os.environ["ESCAVADOR_API_KEY"]
-            except KeyError as e:
-                raise ApiKeyNotFoundException(
-                    "Nenhuma chave da API foi informada"
-                ) from e
+                __APIKEY__ = os.environ["ESCAVADOR_API_KEY"]
+            except KeyError:
+                pass
+
+    @property
+    def api_key(self) -> str:
+        global __APIKEY__
+        if __APIKEY__ is None:
+            raise ApiKeyNotFoundException("Nenhuma chave da API foi informada")
+        return __APIKEY__
+
+    @api_key.setter
+    def api_key(self, value: str):
+        global __APIKEY__
+        __APIKEY__ = value
 
     def headers(self) -> Dict:
         """
