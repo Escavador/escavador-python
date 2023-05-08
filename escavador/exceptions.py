@@ -30,6 +30,8 @@ class FailedRequest(Exception):
         self.code = code
         self.message = message or error  # unauthenticated e "créditos insuficientes" tem estrutura diferente
         self.errors = errors
+        if self.status == 401:
+            raise self
 
     def __str__(self):
         return f"Erro {self.code} ({self.status}): {self.message}"
