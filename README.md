@@ -33,6 +33,22 @@ Para obter seu token da API, acesse o [painel de tokens](https://api.escavador.c
 
 ## Exemplos
 
+### Consultando os processos de uma empresa pelo CNPJ usando a API V2
+
+[Processos de um envolvido pelo seu nome ou documento](https://api.escavador.com/v2/docs/#processos-de-envolvidos-por-nome-ou-cpfcnpj)
+
+```py
+from escavador.v2 import Processo
+
+processos = Processo.por_cnpj(cnpj="00000000000000") # Também aceita o formato 00.000.000/0000-00)
+
+for processo in processos:
+    print(f"{processo.numero_cnj}:")
+    print(f"Fonte: {processo.fontes[0].nome}")
+    print(f"Data de início: {processo.data_inicio}")
+    print(f"Última movimentação: {processo.data_ultima_movimentacao}")
+```
+
 ### Consultando o processo mais recente de um advogado usando a API V2
 
 [Consultando processos de um advogado usando sua OAB](https://api.escavador.com/v2/docs/#processos-de-um-advogado-por-oab)
@@ -52,6 +68,7 @@ print(f"{processo.numero_cnj}: {processo.titulo_polo_ativo} X {processo.titulo_p
 ```
 
 ### Buscando as movimentações de um processo usando a API V2
+
 [Consultando movimentações de um processo](https://api.escavador.com/v2/docs/#movimentaes-de-um-processo)
 
 ```py
@@ -65,6 +82,27 @@ while resultado:
         print(f"{movimentacao.conteudo}")
         print()
     resultado = resultado[0].continuar_busca() # Solicita mais movimentações.
+```
+
+### Consultando a última movimentação dos processos mais recentes de uma pessoa pelo nome usando a API V2
+
+[Processos de um envolvido pelo seu nome ou documento](https://api.escavador.com/v2/docs/#processos-de-envolvidos-por-nome-ou-cpfcnpj)
+
+```py
+from escavador import CriterioOrdenacao, Ordem
+from escavador.v2 import Processo
+
+processos = Processo.por_nome(nome="Fulano de Tal da Silva",
+                              ordena_por=CriterioOrdenacao.INICIO,
+                              ordem=Ordem.DESC)
+
+for processo in processos:
+    print(f"{processo.numero_cnj}:")
+    print(f"Fonte: {processo.fontes[0].nome}")
+    print(f"Data de início: {processo.data_inicio}")
+    movimentacoes = Processo.movimentacoes(numero_cnj=processo.numero_cnj)
+    if movimentacoes:
+        print(f"Última movimentação: {movimentacoes[0].conteudo}")
 ```
 
 ### Solicitar busca assíncrona de processo usando a API V1
