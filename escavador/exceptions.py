@@ -20,10 +20,15 @@ class FailedRequest(Exception):
     message: str
     errors: Dict
 
-    def __init__(self, status: int, code: str = "", message: str = "", errors: Optional[Dict] = None, **kwargs):
+    def __init__(self, status: int,
+                 code: str = "",
+                 message: str = "",
+                 errors: Dict = {},
+                 error: str = "",
+                 **kwargs):
         self.status = status
         self.code = code
-        self.message = message
+        self.message = message or error  # unauthenticated e "créditos insuficientes" tem estrutura diferente
         self.errors = errors
 
     def __str__(self):
