@@ -40,8 +40,9 @@ Para obter seu token da API, acesse o [painel de tokens](https://api.escavador.c
 ```py
 from escavador.v2 import Processo
 
-processos = Processo.por_cnpj(cnpj="00000000000000") # Também aceita o formato 00.000.000/0000-00)
+envolvido, processos = Processo.por_cnpj(cnpj="00000000000000")  # Também aceita o formato 00.000.000/0000-00)
 
+print(f"Processos da empresa {envolvido.nome}:")
 for processo in processos:
     print(f"{processo.numero_cnj}:")
     print(f"Fonte: {processo.fontes[0].nome}")
@@ -92,9 +93,9 @@ while resultado:
 from escavador import CriterioOrdenacao, Ordem
 from escavador.v2 import Processo
 
-processos = Processo.por_nome(nome="Fulano de Tal da Silva",
-                              ordena_por=CriterioOrdenacao.INICIO,
-                              ordem=Ordem.DESC)
+envolvido, processos = Processo.por_nome(nome="Fulano de Tal da Silva",
+                                         ordena_por=CriterioOrdenacao.INICIO,
+                                         ordem=Ordem.DESC)
 
 for processo in processos:
     print(f"{processo.numero_cnj}:")
