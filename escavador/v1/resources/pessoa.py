@@ -4,6 +4,9 @@ from typing import Optional, Dict
 
 class Pessoa(Endpoint):
 
+    def __init__(self):
+        super().__init__(api_version=1)
+
     def por_id(self, id_pessoa: int) -> Dict:
         """
         Retorna dados relacionados a uma pessoa pelo seu identificador.

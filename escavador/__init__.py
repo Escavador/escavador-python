@@ -1,13 +1,33 @@
+"""O SDK em Python da API do Escavador
+
+Documentação disponível:
+
+- API V1 docs: https://api.escavador.com/v1/docs/
+- API V2 docs: https://api.escavador.com/v2/docs/
+- README do SDK: https://github.com/Escavador/escavador-python#readme
+"""
+import escavador.v1
+import escavador.v2
+
+from ratelimit import RateLimitException
+from escavador.exceptions import FailedRequest
+
+from escavador.v1 import (
+    Busca,
+    BuscaAssincrona,
+    Processo,
+    Callback,
+    DiarioOficial,
+    Instituicao,
+    Jurisprudencia,
+    Legislacao,
+    MonitoramentoDiario,
+    MonitoramentoTribunal,
+    Movimentacao,
+    Pessoa,
+    Processo,
+    Saldo,
+    Tribunal
+)
 from escavador.resources import *
-
-__APIKEY__ = None
-
-
-def config(api_key):
-    """
-     Configura a chave da API do escavador
-    :param api_key: o token da API
-    :return:
-    """
-    global __APIKEY__
-    __APIKEY__ = api_key
+from .api import config, __APIKEY__

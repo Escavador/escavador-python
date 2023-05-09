@@ -4,6 +4,9 @@ from typing import Optional, Dict
 
 class Instituicao(Endpoint):
 
+    def __init__(self):
+        super().__init__(api_version=1)
+
     def por_id(self, id_instituicao: int) -> Dict:
         """
         Retorna uma instituição de acordo com seu ID

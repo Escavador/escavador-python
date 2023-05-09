@@ -5,6 +5,9 @@ from escavador.resources.helpers.enums import TiposTermo
 
 class Busca(Endpoint):
 
+    def __init__(self):
+        super().__init__(api_version=1)
+
     def busca_termo(self, termo: str, tipo_termo: TiposTermo, *, limit: Optional[int] = None,
                     page: Optional[int] = None) -> Dict:
         """

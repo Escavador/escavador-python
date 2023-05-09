@@ -1,7 +1,11 @@
 from escavador.resources.helpers.endpoint import Endpoint
 from typing import Dict
 
+
 class Tribunal(Endpoint):
+
+    def __init__(self):
+        super().__init__(api_version=1)
 
     def sistemas_disponiveis(self) -> Dict:
         """

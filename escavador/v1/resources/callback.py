@@ -8,6 +8,9 @@ from escavador.resources.helpers.enums import StatusCallback
 
 class Callback(Endpoint):
 
+    def __init__(self):
+        super().__init__(api_version=1)
+
     def callbacks(self, *, data_maxima: Optional[datetime] = None, data_minima: Optional[datetime] = None,
             evento: Optional[str] = None, item_tipo: Optional[str] = None, item_id: Optional[int] = None,
             status: Optional[StatusCallback]) -> Dict:
@@ -36,7 +39,7 @@ class Callback(Endpoint):
     def marcarRecebido(self, ids: List) -> Dict:
         """
         Marca callbacks como recebidos
-        :param ids:lista com ids dos callbacks que serão marcardos como recebidos
+        :param ids:lista com ids dos callbacks que serão marcados como recebidos
         :return: Dict
         """
 

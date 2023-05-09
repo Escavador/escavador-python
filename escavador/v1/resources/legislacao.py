@@ -5,6 +5,9 @@ from datetime import datetime
 
 class Legislacao(Endpoint):
 
+    def __init__(self):
+        super().__init__(api_version=1)
+
     def filtros_busca_legislacao(self) -> Dict:
         """
         Lista de filtros disponíveis para a busca de Legislação

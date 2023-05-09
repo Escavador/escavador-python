@@ -1,10 +1,13 @@
 from escavador.resources.helpers.endpoint import Endpoint
 from escavador.resources.helpers.documento import Documento
 from typing import Optional, Dict, List
-from datetime import  datetime
+from datetime import datetime
 
 
 class Jurisprudencia(Endpoint):
+
+    def __init__(self):
+        super().__init__(api_version=1)
 
     def filtros_busca_jurisprudencia(self) -> Dict:
         """

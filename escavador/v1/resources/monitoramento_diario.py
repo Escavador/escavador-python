@@ -1,8 +1,11 @@
 from escavador.resources.helpers.endpoint import Endpoint
 from typing import Optional, List, Dict
-from escavador.resources.helpers.enums import TiposMonitoramentosDiario
+from escavador.resources.helpers.enums_v1 import TiposMonitoramentosDiario
 
 class MonitoramentoDiario(Endpoint):
+
+    def __init__(self):
+        super().__init__(api_version=1)
 
     def origens(self, id_monitoramento: int) -> Dict:
         """
