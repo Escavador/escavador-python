@@ -111,7 +111,7 @@ for processo in processos:
 ```py
 from escavador import Processo
 
-resultado_busca = Processo().informacoes_no_tribunal("0000000-00.0000.0.00.0000")  # Gera uma busca assíncrona
+resultado_busca = Processo.informacoes_no_tribunal("0000000-00.0000.0.00.0000")  # Gera uma busca assíncrona
 
 if resultado_busca['resposta']['status'] == 'SUCESSO':
     for instancia in resultado_busca['resposta']['resposta']['instancias']:
@@ -136,7 +136,7 @@ from escavador import BuscaAssincrona
 from time import sleep
 
 while True:
-    resultado_busca = BuscaAssincrona().por_id(id_async)
+    resultado_busca = BuscaAssincrona.por_id(id_async)
     if resultado_busca['resposta']['status'] != 'PENDENTE':
         break
     sleep(15)
@@ -154,13 +154,13 @@ elif resultado_busca['resposta']['status'] == 'ERRO':
 from escavador import MonitoramentoTribunal, MonitoramentoDiario, TiposMonitoramentosTribunal, TiposMonitoramentosDiario,FrequenciaMonitoramentoTribunal
 
 # Monitoramento nos sisteams dos Tribunais
-monitoramento_tribunal = MonitoramentoTribunal().criar(tipo_monitoramento=TiposMonitoramentosTribunal.UNICO,
+monitoramento_tribunal = MonitoramentoTribunal.criar(tipo_monitoramento=TiposMonitoramentosTribunal.UNICO,
                                                        valor="0000000-00.0000.0.00.0000",
                                                        tribunal="TJSP",
                                                        frequencia=FrequenciaMonitoramentoTribunal.SEMANAL)
 
 # Monitoramento em Diários Oficiais
-monitoramento_diario = MonitoramentoDiario().criar(TiposMonitoramentosDiario.PROCESSO, processo_id=2, origens_ids=[2,4,6])
+monitoramento_diario = MonitoramentoDiario.criar(TiposMonitoramentosDiario.PROCESSO, processo_id=2, origens_ids=[2,4,6])
 ```
 
 ### Consultando os Tribunais e sistemas disponíveis para a API V1
@@ -168,7 +168,7 @@ monitoramento_diario = MonitoramentoDiario().criar(TiposMonitoramentosDiario.PRO
 ```py
 from escavador import Tribunal
 
-tribunais_disponiveis = Tribunal().sistemas_disponiveis()
+tribunais_disponiveis = Tribunal.sistemas_disponiveis()
 ```
 
 ### Módulos Disponíveis e Referência da API
