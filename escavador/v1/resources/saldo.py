@@ -1,15 +1,16 @@
-from escavador.resources.helpers.endpoint import Endpoint
+from escavador.resources.helpers.endpoint import EndpointV1
 from typing import Dict
 
 
-class Saldo(Endpoint):
+class Saldo(EndpointV1):
 
     def __init__(self):
-        super().__init__(api_version=1)
+        super().__init__()
 
-    def quantidade(self) -> Dict:
+    @classmethod
+    def quantidade(cls) -> Dict:
         """
         Retorna a quantidade de créditos do usuário
         :return: Dict
         """
-        return self.methods.get("quantidade-creditos")
+        return cls.methods.get("quantidade-creditos")
