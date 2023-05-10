@@ -11,6 +11,10 @@ class Endpoint(object):
             self.methods = Method(api_version)
 
 
+class EndpointV1(Endpoint):
+    methods = Method(api_version=1)
+
+
 class DataEndpoint(Endpoint):
     """Um endpoint que não precisa ser instanciado e também representa um objeto retornado pela API
 
