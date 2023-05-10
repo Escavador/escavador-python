@@ -1,15 +1,16 @@
-from escavador.resources.helpers.endpoint import Endpoint
+from escavador.resources.helpers.endpoint import EndpointV1
 from escavador.resources.helpers.enums_v1 import TiposBusca
 from escavador.resources.helpers.documento import Documento
 from typing import Optional, List, Dict, Union
 
 
-class Processo(Endpoint):
+class Processo(EndpointV1):
 
     def __init__(self):
-        super().__init__(api_version=1)
+        super().__init__()
 
-    def informacoes_no_tribunal(self, numero_unico: str, *, send_callback: Optional[bool] = None,
+    @classmethod
+    def informacoes_no_tribunal(cls, numero_unico: str, *, send_callback: Optional[bool] = None,
                            wait: Optional[bool] = None,
                            autos: Optional[bool] = None, documentos_publicos:  Optional[bool] = None,
                            usuario: Optional[str] = None, senha: Optional[str] = None,
@@ -43,9 +44,10 @@ class Processo(Endpoint):
             'tentativas': tentativas
         }
 
-        return self.methods.post(f"processo-tribunal/{numero_unico}/async", data=data)
+        return cls.methods.post(f"processo-tribunal/{numero_unico}/async", data=data)
 
-    def processos_por_nome_no_tribunal(self, origem: str, nome: str, *, send_callback: Optional[bool] = None,
+    @classmethod
+    def processos_por_nome_no_tribunal(cls, origem: str, nome: str, *, send_callback: Optional[bool] = None,
                               wait: Optional[bool] = None, permitir_parcial: Optional[bool] = None,
                               tentativas: Optional[int] = None) -> Dict:
         """
@@ -67,9 +69,10 @@ class Processo(Endpoint):
             'tentativas': tentativas
         }
 
-        return self.methods.post(f"tribunal/{origem.upper()}/busca-por-nome/async", data=data)
+        return cls.methods.post(f"tribunal/{origem.upper()}/busca-por-nome/async", data=data)
 
-    def processos_por_documento_no_tribunal(self, origem: str, numero_documento: str, *, send_callback: Optional[bool] = None,
+    @classmethod
+    def processos_por_documento_no_tribunal(cls, origem: str, numero_documento: str, *, send_callback: Optional[bool] = None,
                                    wait: Optional[bool] = None, permitir_parcial: Optional[bool] = None,
                                    tentativas: Optional[int] = None) -> Dict:
         """
@@ -91,9 +94,10 @@ class Processo(Endpoint):
             'tentativas': tentativas
         }
 
-        return self.methods.post(f"tribunal/{origem.upper()}/busca-por-documento/async", data=data)
+        return cls.methods.post(f"tribunal/{origem.upper()}/busca-por-documento/async", data=data)
 
-    def processos_por_oab_no_tribunal(self, origem: str, numero_oab: str, estado_oab: str, *,
+    @classmethod
+    def processos_por_oab_no_tribunal(cls, origem: str, numero_oab: str, estado_oab: str, *,
                                    send_callback: Optional[bool] = None, wait: Optional[bool] = None,
                                    permitir_parcial: Optional[bool] = None,
                                    tentativas: Optional[int] = None) -> Dict:
@@ -118,9 +122,10 @@ class Processo(Endpoint):
             'tentativas': tentativas
         }
 
-        return self.methods.post(f"tribunal/{origem.upper()}/busca-por-oab/async", data=data)
+        return cls.methods.post(f"tribunal/{origem.upper()}/busca-por-oab/async", data=data)
 
-    def busca_em_lote_no_tribunal(self, tipo_busca: TiposBusca, origens: List[str], *, send_callback: Optional[bool] = None,
+    @classmethod
+    def busca_em_lote_no_tribunal(cls, tipo_busca: TiposBusca, origens: List[str], *, send_callback: Optional[bool] = None,
                       numero_oab: Union[str, int, None] = None, estado_oab: Optional[str] = None,
                       numero_documento: Optional[str] = None, nome: Optional[str] = None) -> Dict:
         """
@@ -147,9 +152,10 @@ class Processo(Endpoint):
             'send_callback': send_callback
         }
 
-        return self.methods.post("tribunal/async/lote", data=data)
+        return cls.methods.post("tribunal/async/lote", data=data)
 
-    def processos_por_oab_em_diarios(self, estado_oab: str, numero_oab: Union[str, int], *, page: Optional[int] = None) -> Dict:
+    @classmethod
+    def processos_por_oab_em_diarios(cls, estado_oab: str, numero_oab: Union[str, int], *, page: Optional[int] = None) -> Dict:
         """
         Busca processos que estão nos Diários Oficiais do Escavador que estão relacionados ao OAB informado
         :param page: número da página
@@ -162,18 +168,20 @@ class Processo(Endpoint):
             'page': page
         }
 
-        return self.methods.get(f"oab/{estado_oab}/{numero_oab}/processos", data=data)
+        return cls.methods.get(f"oab/{estado_oab}/{numero_oab}/processos", data=data)
 
-    def por_id_em_diarios(self, id_processo: int) -> Dict:
+    @classmethod
+    def por_id_em_diarios(cls, id_processo: int) -> Dict:
         """
         Retorna um processo pelo seu identificador no Escavador.
         :param id_processo: o ID do processo
         :return: Dict
         """
 
-        return self.methods.get(f"processos/{id_processo}")
+        return cls.methods.get(f"processos/{id_processo}")
 
-    def movimentacoes_diario_oficial(self, id_processo: int, *, limit: Optional[int] = None,
+    @classmethod
+    def movimentacoes_diario_oficial(cls, id_processo: int, *, limit: Optional[int] = None,
                                   page: Optional[int] = None) -> Dict:
         """
         Retorna as movimentações de um Processo pelo identificador do processo no Escavador.
@@ -188,9 +196,10 @@ class Processo(Endpoint):
             'page': page
         }
 
-        return self.methods.get(f"processos/{id_processo}/movimentacoes", data=data)
+        return cls.methods.get(f"processos/{id_processo}/movimentacoes", data=data)
 
-    def processo_por_numero_em_diarios(self, numero_unico: str, *, match_exato: Optional[bool] = None) -> Dict:
+    @classmethod
+    def processo_por_numero_em_diarios(cls, numero_unico: str, *, match_exato: Optional[bool] = None) -> Dict:
         """
         Busca processos que estão nos Diários Oficiais do Escavador. e contenham o número único informado.
         :param match_exato: a busca será feita pelo número inteiro do processo pesquisado.
@@ -202,9 +211,10 @@ class Processo(Endpoint):
             'match_exato': match_exato
         }
 
-        return self.methods.get(f"processos/numero/{numero_unico}", data=data)
+        return cls.methods.get(f"processos/numero/{numero_unico}", data=data)
 
-    def get_envolvidos_processo(self, id_processo: int, *, limit: Optional[int] = None,
+    @classmethod
+    def get_envolvidos_processo(cls, id_processo: int, *, limit: Optional[int] = None,
                                 page: Optional[int] = None) -> Dict:
         """
        Retorna os envolvidos de um Processo pelo identificador do processo no Escavador.
@@ -219,9 +229,10 @@ class Processo(Endpoint):
             'page': page
         }
 
-        return self.methods.get(f"processos/{id_processo}/envolvidos", data=data)
+        return cls.methods.get(f"processos/{id_processo}/envolvidos", data=data)
 
-    def get_pdf(self, link_pdf: str, path: str, nome_arquivo: str) -> Dict:
+    @classmethod
+    def get_pdf(cls, link_pdf: str, path: str, nome_arquivo: str) -> Dict:
         """
         Baixa um pdf de autos de acordo com seu link e salva no caminho enviado, com o nome enviado
         :param nome_arquivo: nome do arquivo a ser criado
@@ -229,7 +240,7 @@ class Processo(Endpoint):
         :param path: caminho onde o pdf será salvo
         :return: Dict
         """
-        conteudo = self.methods.get(link_pdf)
+        conteudo = cls.methods.get(link_pdf)
 
         if type(conteudo) is dict:
             return conteudo
