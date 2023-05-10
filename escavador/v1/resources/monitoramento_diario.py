@@ -7,6 +7,7 @@ class MonitoramentoDiario(EndpointV1):
 
     def __init__(self):
         super().__init__()
+
     @classmethod
     def origens(cls, id_monitoramento: int) -> Dict:
         """
@@ -16,6 +17,7 @@ class MonitoramentoDiario(EndpointV1):
         """
 
         return cls.methods.get(f"monitoramentos/{id_monitoramento}/origens")
+
     @classmethod
     def criar(cls, tipo_monitoramento: TiposMonitoramentosDiario, *, termo: Optional[str] = None,
                             origens_ids: Optional[List[int]] = None, processo_id: Optional[int] = None,
@@ -42,6 +44,7 @@ class MonitoramentoDiario(EndpointV1):
         }
 
         return cls.methods.post("monitoramentos", data=data)
+
     @classmethod
     def monitoramentos(cls) -> Dict:
         """
@@ -50,6 +53,7 @@ class MonitoramentoDiario(EndpointV1):
         """
 
         return cls.methods.get("monitoramentos")
+
     @classmethod
     def por_id(cls, id_monitoramento: int) -> Dict:
         """
@@ -59,6 +63,7 @@ class MonitoramentoDiario(EndpointV1):
         """
 
         return cls.methods.get(f"monitoramentos/{id_monitoramento}")
+
     @classmethod
     def editar(cls, id_monitoramento: int, *, variacoes: Optional[List[str]] = None,
                              origens_ids: Optional[List[str]] = None) -> Dict:
@@ -75,6 +80,7 @@ class MonitoramentoDiario(EndpointV1):
         }
 
         return cls.methods.put(f"monitoramentos/{id_monitoramento}", data=data)
+
     @classmethod
     def remover(cls, id_monitoramento: int) -> Dict:
         """
@@ -84,6 +90,7 @@ class MonitoramentoDiario(EndpointV1):
         """
 
         return cls.methods.delete(f"monitoramentos/{id_monitoramento}")
+
     @classmethod
     def aparicoes(cls, id_monitoramento: int) -> Dict:
         """
@@ -93,6 +100,7 @@ class MonitoramentoDiario(EndpointV1):
         """
 
         return cls.methods.get(f"monitoramentos/{id_monitoramento}/aparicoes")
+
     @classmethod
     def test_callback_monitoramento(cls, callback_url: str, *, tipo: Optional[str] = None) -> Dict:
         """
