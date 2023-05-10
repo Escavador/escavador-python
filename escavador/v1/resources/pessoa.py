@@ -1,21 +1,23 @@
-from escavador.resources.helpers.endpoint import Endpoint
+from escavador.resources.helpers.endpoint import EndpointV1
 from typing import Optional, Dict
 
 
-class Pessoa(Endpoint):
+class Pessoa(EndpointV1):
 
     def __init__(self):
-        super().__init__(api_version=1)
+        super().__init__()
 
-    def por_id(self, id_pessoa: int) -> Dict:
+    @classmethod
+    def por_id(cls, id_pessoa: int) -> Dict:
         """
         Retorna dados relacionados a uma pessoa pelo seu identificador.
         :param id_pessoa: o ID da pessoa
         :return: Dict
         """
-        return self.methods.get(f"pessoas/{id_pessoa}")
+        return cls.methods.get(f"pessoas/{id_pessoa}")
 
-    def processos(self, id_pessoa: int, *, limit: Optional[int] = None,
+    @classmethod
+    def processos(cls, id_pessoa: int, *, limit: Optional[int] = None,
                              page: Optional[int] = None) -> Dict:
         """
         Retorna os processos de uma pessoa baseado no ID da pessoa.
@@ -29,4 +31,4 @@ class Pessoa(Endpoint):
             'page': page
         }
 
-        return self.methods.get(f"pessoas/{id_pessoa}/processos", data=data)
+        return cls.methods.get(f"pessoas/{id_pessoa}/processos", data=data)
