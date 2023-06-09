@@ -1,31 +1,34 @@
-from escavador.resources.helpers.endpoint import Endpoint
+from escavador.resources.helpers.endpoint import EndpointV1
 from typing import Optional, Dict
 from escavador.resources.helpers.enums_v1 import TiposMonitoramentosTribunal, FrequenciaMonitoramentoTribunal
 
 
-class MonitoramentoTribunal(Endpoint):
+class MonitoramentoTribunal(EndpointV1):
 
     def __init__(self):
-        super().__init__(api_version=1)
+        super().__init__()
 
-    def monitoramentos(self) -> Dict:
+    @classmethod
+    def monitoramentos(cls) -> Dict:
         """
         Retorna todos os monitoramentos de tribunal do usuário
         :return: Dict
         """
 
-        return self.methods.get("monitoramentos-tribunal")
+        return cls.methods.get("monitoramentos-tribunal")
 
-    def por_id(self, id_monitoramento: int) -> Dict:
+    @classmethod
+    def por_id(cls, id_monitoramento: int) -> Dict:
         """
         Retorna um monitoramento do usuário, de acordo com seu ID
         :param id_monitoramento: o ID do monitoramento
         :return: Dict
         """
 
-        return self.methods.get(f"monitoramentos-tribunal/{id_monitoramento}")
+        return cls.methods.get(f"monitoramentos-tribunal/{id_monitoramento}")
 
-    def editar(self, id_monitoramento: int, *, frequencia: Optional[str] = None) -> Dict:
+    @classmethod
+    def editar(cls, id_monitoramento: int, *, frequencia: Optional[str] = None) -> Dict:
         """
         Edita a frequencia de um monitoramento, de acordo com seu ID
         :param frequencia: a frequencia na qual o processo será monitorado
@@ -35,9 +38,10 @@ class MonitoramentoTribunal(Endpoint):
         data = {
             'frequencia': frequencia
         }
-        return self.methods.put(f"monitoramentos-tribunal/{id_monitoramento}", data=data)
+        return cls.methods.put(f"monitoramentos-tribunal/{id_monitoramento}", data=data)
 
-    def criar(self, tipo_monitoramento: TiposMonitoramentosTribunal, valor: str, *,
+    @classmethod
+    def criar(cls, tipo_monitoramento: TiposMonitoramentosTribunal, valor: str, *,
                             frequencia: Optional[FrequenciaMonitoramentoTribunal] = None,
                             tribunal: Optional[str] = None) -> Dict:
         """
@@ -56,13 +60,14 @@ class MonitoramentoTribunal(Endpoint):
             'frequencia': frequencia.value
         }
 
-        return self.methods.post("monitoramento-tribunal", data=data)
+        return cls.methods.post("monitoramento-tribunal", data=data)
 
-    def remover(self, id_monitoramento: int) -> Dict:
+    @classmethod
+    def remover(cls, id_monitoramento: int) -> Dict:
         """
         Remove um monitoramento de acordo com seu ID
         :param id_monitoramento: o ID do monitoramento
         :return: Dict
         """
 
-        return self.methods.delete(f"monitoramentos-tribunal/{id_monitoramento}")
+        return cls.methods.delete(f"monitoramentos-tribunal/{id_monitoramento}")

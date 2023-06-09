@@ -1,22 +1,25 @@
-from escavador.resources.helpers.endpoint import Endpoint
+from escavador.resources.helpers.endpoint import EndpointV1
 from typing import Optional, List, Dict
 from escavador.resources.helpers.enums_v1 import TiposMonitoramentosDiario
 
-class MonitoramentoDiario(Endpoint):
+
+class MonitoramentoDiario(EndpointV1):
 
     def __init__(self):
-        super().__init__(api_version=1)
+        super().__init__()
 
-    def origens(self, id_monitoramento: int) -> Dict:
+    @classmethod
+    def origens(cls, id_monitoramento: int) -> Dict:
         """
         Retorna os diários oficiais de um monitoramento
         :param id_monitoramento: o ID do monitoramento
         :return: Dict
         """
 
-        return self.methods.get(f"monitoramentos/{id_monitoramento}/origens")
+        return cls.methods.get(f"monitoramentos/{id_monitoramento}/origens")
 
-    def criar(self, tipo_monitoramento: TiposMonitoramentosDiario, *, termo: Optional[str] = None,
+    @classmethod
+    def criar(cls, tipo_monitoramento: TiposMonitoramentosDiario, *, termo: Optional[str] = None,
                             origens_ids: Optional[List[int]] = None, processo_id: Optional[int] = None,
                             variacoes: Optional[List[str]] = None, termos_auxiliares: Optional[List[str]] = None
                             ) -> Dict:
@@ -40,26 +43,29 @@ class MonitoramentoDiario(Endpoint):
             'termos_auxiliares': termos_auxiliares
         }
 
-        return self.methods.post("monitoramentos", data=data)
+        return cls.methods.post("monitoramentos", data=data)
 
-    def monitoramentos(self) -> Dict:
+    @classmethod
+    def monitoramentos(cls) -> Dict:
         """
         Retorna todos os monitoramentos de diários oficiais do usuário
         :return: Dict
         """
 
-        return self.methods.get("monitoramentos")
+        return cls.methods.get("monitoramentos")
 
-    def por_id(self, id_monitoramento: int) -> Dict:
+    @classmethod
+    def por_id(cls, id_monitoramento: int) -> Dict:
         """
         Retorna um monitoramento de diários oficiais de acordo com seu ID
         :param id_monitoramento o ID do monitoramento
         :return: Dict
         """
 
-        return self.methods.get(f"monitoramentos/{id_monitoramento}")
+        return cls.methods.get(f"monitoramentos/{id_monitoramento}")
 
-    def editar(self, id_monitoramento: int, *, variacoes: Optional[List[str]] = None,
+    @classmethod
+    def editar(cls, id_monitoramento: int, *, variacoes: Optional[List[str]] = None,
                              origens_ids: Optional[List[str]] = None) -> Dict:
         """
         Edita os diários oficiais e as variações do termo do monitoramento
@@ -73,27 +79,30 @@ class MonitoramentoDiario(Endpoint):
             'origens_ids': origens_ids
         }
 
-        return self.methods.put(f"monitoramentos/{id_monitoramento}", data=data)
+        return cls.methods.put(f"monitoramentos/{id_monitoramento}", data=data)
 
-    def remover(self, id_monitoramento: int) -> Dict:
+    @classmethod
+    def remover(cls, id_monitoramento: int) -> Dict:
         """
         Remove um monitoramento de acordo com seu ID
         :param id_monitoramento: o ID do monitoramento
         :return: Dict
         """
 
-        return self.methods.delete(f"monitoramentos/{id_monitoramento}")
+        return cls.methods.delete(f"monitoramentos/{id_monitoramento}")
 
-    def aparicoes(self, id_monitoramento: int) -> Dict:
+    @classmethod
+    def aparicoes(cls, id_monitoramento: int) -> Dict:
         """
         Retorna as aparições de um monitoramento pelo identificador do monitoramento.
         :param id_monitoramento: O ID do monitoramento
         :return: Dict
         """
 
-        return self.methods.get(f"monitoramentos/{id_monitoramento}/aparicoes")
+        return cls.methods.get(f"monitoramentos/{id_monitoramento}/aparicoes")
 
-    def test_callback_monitoramento(self, callback_url: str, *, tipo: Optional[str] = None) -> Dict:
+    @classmethod
+    def test_callback_monitoramento(cls, callback_url: str, *, tipo: Optional[str] = None) -> Dict:
         """
         Testa se a ulr de callback do usuário pode receber callbacks com resultados de monitoramentos
         :param callback_url: a url que o callback será enviado
@@ -104,4 +113,4 @@ class MonitoramentoDiario(Endpoint):
             'callback_url': callback_url,
             'tipo': tipo
         }
-        return self.methods.post("monitoramentos/testcallback", data=data)
+        return cls.methods.post("monitoramentos/testcallback", data=data)

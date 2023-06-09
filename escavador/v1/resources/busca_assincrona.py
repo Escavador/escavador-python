@@ -1,24 +1,26 @@
-from escavador.resources.helpers.endpoint import Endpoint
+from escavador.resources.helpers.endpoint import EndpointV1
 from typing import Dict
 
 
-class BuscaAssincrona(Endpoint):
+class BuscaAssincrona(EndpointV1):
 
     def __init__(self):
-        super().__init__(api_version=1)
+        super().__init__()
 
-    def por_id(self, id: int) -> Dict:
+    @classmethod
+    def por_id(cls, id: int) -> Dict:
         """
         Retorna dados de uma busca assíncrona pelo id
         :param id: o ID da busca assíncrona
         :return: Dict
         """
-        return self.methods.get(f"async/resultados/{id}")
+        return cls.methods.get(f"async/resultados/{id}")
 
-    def resultados(self) -> Dict:
+    @classmethod
+    def resultados(cls) -> Dict:
         """
         Consultar todos os resultados das buscas assíncrona
         :return: Dict
         :return:
         """
-        return self.methods.get("async/resultados")
+        return cls.methods.get("async/resultados")

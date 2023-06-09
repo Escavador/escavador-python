@@ -1,22 +1,24 @@
-from escavador.resources.helpers.endpoint import Endpoint
+from escavador.resources.helpers.endpoint import EndpointV1
 from typing import Optional, Dict
 
 
-class Instituicao(Endpoint):
+class Instituicao(EndpointV1):
 
     def __init__(self):
-        super().__init__(api_version=1)
+        super().__init__()
 
-    def por_id(self, id_instituicao: int) -> Dict:
+    @classmethod
+    def por_id(cls, id_instituicao: int) -> Dict:
         """
         Retorna uma instituição de acordo com seu ID
         :argument id_instituicao: o ID da instituição
         :return Dict
         """
 
-        return self.methods.get(f"instituicoes/{id_instituicao}")
+        return cls.methods.get(f"instituicoes/{id_instituicao}")
 
-    def get_processos_instituicao(self, id_instituicao: int, *, limit: Optional[int] = None,
+    @classmethod
+    def get_processos_instituicao(cls, id_instituicao: int, *, limit: Optional[int] = None,
                                   page: Optional[int] = None) -> Dict:
         """
         Retorna os processos de uma instituição
@@ -30,9 +32,10 @@ class Instituicao(Endpoint):
             'limit': limit,
             'page': page
         }
-        return self.methods.get(f"instituicoes/{id_instituicao}/processos", data=data)
+        return cls.methods.get(f"instituicoes/{id_instituicao}/processos", data=data)
 
-    def get_pessoas_instituicao(self, id_instituicao: int, *, limit: Optional[int] = None,
+    @classmethod
+    def get_pessoas_instituicao(cls, id_instituicao: int, *, limit: Optional[int] = None,
                                 page: Optional[int] = None) -> Dict:
         """
         Retorna as pessoas de uma instituição
@@ -46,4 +49,4 @@ class Instituicao(Endpoint):
             'limit': limit,
             'page': page
         }
-        return self.methods.get(f"instituicoes/{id_instituicao}/pessoas", data=data)
+        return cls.methods.get(f"instituicoes/{id_instituicao}/pessoas", data=data)

@@ -1,21 +1,23 @@
-from escavador.resources.helpers.endpoint import Endpoint
+from escavador.resources.helpers.endpoint import EndpointV1
 from typing import Optional, Dict
 from datetime import datetime
 
 
-class Legislacao(Endpoint):
+class Legislacao(EndpointV1):
 
     def __init__(self):
-        super().__init__(api_version=1)
+        super().__init__()
 
-    def filtros_busca_legislacao(self) -> Dict:
+    @classmethod
+    def filtros_busca_legislacao(cls) -> Dict:
         """
         Lista de filtros disponíveis para a busca de Legislação
         :return: Dict
         """
-        return self.methods.get("legislacoes")
+        return cls.methods.get("legislacoes")
 
-    def busca_por_legislacao(self, termo: str, *, ordena_por: Optional[str] = None, de_data: Optional[datetime] = None,
+    @classmethod
+    def busca_por_legislacao(cls, termo: str, *, ordena_por: Optional[str] = None, de_data: Optional[datetime] = None,
                              ate_data: Optional[datetime] = None, pagina: Optional[int] = None,
                              filtro: Optional[str] = None) -> Dict:
         """
@@ -38,9 +40,10 @@ class Legislacao(Endpoint):
             'filtro': filtro
         }
 
-        return self.methods.get('legislacoes/busca', data=data)
+        return cls.methods.get('legislacoes/busca', data=data)
 
-    def get_documento_legislacao(self, tipo_documento: str, id_documento: int) -> Dict:
+    @classmethod
+    def get_documento_legislacao(cls, tipo_documento: str, id_documento: int) -> Dict:
         """
         Traz informações sobre um documento de Legislação
         :param tipo_documento: O tipo do Documento
@@ -48,9 +51,10 @@ class Legislacao(Endpoint):
         :return Dict
         """
 
-        return self.methods.get(f"legislacoes/documento/{tipo_documento}/{id_documento}")
+        return cls.methods.get(f"legislacoes/documento/{tipo_documento}/{id_documento}")
 
-    def fragmentos_texto_legislacao(self, tipo_documento: str, id_documento: int) -> Dict:
+    @classmethod
+    def fragmentos_texto_legislacao(cls, tipo_documento: str, id_documento: int) -> Dict:
         """
         Traz os fragmentos de uma legislação paginados.
         :param tipo_documento: O tipo do Documento
@@ -58,4 +62,4 @@ class Legislacao(Endpoint):
         :return: Dict
         """
 
-        return self.methods.get(f"legislacoes/pdf/{tipo_documento}/{id_documento}/fragmentos")
+        return cls.methods.get(f"legislacoes/pdf/{tipo_documento}/{id_documento}/fragmentos")
