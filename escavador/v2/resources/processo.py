@@ -286,7 +286,7 @@ class Processo(DataEndpoint):
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
         **kwargs,
-    ) -> Union[List["Processo"], FailedRequest]:
+    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], List["Processo"]], FailedRequest]:
         """
         Busca os processos de um advogado a partir de sua carteira da OAB.
 
@@ -320,7 +320,13 @@ class Processo(DataEndpoint):
             conteudo = first_response.get("resposta", {})
             return FailedRequest(status=first_response["http_status"], **conteudo)
 
-        return json_to_class(first_response, Processo.from_json, add_cursor=True)
+        advogado_encontrado = EnvolvidoEncontrado.from_json(
+            first_response["resposta"].get("advogado_encontrado"),
+            last_cursor=first_response["resposta"].get("links", {}).get("next", ""),
+            classe_buscada=Processo,
+        )
+
+        return advogado_encontrado, json_to_class(first_response, Processo.from_json, add_cursor=True)
 
     def continuar_busca(self) -> Union[List["Processo"], FailedRequest]:
         """Retorna mais resultados para a busca que gerou o processo atual.

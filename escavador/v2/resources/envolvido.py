@@ -59,7 +59,7 @@ class EnvolvidoEncontrado:
 
         return cls(
             nome=json_dict["nome"],
-            tipo_pessoa=json_dict["tipo_pessoa"],
+            tipo_pessoa=json_dict.get("tipo_pessoa", "FISICA"), # Se não houver tipo_pessoa, assume-se que é advogado.
             quantidade_processos=json_dict["quantidade_processos"],
             last_valid_cursor=last_cursor,
             _classe_buscada=classe_buscada,
