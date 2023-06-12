@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 
 from typing import Optional, List, Dict, Tuple, Union, TYPE_CHECKING, Type
 
+from escavador import ListaResultados
 from escavador.exceptions import FailedRequest
 from escavador.resources.helpers.enums_v2 import CriterioOrdenacao, Ordem, SiglaTribunal
 from escavador.resources.helpers.endpoint import DataEndpoint
@@ -65,7 +66,7 @@ class EnvolvidoEncontrado:
             _classe_buscada=classe_buscada,
         )
 
-    def continuar_busca(self) -> Union[List["DataEndpoint"], FailedRequest]:
+    def continuar_busca(self) -> Union[ListaResultados["DataEndpoint"], FailedRequest]:
         """Retorna mais resultados para a busca que gerou o objeto atual.
 
         :return: lista contendo a próxima página de resultados, ou FailedRequest em caso de erro

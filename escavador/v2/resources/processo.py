@@ -2,6 +2,7 @@ from functools import total_ordering
 from dataclasses import dataclass, field
 from typing import Optional, Dict, List, Union, Tuple
 
+from escavador.resources import ListaResultados
 from escavador.exceptions import FailedRequest
 from escavador.resources.helpers.endpoint import DataEndpoint
 from escavador.resources.helpers.enums_v2 import Ordem, CriterioOrdenacao, SiglaTribunal
@@ -102,7 +103,7 @@ class Processo(DataEndpoint):
     @staticmethod
     def movimentacoes(
         numero_cnj: str, **kwargs
-    ) -> Union[List[Movimentacao], FailedRequest]:
+    ) -> Union[ListaResultados[Movimentacao], FailedRequest]:
         """
         Busca as movimentações de um processo pelo seu número único do CNJ.
 
@@ -132,7 +133,7 @@ class Processo(DataEndpoint):
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
         **kwargs,
-    ) -> Union[List["Processo"], FailedRequest]:
+    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
         """
         Busca os processos envolvendo uma pessoa ou empresa a partir do seu nome.
 
@@ -140,7 +141,8 @@ class Processo(DataEndpoint):
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
-        :return: uma lista de processos, ou FailedRequest caso ocorra algum erro
+        :return: tupla com os dados do envolvido encontrado e uma lista de processos,
+        ou FailedRequest caso ocorra algum erro
 
         >>> Processo.por_nome("Escavador Engenharia e Construcoes Ltda") # doctest: +SKIP
 
@@ -164,15 +166,18 @@ class Processo(DataEndpoint):
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
         **kwargs,
-    ) -> Union[List["Processo"], FailedRequest]:
+    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
         """
         Busca os processos envolvendo uma pessoa a partir de seu CPF.
+
+        É possível filtrar por tribunal ou ordenar os resultados.
 
         :param cpf: o CPF da pessoa
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
-        :return: uma lista de processos, ou FailedRequest caso ocorra algum erro
+        :return: tupla com os dados do envolvido encontrado e uma lista de processos,
+        ou FailedRequest caso ocorra algum erro
 
         >>> Processo.por_cpf("123.456.789-99") # doctest: +SKIP
 
@@ -196,15 +201,18 @@ class Processo(DataEndpoint):
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
         **kwargs,
-    ) -> Union[List["Processo"], FailedRequest]:
+    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
         """
         Busca os processos envolvendo uma instituição a partir de seu CNPJ.
+
+        É possível filtrar por tribunal e ordenar os resultados.
 
         :param cnpj: o CNPJ da instituição
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
-        :return: uma lista de processos, ou FailedRequest caso ocorra algum erro
+        :return: tupla com os dados do envolvido encontrado e uma lista de processos,
+        ou FailedRequest caso ocorra algum erro
 
         >>> Processo.por_cnpj("07838351002160") # doctest: +SKIP
 
@@ -229,11 +237,11 @@ class Processo(DataEndpoint):
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
         **kwargs,
-    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], List["Processo"]], FailedRequest]:
+    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
         """
         Busca os processos envolvendo uma pessoa ou instituição a partir de seu nome e/ou CPF/CNPJ.
 
-        É possível filtrar
+        É possível filtrar por tribunal e ordenar os resultados.
 
         :param nome: o nome da pessoa ou instituição. Obrigatório se não for informado o CPF/CNPJ
         :param cpf_cnpj: o CPF/CNPJ da pessoa ou instituição. Obrigatório se não for informado o nome
@@ -286,7 +294,7 @@ class Processo(DataEndpoint):
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
         **kwargs,
-    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], List["Processo"]], FailedRequest]:
+    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
         """
         Busca os processos de um advogado a partir de sua carteira da OAB.
 
@@ -328,7 +336,7 @@ class Processo(DataEndpoint):
 
         return advogado_encontrado, json_to_class(first_response, Processo.from_json, add_cursor=True)
 
-    def continuar_busca(self) -> Union[List["Processo"], FailedRequest]:
+    def continuar_busca(self) -> Union[ListaResultados["Processo"], FailedRequest]:
         """Retorna mais resultados para a busca que gerou o processo atual.
 
         :return: lista de processos ou FailedRequest
@@ -342,7 +350,7 @@ class Processo(DataEndpoint):
 
             return json_to_class(resposta, self.from_json, add_cursor=True)
 
-        return []
+        return ListaResultados()
 
 
 @dataclass

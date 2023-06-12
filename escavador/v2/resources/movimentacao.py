@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Optional, Dict, Union, List, TYPE_CHECKING
 
+from escavador.resources import ListaResultados
 from escavador.exceptions import FailedRequest
 from escavador.v2.resources.tribunal import Tribunal
 from escavador.resources.helpers.consume_cursor import consumir_cursor, json_to_class
@@ -88,7 +89,7 @@ class Movimentacao(DataEndpoint):
     @staticmethod
     def movimentacoes(
         processo: Union["Processo", str], **kwargs
-    ) -> Union[List["Movimentacao"], FailedRequest]:
+    ) -> Union[ListaResultados["Movimentacao"], FailedRequest]:
         """Busca as movimentações de um processo.
 
         Alias do método `Processo.movimentacoes`.
