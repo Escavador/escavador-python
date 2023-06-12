@@ -133,7 +133,9 @@ class Processo(DataEndpoint):
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
         **kwargs,
-    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
+    ) -> Union[
+        Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest
+    ]:
         """
         Busca os processos envolvendo uma pessoa ou empresa a partir do seu nome.
 
@@ -166,7 +168,9 @@ class Processo(DataEndpoint):
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
         **kwargs,
-    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
+    ) -> Union[
+        Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest
+    ]:
         """
         Busca os processos envolvendo uma pessoa a partir de seu CPF.
 
@@ -201,7 +205,9 @@ class Processo(DataEndpoint):
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
         **kwargs,
-    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
+    ) -> Union[
+        Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest
+    ]:
         """
         Busca os processos envolvendo uma instituição a partir de seu CNPJ.
 
@@ -237,7 +243,9 @@ class Processo(DataEndpoint):
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
         **kwargs,
-    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
+    ) -> Union[
+        Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest
+    ]:
         """
         Busca os processos envolvendo uma pessoa ou instituição a partir de seu nome e/ou CPF/CNPJ.
 
@@ -294,7 +302,9 @@ class Processo(DataEndpoint):
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
         **kwargs,
-    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
+    ) -> Union[
+        Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest
+    ]:
         """
         Busca os processos de um advogado a partir de sua carteira da OAB.
 
@@ -334,7 +344,9 @@ class Processo(DataEndpoint):
             classe_buscada=Processo,
         )
 
-        return advogado_encontrado, json_to_class(first_response, Processo.from_json, add_cursor=True)
+        return advogado_encontrado, json_to_class(
+            first_response, Processo.from_json, add_cursor=True
+        )
 
     def continuar_busca(self) -> Union[ListaResultados["Processo"], FailedRequest]:
         """Retorna mais resultados para a busca que gerou o processo atual.

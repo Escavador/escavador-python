@@ -4,8 +4,8 @@ class CustomListTypeHint(type):
             item = item.__name__
         return f"{self.__name__}[{item}]"
 
-class ListaResultados(list, metaclass=CustomListTypeHint):
 
+class ListaResultados(list, metaclass=CustomListTypeHint):
     def continuar_busca(self) -> "ListaResultados":
         """Retorna a próxima página de resultados, caso exista."""
         return self[-1].continuar_busca() if len(self) else ListaResultados()
@@ -32,7 +32,9 @@ class ListaResultados(list, metaclass=CustomListTypeHint):
         if not novos_resultados:
             return False
 
-        if len(novos_resultados) > 1 and isinstance(novos_resultados[1], ListaResultados):
+        if len(novos_resultados) > 1 and isinstance(
+            novos_resultados[1], ListaResultados
+        ):
             novos_resultados = novos_resultados[1]
 
         self.extend(novos_resultados)

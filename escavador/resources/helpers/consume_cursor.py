@@ -18,7 +18,9 @@ def consumir_cursor(cursor: str) -> Dict:
     return _methods.get(endpoint_cursor)
 
 
-def json_to_class(resposta: Dict, constructor: Callable, add_cursor=False) -> ListaResultados:
+def json_to_class(
+    resposta: Dict, constructor: Callable, add_cursor=False
+) -> ListaResultados:
     """Instancia os itens de uma resposta a partir de um construtor
 
     :param resposta: a resposta da primeira requisição, onde 'items' é uma lista de dicts (jsons)
