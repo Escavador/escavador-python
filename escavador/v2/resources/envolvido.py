@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 
 from typing import Optional, List, Dict, Tuple, Union, TYPE_CHECKING, Type
 
-from escavador import ListaResultados
+from escavador.resources import ListaResultados
 from escavador.exceptions import FailedRequest
 from escavador.resources.helpers.enums_v2 import CriterioOrdenacao, Ordem, SiglaTribunal
 from escavador.resources.helpers.endpoint import DataEndpoint

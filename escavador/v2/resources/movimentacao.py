@@ -107,7 +107,7 @@ class Movimentacao(DataEndpoint):
             else Processo.movimentacoes(processo, **kwargs)
         )
 
-    def continuar_busca(self) -> Union[List["Movimentacao"], FailedRequest]:
+    def continuar_busca(self) -> Union[ListaResultados["Movimentacao"], FailedRequest]:
         """Retorna mais resultados para a busca que gerou a movimentação atual.
 
         :return: lista de movimentações ou FailedRequest
@@ -123,4 +123,4 @@ class Movimentacao(DataEndpoint):
 
             return json_to_class(resposta, self.from_json, add_cursor=True)
 
-        return []
+        return ListaResultados()
