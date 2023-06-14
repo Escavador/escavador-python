@@ -58,12 +58,12 @@ for processo in processos:
 from escavador import CriterioOrdenacao, Ordem
 from escavador.v2 import Processo
 
-busca = Processo.por_oab(numero=12345,
-                         estado="SP",
-                         ordena_por=CriterioOrdenacao.INICIO,
-                         ordem=Ordem.DESC)
+advogado, processos = Processo.por_oab(numero=12345,
+                                       estado="SP",
+                                       ordena_por=CriterioOrdenacao.INICIO,
+                                       ordem=Ordem.DESC)
 
-processo = busca.pop()
+processo = processos.pop()
 
 print(f"{processo.numero_cnj}: {processo.titulo_polo_ativo} X {processo.titulo_polo_passivo}")
 ```
@@ -82,7 +82,7 @@ while resultado:
         print(f"{movimentacao.data} - {movimentacao.tipo}:")
         print(f"{movimentacao.conteudo}")
         print()
-    resultado = resultado[0].continuar_busca() # Solicita mais movimentações.
+    resultado = resultado.continuar_busca() # Solicita a próxima página de movimentações
 ```
 
 ### Consultando a última movimentação dos processos mais recentes de uma pessoa pelo nome usando a API V2

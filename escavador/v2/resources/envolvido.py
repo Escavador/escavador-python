@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 
 from typing import Optional, List, Dict, Tuple, Union, TYPE_CHECKING, Type
 
+from escavador.resources import ListaResultados
 from escavador.exceptions import FailedRequest
 from escavador.resources.helpers.enums_v2 import CriterioOrdenacao, Ordem, SiglaTribunal
 from escavador.resources.helpers.endpoint import DataEndpoint
@@ -50,22 +51,31 @@ class EnvolvidoEncontrado:
     tipo_pessoa: str
     quantidade_processos: int
     last_valid_cursor: str = field(default="None", hash=False, compare=False)
-    _classe_buscada: Type["DataEndpoint"] = field(default=None, hash=False, compare=False)
+    _classe_buscada: Type["DataEndpoint"] = field(
+        default=None, hash=False, compare=False
+    )
 
     @classmethod
-    def from_json(cls, json_dict: Optional[Dict], last_cursor: str = "", classe_buscada: Type["DataEndpoint"] = None) -> Optional["EnvolvidoEncontrado"]:
+    def from_json(
+        cls,
+        json_dict: Optional[Dict],
+        last_cursor: str = "",
+        classe_buscada: Type["DataEndpoint"] = None,
+    ) -> Optional["EnvolvidoEncontrado"]:
         if json_dict is None:
             return None
 
         return cls(
             nome=json_dict["nome"],
-            tipo_pessoa=json_dict["tipo_pessoa"],
+            tipo_pessoa=json_dict.get(
+                "tipo_pessoa", "FISICA"
+            ),  # Se não houver tipo_pessoa, assume-se que é advogado.
             quantidade_processos=json_dict["quantidade_processos"],
             last_valid_cursor=last_cursor,
             _classe_buscada=classe_buscada,
         )
 
-    def continuar_busca(self) -> Union[List["DataEndpoint"], FailedRequest]:
+    def continuar_busca(self) -> Union[ListaResultados["DataEndpoint"], FailedRequest]:
         """Retorna mais resultados para a busca que gerou o objeto atual.
 
         :return: lista contendo a próxima página de resultados, ou FailedRequest em caso de erro
@@ -77,8 +87,12 @@ class EnvolvidoEncontrado:
                 conteudo = resposta.get("resposta", {})
                 return FailedRequest(status=resposta["http_status"], **conteudo)
 
-            self.last_valid_cursor = resposta["resposta"].get("links", {}).get("next", "")
-            return json_to_class(resposta, self._classe_buscada.from_json, add_cursor=True)
+            self.last_valid_cursor = (
+                resposta["resposta"].get("links", {}).get("next", "")
+            )
+            return json_to_class(
+                resposta, self._classe_buscada.from_json, add_cursor=True
+            )
 
         return []
 

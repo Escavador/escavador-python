@@ -3,6 +3,7 @@ import re
 from typing import Dict, Callable, List
 
 from escavador.method import Method
+from .lista_resultados import ListaResultados
 
 _methods = Method(api_version=2)
 
@@ -17,7 +18,9 @@ def consumir_cursor(cursor: str) -> Dict:
     return _methods.get(endpoint_cursor)
 
 
-def json_to_class(resposta: Dict, constructor: Callable, add_cursor=False) -> List:
+def json_to_class(
+    resposta: Dict, constructor: Callable, add_cursor=False
+) -> ListaResultados:
     """Instancia os itens de uma resposta a partir de um construtor
 
     :param resposta: a resposta da primeira requisição, onde 'items' é uma lista de dicts (jsons)
@@ -27,7 +30,7 @@ def json_to_class(resposta: Dict, constructor: Callable, add_cursor=False) -> Li
     """
     items = resposta["resposta"]["items"]
     cursor_url = resposta["resposta"].get("links", {}).get("next", "")
-    return (
+    return ListaResultados(
         [constructor(item, ultimo_cursor=cursor_url) for item in items]
         if add_cursor
         else [constructor(item) for item in items]
