@@ -26,10 +26,10 @@ class Busca(EndpointV1):
         :return: Dict
         """
 
-        data = {
+        params = {
             'q': termo,
             'qo': tipo_termo.value,
             'limit': limit,
             'page': page
         }
-        return cls.methods.get("busca", data=data)
+        return cls.methods.get("busca", params=params)
