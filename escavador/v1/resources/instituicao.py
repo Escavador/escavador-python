@@ -28,11 +28,11 @@ class Instituicao(EndpointV1):
         :return Dict
         """
 
-        data = {
+        params = {
             'limit': limit,
             'page': page
         }
-        return cls.methods.get(f"instituicoes/{id_instituicao}/processos", data=data)
+        return cls.methods.get(f"instituicoes/{id_instituicao}/processos", params=params)
 
     @classmethod
     def get_pessoas_instituicao(cls, id_instituicao: int, *, limit: Optional[int] = None,
@@ -45,8 +45,8 @@ class Instituicao(EndpointV1):
         :return Dict
         """
 
-        data = {
+        params = {
             'limit': limit,
             'page': page
         }
-        return cls.methods.get(f"instituicoes/{id_instituicao}/pessoas", data=data)
+        return cls.methods.get(f"instituicoes/{id_instituicao}/pessoas", params=params)
