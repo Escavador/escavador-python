@@ -35,7 +35,7 @@ class Jurisprudencia(EndpointV1):
         :return: Dict
         """
 
-        data = {
+        params = {
             'q': termo,
             'ordena_por': ordena_por,
             'de_data': de_data.strftime("%Y%m%d") if de_data else None,
@@ -45,9 +45,9 @@ class Jurisprudencia(EndpointV1):
 
         if filtros:
             for filtro in filtros:
-                data.update(filtro)
+                params.update(filtro)
 
-        return cls.methods.get('jurisprudencias/busca', data=data)
+        return cls.methods.get('jurisprudencias/busca', params=params)
 
     @classmethod
     def get_documento_jurisprudencia(cls, tipo_documento: str, id_documento: int) -> Dict:

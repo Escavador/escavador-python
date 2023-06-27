@@ -31,7 +31,7 @@ class Legislacao(EndpointV1):
         :return: Dict
         """
 
-        data = {
+        params = {
             'q': termo,
             'ordena_por': ordena_por,
             'de_data': de_data.strftime("%Y%m%d") if de_data else None,
@@ -40,7 +40,7 @@ class Legislacao(EndpointV1):
             'filtro': filtro
         }
 
-        return cls.methods.get('legislacoes/busca', data=data)
+        return cls.methods.get('legislacoes/busca', params=params)
 
     @classmethod
     def get_documento_legislacao(cls, tipo_documento: str, id_documento: int) -> Dict:

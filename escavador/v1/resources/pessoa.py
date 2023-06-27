@@ -26,9 +26,9 @@ class Pessoa(EndpointV1):
         :param limit: limita a quantidade de registros retornados
         :return: Dict
         """
-        data = {
+        params = {
             'limit': limit,
             'page': page
         }
 
-        return cls.methods.get(f"pessoas/{id_pessoa}/processos", data=data)
+        return cls.methods.get(f"pessoas/{id_pessoa}/processos", params=params)

@@ -24,11 +24,11 @@ class DiarioOficial(EndpointV1):
         :param page: número da página do diário oficial
         :return: Dict
         """
-        data = {
+        params = {
             "page": page
         }
 
-        return cls.methods.get(f"diarios/{id_diario}", data=data)
+        return cls.methods.get(f"diarios/{id_diario}", params=params)
 
     @classmethod
     def download_pdf_pagina(cls, id_diario: int, page: int, path: str, nome_arquivo: str) -> Dict:
