@@ -112,10 +112,10 @@ class Processo(DataEndpoint):
 
         >>> Processo.movimentacoes("0000000-00.0000.0.00.0000") # doctest: +SKIP
         """
-        data = kwargs
+        params = kwargs
 
         first_response = Processo.methods.get(
-            f"processos/numero_cnj/{numero_cnj}/movimentacoes", data=data, **kwargs
+            f"processos/numero_cnj/{numero_cnj}/movimentacoes", params=params, **kwargs
         )
 
         if not first_response["sucesso"]:
@@ -266,19 +266,18 @@ class Processo(DataEndpoint):
         ...                             ordem=Ordem.ASC,
         ...                             tribunais=[SiglaTribunal.TJBA]) # doctest: +SKIP
         """
-        data = {
+
+
+        params = {
             "nome": nome,
             "cpf_cnpj": cpf_cnpj,
             "tribunais": tribunais,
-        }
-
-        params = {
             "ordena_por": ordena_por.value if ordena_por else None,
             "ordem": ordem.value if ordem else None,
         }
 
         first_response = Processo.methods.get(
-            "envolvido/processos", data=data, params=params, **kwargs
+            "envolvido/processos", params=params, **kwargs
         )
 
         if not first_response["sucesso"]:
@@ -321,17 +320,15 @@ class Processo(DataEndpoint):
         ...                  ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
         ...                  ordem=Ordem.DESC) # doctest: +SKIP
         """
-        data = {
+        params = {
             "oab_numero": f"{numero}",
             "oab_estado": estado,
-        }
-        params = {
             "ordena_por": ordena_por.value if ordena_por else None,
             "ordem": ordem.value if ordem else None,
         }
 
         first_response = Processo.methods.get(
-            "advogado/processos", data=data, params=params, **kwargs
+            "advogado/processos", params=params, **kwargs
         )
 
         if not first_response["sucesso"]:
