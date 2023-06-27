@@ -26,7 +26,7 @@ class Callback(EndpointV1):
         :return: Dict
         """
 
-        data = {
+        params = {
             "data_maxima": data_maxima.strftime("%Y-%m-%d %H:%M:%S") if data_maxima else None,
             "data_minima": data_minima.strftime("%Y-%m-%d %H:%M:%S") if data_minima else None,
             "evento": evento,
@@ -35,7 +35,7 @@ class Callback(EndpointV1):
             "status": status.value
         }
 
-        return cls.methods.get('callbacks', data=data)
+        return cls.methods.get('callbacks', params=params)
 
     @classmethod
     def marcarRecebido(cls, ids: List) -> Dict:
