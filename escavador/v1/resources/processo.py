@@ -164,11 +164,11 @@ class Processo(EndpointV1):
         :return: Dict
         """
 
-        data = {
+        params = {
             'page': page
         }
 
-        return cls.methods.get(f"oab/{estado_oab}/{numero_oab}/processos", data=data)
+        return cls.methods.get(f"oab/{estado_oab}/{numero_oab}/processos", params=params)
 
     @classmethod
     def por_id_em_diarios(cls, id_processo: int) -> Dict:
@@ -191,12 +191,12 @@ class Processo(EndpointV1):
         :return: Dict
         """
 
-        data = {
+        params = {
             'limit': limit,
             'page': page
         }
 
-        return cls.methods.get(f"processos/{id_processo}/movimentacoes", data=data)
+        return cls.methods.get(f"processos/{id_processo}/movimentacoes", params=params)
 
     @classmethod
     def processo_por_numero_em_diarios(cls, numero_unico: str, *, match_exato: Optional[bool] = None) -> Dict:
@@ -207,11 +207,11 @@ class Processo(EndpointV1):
         :return: Dict
         """
 
-        data = {
+        params = {
             'match_exato': match_exato
         }
 
-        return cls.methods.get(f"processos/numero/{numero_unico}", data=data)
+        return cls.methods.get(f"processos/numero/{numero_unico}", params=params)
 
     @classmethod
     def get_envolvidos_processo(cls, id_processo: int, *, limit: Optional[int] = None,
@@ -224,12 +224,12 @@ class Processo(EndpointV1):
         :return: Dict
         """
 
-        data = {
+        params = {
             'limit': limit,
             'page': page
         }
 
-        return cls.methods.get(f"processos/{id_processo}/envolvidos", data=data)
+        return cls.methods.get(f"processos/{id_processo}/envolvidos", params=params)
 
     @classmethod
     def get_pdf(cls, link_pdf: str, path: str, nome_arquivo: str) -> Dict:
