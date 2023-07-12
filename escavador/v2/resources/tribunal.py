@@ -1,9 +1,13 @@
 from dataclasses import dataclass, field
 from typing import Optional, List, Dict
 
+from escavador.exceptions import FailedRequest
+from resources.helpers.consume_cursor import json_to_class
+from resources.helpers.endpoint import DataEndpoint
+
 
 @dataclass
-class Tribunal:
+class Tribunal(DataEndpoint):
     """Informações de um tribunal.
 
     :attr id: id do tribunal no sistema do Escavador
@@ -31,5 +35,37 @@ class Tribunal:
             nome=json_dict["nome"],
             sigla=json_dict["sigla"],
             categoria=json_dict.get("categoria"),
-            estados=json_dict.get("estados", []),
+            estados=json_to_class(
+                json_dict.get("estados", []),
+                Estado.from_json,
+                add_cursor=False,
+            ),
         )
+
+    @staticmethod
+    def listar():
+        response = Tribunal.methods.get("tribunais")
+        if not response["sucesso"]:
+            conteudo = response.get("resposta", {})
+            return FailedRequest(status=response["http_status"], **conteudo)
+
+        return json_to_class(response, Tribunal.from_json, add_cursor=False)
+
+
+@dataclass
+class Estado:
+    """Informações de um ente federativo brasileiro.
+
+    :attr nome: nome do estado
+    :attr sigla: sigla do estado
+    """
+
+    nome: str
+    sigla: str
+
+    @classmethod
+    def from_json(cls, json_dict: Optional[Dict]) -> Optional["Estado"]:
+        if json_dict is None:
+            return None
+
+        return cls(nome=json_dict["nome"], sigla=json_dict["sigla"])
