@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Union
 
 from escavador.exceptions import FailedRequest
 from resources.helpers.consume_cursor import json_to_class
@@ -43,8 +43,26 @@ class Tribunal(DataEndpoint):
         )
 
     @staticmethod
-    def listar():
-        response = Tribunal.methods.get("tribunais")
+    def listar(estados: List[str] = None) -> Union[List["Tribunal"], FailedRequest]:
+        """
+        Lista os tribunais em que o Escavador possui crawlers e os estados que cada um abrange.
+
+        No caso de tribunais de instância superior que abrangem todo o território nacional,
+        a lista de estados será vazia.
+
+        :param estados: permite que apenas tribunais que atendem os estados cujas siglas foram
+        especificadas sejam retornados. Se não for especificado, todos os tribunais serão retornados.
+        :return: lista de tribunais
+
+        >>> Tribunal.listar() # doctest: +SKIP
+
+        >>> Tribunal.listar(["SP", "RJ"]) # doctest: +SKIP
+        """
+        dados = {}
+        if estados is not None:
+            dados["estados"] = estados
+
+        response = Tribunal.methods.get("tribunais", data=dados)
         if not response["sucesso"]:
             conteudo = response.get("resposta", {})
             return FailedRequest(status=response["http_status"], **conteudo)
