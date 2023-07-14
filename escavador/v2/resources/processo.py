@@ -167,6 +167,7 @@ class Processo(DataEndpoint):
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
+        incluir_homonimos: Optional[bool] = None,
         **kwargs,
     ) -> Union[
         Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest
@@ -180,6 +181,9 @@ class Processo(DataEndpoint):
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
+        :param incluir_homonimos: especifica se a busca por CPF deve incluir processos onde o CPF
+        especificado não está associado, mas há envolvido com o nome igual e não associado a um CPF
+        diferente. Só é permitido se cpf_cnpj for informado.
         :return: tupla com os dados do envolvido encontrado e uma lista de processos,
         ou FailedRequest caso ocorra algum erro
 
@@ -188,13 +192,15 @@ class Processo(DataEndpoint):
         >>> Processo.por_cpf("12345678999",
         ...                  ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
         ...                  ordem=Ordem.ASC,
-        ...                  tribunais=[SiglaTribunal.STF]) # doctest: +SKIP
+        ...                  tribunais=[SiglaTribunal.STF],
+        ...                  incluir_homonimos=True) # doctest: +SKIP
         """
         return Processo.por_envolvido(
             cpf_cnpj=cpf,
             ordena_por=ordena_por,
             ordem=ordem,
             tribunais=tribunais,
+            incluir_homonimos=incluir_homonimos,
             **kwargs,
         )
 
@@ -242,6 +248,7 @@ class Processo(DataEndpoint):
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
+        incluir_homonimos: Optional[bool] = None,
         **kwargs,
     ) -> Union[
         Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest
@@ -256,6 +263,9 @@ class Processo(DataEndpoint):
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
+        :param incluir_homonimos: especifica se a busca por CPF deve incluir processos onde o CPF
+        especificado não está associado, mas há envolvido com o nome igual e não associado a um CPF
+        diferente. Só é permitido se cpf_cnpj for informado.
         :return: tupla com os dados do envolvido encontrado e uma lista de processos,
         ou FailedRequest caso ocorra algum erro
 
@@ -267,13 +277,15 @@ class Processo(DataEndpoint):
         ...                             tribunais=[SiglaTribunal.TJBA]) # doctest: +SKIP
         """
 
-
         params = {
             "nome": nome,
             "cpf_cnpj": cpf_cnpj,
             "tribunais": tribunais,
             "ordena_por": ordena_por.value if ordena_por else None,
             "ordem": ordem.value if ordem else None,
+            "incluir_homonimos": int(incluir_homonimos)
+            if incluir_homonimos is not None
+            else None,
         }
 
         first_response = Processo.methods.get(
