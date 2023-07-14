@@ -21,12 +21,12 @@ class Tribunal(DataEndpoint):
     nome: str
     sigla: str
     categoria: Optional[str] = None
-    estados: List[str] = field(
-        default_factory=list, hash=False, compare=False
-    )  # Será adicionado à API depois
+    estados: List[str] = field(default_factory=list, hash=False, compare=False)
 
     @classmethod
-    def from_json(cls, json_dict: Optional[Dict]) -> Optional["Tribunal"]:
+    def from_json(
+        cls, json_dict: Optional[Dict], *, ultimo_cursor: Optional[str] = None
+    ) -> Optional["Tribunal"]:
         if json_dict is None:
             return None
 
