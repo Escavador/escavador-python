@@ -44,12 +44,14 @@ class EnvolvidoEncontrado:
     :attr nome: nome do envolvido
     :attr tipo_pessoa: tipo de pessoa do envolvido (ex: "FISICA")
     :attr quantidade_processos: quantidade de processos onde o envolvido apareceu
+    :attr cpfs_com_esse_nome: quantidade de CPFs homônimos do envolvido
     :attr last_valid_cursor: cursor válido para a próxima página de resultados
     """
 
     nome: str
     tipo_pessoa: str
-    quantidade_processos: int
+    quantidade_processos: int = field(hash=False, compare=False)
+    cpfs_com_esse_nome: int = field(default=0, hash=False, compare=False)
     last_valid_cursor: str = field(default="None", hash=False, compare=False)
     _classe_buscada: Type["DataEndpoint"] = field(
         default=None, hash=False, compare=False
@@ -65,12 +67,16 @@ class EnvolvidoEncontrado:
         if json_dict is None:
             return None
 
+        tipo_pessoa = json_dict.get(
+            "tipo_pessoa", "FISICA"
+        )  # Se não houver tipo_pessoa, assume-se que é advogado, isto é, pessoa física.
         return cls(
             nome=json_dict["nome"],
-            tipo_pessoa=json_dict.get(
-                "tipo_pessoa", "FISICA"
-            ),  # Se não houver tipo_pessoa, assume-se que é advogado.
+            tipo_pessoa=tipo_pessoa,
             quantidade_processos=json_dict["quantidade_processos"],
+            cpfs_com_esse_nome=json_dict.get(
+                "cpfs_com_esse_nome", 1 if tipo_pessoa == "FISICA" else 0
+            ),
             last_valid_cursor=last_cursor,
             _classe_buscada=classe_buscada,
         )
@@ -94,7 +100,7 @@ class EnvolvidoEncontrado:
                 resposta, self._classe_buscada.from_json, add_cursor=True
             )
 
-        return []
+        return ListaResultados()
 
 
 @dataclass

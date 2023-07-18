@@ -193,6 +193,7 @@ tribunais_disponiveis = Tribunal.sistemas_disponiveis()
 
 #### V2:
 
-| Módulo                | Link API                                                             |
-|-----------------------|----------------------------------------------------------------------|
-| v2.Processo           | https://api.escavador.com/v2/docs/#processos                         |
+| Módulo      | Link API                                     |
+|-------------|----------------------------------------------|
+| v2.Processo | https://api.escavador.com/v2/docs/#processos |
+| v2.Tribunal | https://api.escavador.com/v2/docs/#tribunais |

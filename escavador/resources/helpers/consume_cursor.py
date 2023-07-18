@@ -28,10 +28,18 @@ def json_to_class(
     :param add_cursor: se True, adiciona o cursor da resposta ao objeto instanciado
     :return: uma lista de objetos instanciados
     """
-    items = resposta["resposta"]["items"]
-    cursor_url = resposta["resposta"].get("links", {}).get("next", "")
+    if isinstance(resposta, dict):
+        resposta = resposta["resposta"]
+        items, cursor_url = resposta["items"], resposta.get("links", {}).get("next", "")
+    else:
+        items, cursor_url = resposta, ""
+
     return ListaResultados(
-        [constructor(item, ultimo_cursor=cursor_url) for item in items]
-        if add_cursor
-        else [constructor(item) for item in items]
+        result
+        for result in (
+            [constructor(item, ultimo_cursor=cursor_url) for item in items]
+            if add_cursor and cursor_url
+            else [constructor(item) for item in items]
+        )
+        if result is not None
     )
