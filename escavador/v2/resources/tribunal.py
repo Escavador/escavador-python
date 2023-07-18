@@ -2,8 +2,8 @@ from dataclasses import dataclass, field
 from typing import Optional, List, Dict, Union
 
 from escavador.exceptions import FailedRequest
-from resources.helpers.consume_cursor import json_to_class
-from resources.helpers.endpoint import DataEndpoint
+from escavador.resources.helpers.consume_cursor import json_to_class
+from escavador.resources.helpers.endpoint import DataEndpoint
 
 
 @dataclass
