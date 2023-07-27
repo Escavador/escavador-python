@@ -40,14 +40,20 @@ Para obter seu token da API, acesse o [painel de tokens](https://api.escavador.c
 ```py
 from escavador.v2 import Processo
 
-envolvido, processos = Processo.por_cnpj(cnpj="00000000000000")  # Também aceita o formato 00.000.000/0000-00)
+# Chamada inicial na API /api/v2/envolvido/processos?cpf_cnpj=00000000000
+envolvido, processos = Processo.por_cnpj(cnpj="00653149000170")  # Também aceita o formato 00.000.000/0000-00)
 
 print(f"Processos da empresa {envolvido.nome}:")
-for processo in processos:
-    print(f"{processo.numero_cnj}:")
-    print(f"Fonte: {processo.fontes[0].nome}")
-    print(f"Data de início: {processo.data_inicio}")
-    print(f"Última movimentação: {processo.data_ultima_movimentacao}")
+
+while processos:
+    for processo in processos:
+        print(f"{processo.numero_cnj}:")
+        print(f"Fonte: {processo.fontes[0].nome}")
+        print(f"Data de início: {processo.data_inicio}")
+        print(f"Última movimentação: {processo.data_ultima_movimentacao}")
+
+    # Chamada para a paginação via cursor na API /api/v2/envolvido/processos?cpf_cnpj=00000000000&cursor=HASH_PROXIMA_PAGINA
+    processos = processos.continuar_busca()
 ```
 
 ### Consultando o processo mais recente de um advogado usando a API V2
