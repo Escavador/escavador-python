@@ -13,7 +13,7 @@ on:
 
 jobs:
   build-and-run-tests:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest # Python 3.7 is the oldest version supported by ubuntu-latest currently
 
     steps:
       - name: Checkout sources
@@ -22,7 +22,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ github.event.inputs.version || '3.6' }}
+          python-version: ${{ github.event.inputs.version || '3.7' }}
 
       - name: Install poetry and dependencies
         run: |
