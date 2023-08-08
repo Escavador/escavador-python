@@ -21,7 +21,7 @@ class Tribunal(DataEndpoint):
     nome: str
     sigla: str
     categoria: Optional[str] = None
-    estados: List[str] = field(default_factory=list, hash=False, compare=False)
+    estados: List["Estado"] = field(default_factory=list, hash=False, compare=False)
 
     @classmethod
     def from_json(
