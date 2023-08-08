@@ -7,8 +7,39 @@ on:
   workflow_dispatch:
 
 jobs:
+  call-tests-3-6:
+    uses: ./.github/workflows/tests.yml
+    with:
+      version: "3.6"
+    secrets: inherit
+
+  call-tests-3-7:
+    uses: ./.github/workflows/tests.yml
+    with:
+      version: "3.7"
+    secrets: inherit
+
+  call-tests-3-8:
+    uses: ./.github/workflows/tests.yml
+    with:
+      version: "3.8"
+    secrets: inherit
+
+  call-tests-3-9:
+    uses: ./.github/workflows/tests.yml
+    with:
+      version: "3.9"
+    secrets: inherit
+
+  call-tests-3-10:
+    uses: ./.github/workflows/tests.yml
+    with:
+      version: "3.10"
+    secrets: inherit
+
   build-and-publish:
     runs-on: ubuntu-latest
+    needs: [ call-tests-3-6, call-tests-3-7, call-tests-3-8, call-tests-3-9, call-tests-3-10 ]
 
     steps:
       - name: Checkout sources
@@ -17,7 +48,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.10"
+          python-version: "3.6"
 
       - name: Install poetry and dependencies
         run: |

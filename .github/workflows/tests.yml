@@ -4,6 +4,13 @@ on:
   push:
     branches-ignore:
       - main
+  workflow_call:
+    inputs:
+      version:
+        description: "Python version to use"
+        type: string
+        required: false
+        default: "3.6"
 
 jobs:
   build-and-run-tests:
@@ -16,7 +23,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.10"
+          python-version: ${{ inputs.version }}
 
       - name: Install poetry and dependencies
         run: |
@@ -26,6 +33,6 @@ jobs:
 
       - name: Run tests
         env:
-          ESCAVADOR_API_KEY: ${{ secrets.API_KEY }}
+          ESCAVADOR_API_KEY: ${{ secrets.ESCAVADOR_API_KEY }}
         run: |
           poetry run python -m unittest discover -s tests
