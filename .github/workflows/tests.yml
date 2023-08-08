@@ -9,8 +9,7 @@ on:
       version:
         description: "Python version to use"
         type: string
-        required: false
-        default: "3.6"
+        required: true
 
 jobs:
   build-and-run-tests:
@@ -23,7 +22,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ inputs.version }}
+          python-version: ${{ github.event.inputs.version || '3.7' }}
 
       - name: Install poetry and dependencies
         run: |
