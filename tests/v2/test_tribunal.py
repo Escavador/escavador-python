@@ -20,6 +20,5 @@ class TestTribunal(unittest.TestCase):
         self.assertEqual(tribunal.estados[0].sigla, "MG")
 
 
-
 if __name__ == "__main__":
     unittest.main()

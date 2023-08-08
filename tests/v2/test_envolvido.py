@@ -1,6 +1,5 @@
 import unittest
-from escavador.v2 import Processo
-from v2 import Envolvido
+from escavador.v2 import Processo, Envolvido
 
 
 class TestEnvolvido(unittest.TestCase):
