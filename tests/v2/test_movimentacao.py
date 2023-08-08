@@ -2,7 +2,6 @@ import unittest
 from escavador.v2 import Movimentacao
 
 
-
 class TestMovimentacao(unittest.TestCase):
     def test_montar_movimentacao_from_json(self):
         json_dict_1 = {
@@ -16,8 +15,8 @@ class TestMovimentacao(unittest.TestCase):
                 "tipo": "TRIBUNAL",
                 "sigla": "TRF1",
                 "grau": 1,
-                "grau_formatado": "Primeiro Grau"
-            }
+                "grau_formatado": "Primeiro Grau",
+            },
         }
         movimentacao_1 = Movimentacao.from_json(json_dict_1, ultimo_cursor="EXPECTED_CURSOR")
         self.assertEqual(movimentacao_1.id, 6572980630)
