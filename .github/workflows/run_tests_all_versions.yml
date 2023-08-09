@@ -1,0 +1,41 @@
+name: Tests on all Python versions
+
+on:
+  push:
+    branches-ignore:
+      - main
+  pull_request:
+    branches: [ main ]
+  workflow_call:
+
+jobs:
+
+  call-tests-3-7:
+    uses: ./.github/workflows/tests.yml
+    with:
+      version: "3.7"
+    secrets: inherit
+
+  call-tests-3-8:
+    uses: ./.github/workflows/tests.yml
+    with:
+      version: "3.8"
+    secrets: inherit
+
+  call-tests-3-9:
+    uses: ./.github/workflows/tests.yml
+    with:
+      version: "3.9"
+    secrets: inherit
+
+  call-tests-3-10:
+    uses: ./.github/workflows/tests.yml
+    with:
+      version: "3.10"
+    secrets: inherit
+
+  call-tests-3-11:
+    uses: ./.github/workflows/tests.yml
+    with:
+      version: "3.11"
+    secrets: inherit
