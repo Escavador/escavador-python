@@ -9,7 +9,7 @@ on:
 jobs:
 
   run-tests:
-    uses: ./.github/workflows/run_tests_all_versions.yml@master
+    uses: Escavador/escavador-python/.github/workflows/run_tests_all_versions.yml@master
     secrets: inherit
 
   build-and-publish:
