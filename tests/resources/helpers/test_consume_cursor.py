@@ -15,7 +15,9 @@ class TestJsonToClass(unittest.TestCase):
 
     def test_json_to_class_adiciona_cursor(self):
         json_resposta = {"resposta": {"items": [{"id": 1}, {"id": 2}, {"id": 3}], "links": {"next": "EXPECTED_CURSOR"}}}
-        result = json_to_class(json_resposta, lambda x, ultimo_cursor: dict(x, **{"cursor": ultimo_cursor}), add_cursor=True)
+        result = json_to_class(
+            json_resposta, lambda x, ultimo_cursor: dict(x, **{"cursor": ultimo_cursor}), add_cursor=True
+        )
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 3)
         for item in result:

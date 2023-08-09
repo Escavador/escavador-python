@@ -10,23 +10,12 @@ class TestDocumento(unittest.TestCase):
         with NamedTemporaryFile("wb") as temp:
             name = temp.name.split("\\")[-1]
             path = "\\".join(temp.name.split("\\")[:-1])
-            realpath = Documento.get_pdf(
-                content,
-                path,
-                name
-            )["path"]
-            self.assertEqual(str(realpath), temp.name+'.pdf')
+            realpath = Documento.get_pdf(content, path, name)["path"]
+            self.assertEqual(str(realpath), temp.name + ".pdf")
             with open(realpath, "rb") as temp2:
-                self.assertEqual(
-                    temp2.read(),
-                    content
-                )
+                self.assertEqual(temp2.read(), content)
 
-            erro = Documento.get_pdf(
-                content,
-                path,
-                name
-            )["error"]
+            erro = Documento.get_pdf(content, path, name)["error"]
             self.assertEqual(erro, "File exists")
 
 
