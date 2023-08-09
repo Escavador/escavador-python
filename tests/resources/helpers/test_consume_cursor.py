@@ -5,7 +5,6 @@ from escavador.v2 import Tribunal
 
 class TestJsonToClass(unittest.TestCase):
     def test_json_to_class_instancia(self):
-        # Queremos que o método instancie alguma coisa, não importa o quê, desde que não seja dict
         constructor_1 = str
         json_resposta = {"resposta": {"items": [{"id": 1}, {"id": 2}, {"id": 3}]}}
         result = json_to_class(json_resposta, constructor_1)
@@ -15,9 +14,8 @@ class TestJsonToClass(unittest.TestCase):
             self.assertIsInstance(item, str)
 
     def test_json_to_class_adiciona_cursor(self):
-        constructor = lambda x, ultimo_cursor: dict(x, **{"cursor": ultimo_cursor})
         json_resposta = {"resposta": {"items": [{"id": 1}, {"id": 2}, {"id": 3}], "links": {"next": "EXPECTED_CURSOR"}}}
-        result = json_to_class(json_resposta, constructor, add_cursor=True)
+        result = json_to_class(json_resposta, lambda x, ultimo_cursor: dict(x, **{"cursor": ultimo_cursor}), add_cursor=True)
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 3)
         for item in result:
