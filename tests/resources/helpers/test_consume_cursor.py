@@ -1,4 +1,6 @@
 import unittest
+from unittest.mock import patch
+
 from escavador.resources.helpers.consume_cursor import json_to_class, consumir_cursor
 from escavador.v2 import Tribunal
 
@@ -63,17 +65,27 @@ class TestJsonToClass(unittest.TestCase):
 
 
 class TestConsumirCursor(unittest.TestCase):
-    def test_makes_request(self):
-        response = consumir_cursor("invalid_endpoint_url_that_will_404")
-        self.assertIsInstance(response, dict)
-        self.assertEqual(response["http_status"], 404)
-        self.assertEqual(response["sucesso"], False)
-        self.assertGreaterEqual(len(response), 0)
+    @patch("escavador.method.Method.get")
+    def test_makes_request(self, mock_get):
+        mock_get.return_value = {"mocked_response": "mocked_response"}
+        response = consumir_cursor("any_endpoint")
+        self.assertEqual(response, mock_get.return_value)
 
+    @patch(
+        "escavador.api.Api.request",
+        lambda self, method, url, **kwargs: {"called_url": self.base_url + url, "called_method": method},
+    )
     def test_request_api(self):
-        response = consumir_cursor("https://www.escavador.com/api/v2/tribunais")
-        self.assertIsInstance(response, dict)
-        self.assertGreaterEqual(len(response), 0)
+        url_cursor = (
+            "https://api.escavador.com/api/v2/envolvido/processos?nome=Algum+pesquisado"
+            "&cursor=eTT0bnZvbHZpZG9fcHJvY2Vzc28uZGF0YV9pbmljaW8iOiIyMDIwLTEyLTA3IiwiZW"
+            "52b2x2aWRvX3Byb2Nlc3NvLmlkIjo3OTk0MjE5MjgsIl9wb2ludHNUb05leHRJdGVtcyI6dHJ1"
+            "ZX0&li=248719474"
+        )
+        response = consumir_cursor(url_cursor)
+
+        self.assertEqual(response["called_url"], url_cursor)
+        self.assertEqual(response["called_method"], "GET")
 
 
 if __name__ == "__main__":
