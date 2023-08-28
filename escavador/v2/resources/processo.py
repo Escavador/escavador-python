@@ -282,17 +282,14 @@ class Processo(DataEndpoint):
             "cpf_cnpj": cpf_cnpj,
             "ordena_por": ordena_por.value if ordena_por else None,
             "ordem": ordem.value if ordem else None,
+            "tribunais[]": tribunais,
             "incluir_homonimos": int(incluir_homonimos)
             if incluir_homonimos is not None
             else None,
         }
 
-        body = {
-            "tribunais": tribunais,
-        }
-
         first_response = Processo.methods.get(
-            "envolvido/processos", params=params, data=body, **kwargs
+            "envolvido/processos", params=params, **kwargs
         )
 
         if not first_response["sucesso"]:
