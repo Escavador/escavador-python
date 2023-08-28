@@ -280,7 +280,6 @@ class Processo(DataEndpoint):
         params = {
             "nome": nome,
             "cpf_cnpj": cpf_cnpj,
-            "tribunais": tribunais,
             "ordena_por": ordena_por.value if ordena_por else None,
             "ordem": ordem.value if ordem else None,
             "incluir_homonimos": int(incluir_homonimos)
@@ -288,8 +287,12 @@ class Processo(DataEndpoint):
             else None,
         }
 
+        body = {
+            "tribunais": tribunais,
+        }
+
         first_response = Processo.methods.get(
-            "envolvido/processos", params=params, **kwargs
+            "envolvido/processos", params=params, data=body, **kwargs
         )
 
         if not first_response["sucesso"]:
