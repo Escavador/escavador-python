@@ -58,11 +58,11 @@ class Tribunal(DataEndpoint):
 
         >>> Tribunal.listar(["SP", "RJ"]) # doctest: +SKIP
         """
-        dados = {}
+        params = {}
         if estados is not None:
-            dados["estados"] = estados
+            params["estados[]"] = estados
 
-        response = Tribunal.methods.get("tribunais", data=dados)
+        response = Tribunal.methods.get("tribunais", params=params)
         if not response["sucesso"]:
             conteudo = response.get("resposta", {})
             return FailedRequest(status=response["http_status"], **conteudo)
