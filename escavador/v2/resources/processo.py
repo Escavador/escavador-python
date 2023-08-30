@@ -280,9 +280,9 @@ class Processo(DataEndpoint):
         params = {
             "nome": nome,
             "cpf_cnpj": cpf_cnpj,
-            "tribunais": tribunais,
             "ordena_por": ordena_por.value if ordena_por else None,
             "ordem": ordem.value if ordem else None,
+            "tribunais[]": tribunais,
             "incluir_homonimos": int(incluir_homonimos)
             if incluir_homonimos is not None
             else None,
