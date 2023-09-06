@@ -86,7 +86,7 @@ class Processo(DataEndpoint):
 
         if not resposta["sucesso"]:
             conteudo = resposta.get("resposta", {})
-            return FailedRequest(status=resposta["http_status"], **conteudo)
+            raise FailedRequest(status=resposta["http_status"], **conteudo)
 
         return Processo.from_json(resposta["resposta"], resposta.get("links", {}).get("next", ""))
 
@@ -110,7 +110,7 @@ class Processo(DataEndpoint):
 
         if not first_response["sucesso"]:
             conteudo = first_response.get("resposta", {})
-            return FailedRequest(status=first_response["http_status"], **conteudo)
+            raise FailedRequest(status=first_response["http_status"], **conteudo)
 
         return json_to_class(first_response, constructor=Movimentacao.from_json, add_cursor=True)
 
@@ -270,7 +270,7 @@ class Processo(DataEndpoint):
 
         if not first_response["sucesso"]:
             conteudo = first_response.get("resposta", {})
-            return FailedRequest(status=first_response["http_status"], **conteudo)
+            raise FailedRequest(status=first_response["http_status"], **conteudo)
 
         envolvido_encontrado = EnvolvidoEncontrado.from_json(
             first_response["resposta"].get("envolvido_encontrado"),
@@ -317,7 +317,7 @@ class Processo(DataEndpoint):
 
         if not first_response["sucesso"]:
             conteudo = first_response.get("resposta", {})
-            return FailedRequest(status=first_response["http_status"], **conteudo)
+            raise FailedRequest(status=first_response["http_status"], **conteudo)
 
         advogado_encontrado = EnvolvidoEncontrado.from_json(
             first_response["resposta"].get("advogado_encontrado"),
@@ -339,7 +339,7 @@ class Processo(DataEndpoint):
 
             if not resposta["sucesso"]:
                 conteudo = resposta.get("resposta", {})
-                return FailedRequest(status=resposta["http_status"], **conteudo)
+                raise FailedRequest(status=resposta["http_status"], **conteudo)
 
             return json_to_class(resposta, self.from_json, add_cursor=True)
 

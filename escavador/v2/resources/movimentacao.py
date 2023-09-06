@@ -119,7 +119,7 @@ class Movimentacao(DataEndpoint):
 
             if not resposta["sucesso"]:
                 conteudo = resposta.get("resposta", {})
-                return FailedRequest(status=resposta["http_status"], **conteudo)
+                raise FailedRequest(status=resposta["http_status"], **conteudo)
 
             return json_to_class(resposta, self.from_json, add_cursor=True)
 

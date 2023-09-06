@@ -91,7 +91,7 @@ class EnvolvidoEncontrado:
 
             if not resposta["sucesso"]:
                 conteudo = resposta.get("resposta", {})
-                return FailedRequest(status=resposta["http_status"], **conteudo)
+                raise FailedRequest(status=resposta["http_status"], **conteudo)
 
             self.last_valid_cursor = resposta["resposta"].get("links", {}).get("next", "")
             return json_to_class(resposta, self._classe_buscada.from_json, add_cursor=True)

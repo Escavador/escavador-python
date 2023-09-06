@@ -65,7 +65,7 @@ class Tribunal(DataEndpoint):
         response = Tribunal.methods.get("tribunais", params=params)
         if not response["sucesso"]:
             conteudo = response.get("resposta", {})
-            return FailedRequest(status=response["http_status"], **conteudo)
+            raise FailedRequest(status=response["http_status"], **conteudo)
 
         return json_to_class(response, Tribunal.from_json, add_cursor=False)
 
