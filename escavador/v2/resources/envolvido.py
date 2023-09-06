@@ -52,8 +52,10 @@ class EnvolvidoEncontrado:
     tipo_pessoa: str
     quantidade_processos: int = field(hash=False, compare=False)
     cpfs_com_esse_nome: int = field(default=0, hash=False, compare=False)
-    last_valid_cursor: Optional[str] = field(default="", hash=False, compare=False)
-    _classe_buscada: Type["DataEndpoint"] = field(default=None, hash=False, compare=False)
+    last_valid_cursor: Optional[str] = field(default="", hash=False, compare=False, repr=False)
+    _classe_buscada: Type["DataEndpoint"] = field(
+        default=None, hash=False, compare=False, repr=False
+    )
 
     @classmethod
     def from_json(
@@ -153,7 +155,7 @@ class Envolvido(DataEndpoint):
     cnpj: Optional[str] = None
     oabs: List[Oab] = field(default_factory=list)
     advogados: List["Envolvido"] = field(default_factory=list, hash=False, compare=False)
-    last_valid_cursor: str = field(default="", hash=False, compare=False)
+    last_valid_cursor: str = field(default="", hash=False, compare=False, repr=False)
 
     @classmethod
     def from_json(cls, json_dict: Optional[Dict], ultimo_cursor: str = "") -> Optional["Envolvido"]:

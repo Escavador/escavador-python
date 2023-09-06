@@ -578,12 +578,12 @@ class ValorCausa:
 class InformacaoComplementar:
     """Informações complementares de um processo.
 
-    :attr valor: texto da informação
     :attr tipo: tipo ou significado da informação
+    :attr valor: texto da informação
     """
 
-    valor: str
     tipo: str
+    valor: str
 
     @classmethod
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["InformacaoComplementar"]:
