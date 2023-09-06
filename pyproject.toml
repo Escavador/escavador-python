@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "escavador"
-version = "0.4.2"
-description = "A library to  interact with Escavador API"
+version = "0.5.0"
+description = "A library to interact with Escavador API"
 authors = [
     "Rafael <rafaelcampos@escavador.com>",
     "Gabriel <gabriel@escavador.com>"
@@ -41,8 +41,6 @@ exclude = '''
   | dist
 )/
 '''
-
-[tool.poetry.dev-dependencies]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
