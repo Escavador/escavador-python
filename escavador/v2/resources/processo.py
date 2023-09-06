@@ -36,10 +36,10 @@ class Processo(DataEndpoint):
 
     numero_cnj: str
     quantidade_movimentacoes: int
-    fontes_tribunais_estao_arquivadas: bool
+    fontes_tribunais_estao_arquivadas: bool = field(hash=False, compare=False)
     ano_inicio: int
-    data_ultima_verificacao: str
-    tempo_desde_ultima_verificacao: str
+    data_ultima_verificacao: str = field(hash=False, compare=False)
+    tempo_desde_ultima_verificacao: str = field(hash=False, compare=False)
     data_ultima_movimentacao: str
     titulo_polo_ativo: Optional[str] = None
     titulo_polo_passivo: Optional[str] = None
@@ -48,33 +48,25 @@ class Processo(DataEndpoint):
     last_valid_cursor: str = field(default="", repr=False, hash=False)
 
     @classmethod
-    def from_json(
-        cls, json_dict: Optional[Dict], ultimo_cursor: str = ""
-    ) -> Optional["Processo"]:
+    def from_json(cls, json_dict: Optional[Dict], ultimo_cursor: str = "") -> Optional["Processo"]:
         if json_dict is None:
             return None
 
         instance = cls(
             numero_cnj=json_dict.get("numero_cnj"),
             quantidade_movimentacoes=json_dict.get("quantidade_movimentacoes", 0),
-            fontes_tribunais_estao_arquivadas=json_dict.get(
-                "fontes_tribunais_estao_arquivadas"
-            ),
+            fontes_tribunais_estao_arquivadas=json_dict.get("fontes_tribunais_estao_arquivadas"),
             titulo_polo_ativo=json_dict.get("titulo_polo_ativo"),
             titulo_polo_passivo=json_dict.get("titulo_polo_passivo"),
             ano_inicio=json_dict.get("ano_inicio"),
             data_inicio=json_dict.get("data_inicio", None),
             data_ultima_movimentacao=json_dict.get("data_ultima_movimentacao", None),
             data_ultima_verificacao=json_dict.get("data_ultima_verificacao", None),
-            tempo_desde_ultima_verificacao=json_dict.get(
-                "tempo_desde_ultima_verificacao", None
-            ),
+            tempo_desde_ultima_verificacao=json_dict.get("tempo_desde_ultima_verificacao", None),
             last_valid_cursor=ultimo_cursor,
         )
         instance.fontes += [
-            FonteProcesso.from_json(fonte)
-            for fonte in json_dict.get("fontes", [])
-            if fonte
+            FonteProcesso.from_json(fonte) for fonte in json_dict.get("fontes", []) if fonte
         ]
 
         return instance
@@ -96,9 +88,7 @@ class Processo(DataEndpoint):
             conteudo = resposta.get("resposta", {})
             return FailedRequest(status=resposta["http_status"], **conteudo)
 
-        return Processo.from_json(
-            resposta["resposta"], resposta.get("links", {}).get("next", "")
-        )
+        return Processo.from_json(resposta["resposta"], resposta.get("links", {}).get("next", ""))
 
     @staticmethod
     def movimentacoes(
@@ -122,9 +112,7 @@ class Processo(DataEndpoint):
             conteudo = first_response.get("resposta", {})
             return FailedRequest(status=first_response["http_status"], **conteudo)
 
-        return json_to_class(
-            first_response, constructor=Movimentacao.from_json, add_cursor=True
-        )
+        return json_to_class(first_response, constructor=Movimentacao.from_json, add_cursor=True)
 
     @staticmethod
     def por_nome(
@@ -133,9 +121,7 @@ class Processo(DataEndpoint):
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
         **kwargs,
-    ) -> Union[
-        Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest
-    ]:
+    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
         """
         Busca os processos envolvendo uma pessoa ou empresa a partir do seu nome.
 
@@ -169,9 +155,7 @@ class Processo(DataEndpoint):
         tribunais: Optional[List[SiglaTribunal]] = None,
         incluir_homonimos: Optional[bool] = None,
         **kwargs,
-    ) -> Union[
-        Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest
-    ]:
+    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
         """
         Busca os processos envolvendo uma pessoa a partir de seu CPF.
 
@@ -211,9 +195,7 @@ class Processo(DataEndpoint):
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
         **kwargs,
-    ) -> Union[
-        Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest
-    ]:
+    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
         """
         Busca os processos envolvendo uma instituição a partir de seu CNPJ.
 
@@ -250,9 +232,7 @@ class Processo(DataEndpoint):
         tribunais: Optional[List[SiglaTribunal]] = None,
         incluir_homonimos: Optional[bool] = None,
         **kwargs,
-    ) -> Union[
-        Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest
-    ]:
+    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
         """
         Busca os processos envolvendo uma pessoa ou instituição a partir de seu nome e/ou CPF/CNPJ.
 
@@ -283,14 +263,10 @@ class Processo(DataEndpoint):
             "ordena_por": ordena_por.value if ordena_por else None,
             "ordem": ordem.value if ordem else None,
             "tribunais[]": tribunais,
-            "incluir_homonimos": int(incluir_homonimos)
-            if incluir_homonimos is not None
-            else None,
+            "incluir_homonimos": int(incluir_homonimos) if incluir_homonimos is not None else None,
         }
 
-        first_response = Processo.methods.get(
-            "envolvido/processos", params=params, **kwargs
-        )
+        first_response = Processo.methods.get("envolvido/processos", params=params, **kwargs)
 
         if not first_response["sucesso"]:
             conteudo = first_response.get("resposta", {})
@@ -313,9 +289,7 @@ class Processo(DataEndpoint):
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
         **kwargs,
-    ) -> Union[
-        Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest
-    ]:
+    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
         """
         Busca os processos de um advogado a partir de sua carteira da OAB.
 
@@ -339,9 +313,7 @@ class Processo(DataEndpoint):
             "ordem": ordem.value if ordem else None,
         }
 
-        first_response = Processo.methods.get(
-            "advogado/processos", params=params, **kwargs
-        )
+        first_response = Processo.methods.get("advogado/processos", params=params, **kwargs)
 
         if not first_response["sucesso"]:
             conteudo = first_response.get("resposta", {})
@@ -417,11 +389,9 @@ class FonteProcesso:
     arquivado: Optional[bool] = None
     url: Optional[str] = None
     caderno: Optional[str] = None
-    data_ultima_verificacao: Optional[str] = None
+    data_ultima_verificacao: Optional[str] = field(default=None, hash=False, compare=False)
     tribunal: Optional[Tribunal] = None
-    capa: Optional["CapaProcessoTribunal"] = field(
-        default=None, hash=False, compare=False
-    )
+    capa: Optional["CapaProcessoTribunal"] = field(default=None, hash=False, compare=False)
     envolvidos: List[Envolvido] = field(default_factory=list, hash=False, compare=False)
 
     @classmethod
@@ -476,9 +446,7 @@ class CapaProcessoTribunal:
     """
 
     assunto_principal_normalizado: Optional["Assunto"] = None
-    assuntos_normalizados: List["Assunto"] = field(
-        default_factory=list, hash=False, compare=False
-    )
+    assuntos_normalizados: List["Assunto"] = field(default_factory=list, hash=False, compare=False)
     classe: Optional[str] = None
     assunto: Optional[str] = None
     area: Optional[str] = None
@@ -562,7 +530,7 @@ class ValorCausa:
 
     valor: float
     moeda: str
-    valor_formatado: str
+    valor_formatado: str = field(hash=False, compare=False)
 
     @classmethod
     def from_json(cls, json_dict: Optional[Dict]) -> Optional["ValorCausa"]:
@@ -584,10 +552,7 @@ class ValorCausa:
             f"{moeda} "
             + "".join(
                 reversed(
-                    [
-                        f"{x}{'' if i % 3 and i else '.'}"
-                        for i, x in enumerate(reversed(inteiros))
-                    ]
+                    [f"{x}{'' if i % 3 and i else '.'}" for i, x in enumerate(reversed(inteiros))]
                 )
             ).strip(".")
             + f",{centavos}"

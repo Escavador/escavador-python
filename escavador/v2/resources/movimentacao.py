@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Optional, Dict, Union, List, TYPE_CHECKING
+from typing import Optional, Dict, Union, TYPE_CHECKING
 
 from escavador.resources import ListaResultados
 from escavador.exceptions import FailedRequest
