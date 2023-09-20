@@ -20,7 +20,6 @@ cchardet = "^2.1.7"
 python-dotenv = "^0.19.2"
 ratelimit = "*"
 dataclasses = "*"
-importlib = "*"
 importlib_metadata = "*"
 
 [tool.black]
