@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "escavador"
-version = "0.4.2"
-description = "A library to  interact with Escavador API"
+version = "0.5.0"
+description = "A library to interact with Escavador API"
 authors = [
     "Rafael <rafaelcampos@escavador.com>",
     "Gabriel <gabriel@escavador.com>"
@@ -23,7 +23,24 @@ dataclasses = "*"
 importlib = "*"
 importlib_metadata = "*"
 
-[tool.poetry.dev-dependencies]
+[tool.black]
+line-length = 100
+target-version = ['py36', 'py37', 'py38', 'py39', 'py310']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

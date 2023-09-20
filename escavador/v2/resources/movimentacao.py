@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Optional, Dict, Union, List, TYPE_CHECKING
+from typing import Optional, Dict, Union, TYPE_CHECKING
 
 from escavador.resources import ListaResultados
 from escavador.exceptions import FailedRequest
@@ -119,7 +119,7 @@ class Movimentacao(DataEndpoint):
 
             if not resposta["sucesso"]:
                 conteudo = resposta.get("resposta", {})
-                return FailedRequest(status=resposta["http_status"], **conteudo)
+                raise FailedRequest(status=resposta["http_status"], **conteudo)
 
             return json_to_class(resposta, self.from_json, add_cursor=True)
 

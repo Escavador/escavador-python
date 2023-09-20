@@ -52,9 +52,9 @@ class EnvolvidoEncontrado:
     tipo_pessoa: str
     quantidade_processos: int = field(hash=False, compare=False)
     cpfs_com_esse_nome: int = field(default=0, hash=False, compare=False)
-    last_valid_cursor: str = field(default="None", hash=False, compare=False)
+    last_valid_cursor: Optional[str] = field(default="", hash=False, compare=False, repr=False)
     _classe_buscada: Type["DataEndpoint"] = field(
-        default=None, hash=False, compare=False
+        default=None, hash=False, compare=False, repr=False
     )
 
     @classmethod
@@ -91,16 +91,35 @@ class EnvolvidoEncontrado:
 
             if not resposta["sucesso"]:
                 conteudo = resposta.get("resposta", {})
-                return FailedRequest(status=resposta["http_status"], **conteudo)
+                raise FailedRequest(status=resposta["http_status"], **conteudo)
 
-            self.last_valid_cursor = (
-                resposta["resposta"].get("links", {}).get("next", "")
-            )
-            return json_to_class(
-                resposta, self._classe_buscada.from_json, add_cursor=True
-            )
+            self.last_valid_cursor = resposta["resposta"].get("links", {}).get("next", "")
+            return json_to_class(resposta, self._classe_buscada.from_json, add_cursor=True)
 
         return ListaResultados()
+
+    def __eq__(self, other):
+        if isinstance(other, Envolvido):
+            # se só tem um CPF com esse nome, podemos dar como certo que é a mesma pessoa
+            # se houver mais que um, não podemos ter certeza
+            return (
+                self.nome == other.nome
+                and self.tipo_pessoa == other.tipo_pessoa
+                and self.cpfs_com_esse_nome < 2
+            )
+        elif isinstance(other, EnvolvidoEncontrado):
+            return (
+                self.nome == other.nome
+                and self.tipo_pessoa == other.tipo_pessoa
+                # se um nome de envolvido foi obtido em uma data anterior (e, por exemplo, salvo como Pickle e depois
+                # recuperado) e o outro foi obtido em uma busca nova, o valor de cpfs_com_esse_nome pode ser diferente.
+                # Por isso, é necessário verificar que ambos sinalizam um cpf único com esse nome.
+                and self.cpfs_com_esse_nome < 2
+                and other.cpfs_com_esse_nome < 2
+            ) or self is other
+        elif isinstance(other, str):
+            return self.nome == other
+        return False
 
 
 @dataclass
@@ -111,7 +130,6 @@ class Envolvido(DataEndpoint):
     :attr quantidade_processos: quantidade de processos onde o envolvido apareceu
     :attr tipo_pessoa: tipo de pessoa do envolvido (ex: "FISICA")
     :attr nome: nome do envolvido (ex: "João da Silva")
-    :attr nome_normalizado: nome do envolvido depois da normalização (como foi buscado no banco de dados)
     :attr prefixo: prefixos do nome do envolvido (ex: "Dr.")
     :attr sufixo: sufixos do nome do envolvido (ex: "Jr.")
     :attr tipo: tipo do envolvido (ex: "Advogado")
@@ -136,15 +154,11 @@ class Envolvido(DataEndpoint):
     cpf: Optional[str] = None
     cnpj: Optional[str] = None
     oabs: List[Oab] = field(default_factory=list)
-    advogados: List["Envolvido"] = field(
-        default_factory=list, hash=False, compare=False
-    )
-    last_valid_cursor: str = field(default="", hash=False, compare=False)
+    advogados: List["Envolvido"] = field(default_factory=list, hash=False, compare=False)
+    last_valid_cursor: str = field(default="", hash=False, compare=False, repr=False)
 
     @classmethod
-    def from_json(
-        cls, json_dict: Optional[Dict], ultimo_cursor: str = ""
-    ) -> Optional["Envolvido"]:
+    def from_json(cls, json_dict: Optional[Dict], ultimo_cursor: str = "") -> Optional["Envolvido"]:
         if json_dict is None:
             return None
 
@@ -160,9 +174,7 @@ class Envolvido(DataEndpoint):
             cpf=json_dict.get("cpf"),
             cnpj=json_dict.get("cnpj"),
             oabs=[Oab.from_json(o) for o in json_dict.get("oabs", []) if o],
-            advogados=[
-                Envolvido.from_json(a) for a in json_dict.get("advogados", []) if a
-            ],
+            advogados=[Envolvido.from_json(a) for a in json_dict.get("advogados", []) if a],
         )
 
     @property
@@ -177,7 +189,7 @@ class Envolvido(DataEndpoint):
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
-        **kwargs
+        **kwargs,
     ) -> Union[Tuple[Optional[EnvolvidoEncontrado], List["Processo"]], FailedRequest]:
         """Busca os processos envolvendo uma pessoa ou instituição a partir de seu nome e/ou CPF/CNPJ.
 
@@ -197,5 +209,23 @@ class Envolvido(DataEndpoint):
             ordena_por=ordena_por,
             ordem=ordem,
             tribunais=tribunais,
-            **kwargs
+            **kwargs,
         )
+
+    def __eq__(self, other):
+        if isinstance(other, EnvolvidoEncontrado):
+            return other == self
+
+        if isinstance(other, Envolvido):
+            return (
+                self.nome == other.nome
+                and self.tipo_pessoa == other.tipo_pessoa
+                and self.cpf == other.cpf
+                and self.cnpj == other.cnpj
+                and self.oabs == other.oabs
+            )
+
+        if isinstance(other, str):
+            return self.nome == other
+
+        return False
