@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "escavador"
-version = "0.5.0"
+version = "0.5.1"
 description = "A library to interact with Escavador API"
 authors = [
     "Rafael <rafaelcampos@escavador.com>",
@@ -20,7 +20,6 @@ cchardet = "^2.1.7"
 python-dotenv = "^0.19.2"
 ratelimit = "*"
 dataclasses = "*"
-importlib = "*"
 importlib_metadata = "*"
 
 [tool.black]
