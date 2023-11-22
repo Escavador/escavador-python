@@ -13,7 +13,7 @@ jobs:
     secrets: inherit
 
   build-and-publish:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04 # Python 3.6 is not supported by ubuntu-latest
     needs: [ run-tests ]
 
     steps:
