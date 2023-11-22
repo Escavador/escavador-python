@@ -16,7 +16,6 @@ keywords = ["escavador", "api", "python"]
 [tool.poetry.dependencies]
 python = "^3.6"
 requests = "^2.27.1"
-cchardet = "^2.1.7"
 python-dotenv = "^0.19.2"
 ratelimit = "*"
 dataclasses = "*"
