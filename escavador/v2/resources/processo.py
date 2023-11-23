@@ -41,6 +41,7 @@ class Processo(DataEndpoint):
     data_ultima_verificacao: str = field(hash=False, compare=False)
     tempo_desde_ultima_verificacao: str = field(hash=False, compare=False)
     data_ultima_movimentacao: str
+    match_fontes: "MatchFontes" = field(hash=False, compare=False)
     titulo_polo_ativo: Optional[str] = None
     titulo_polo_passivo: Optional[str] = None
     data_inicio: Optional[str] = None
@@ -65,6 +66,10 @@ class Processo(DataEndpoint):
             data_ultima_verificacao=json_dict.get("data_ultima_verificacao", None),
             tempo_desde_ultima_verificacao=json_dict.get("tempo_desde_ultima_verificacao", None),
             tipo_match=json_dict.get("tipo_match", None),
+            match_fontes=MatchFontes(
+                tribunal=json_dict.get("match_fontes", {}).get("tribunal", False),
+                diario_oficial=json_dict.get("match_fontes", {}).get("diario_oficial", False),
+            ),
             last_valid_cursor=ultimo_cursor,
         )
         instance.fontes += [
@@ -346,6 +351,17 @@ class Processo(DataEndpoint):
             return json_to_class(resposta, self.from_json, add_cursor=True)
 
         return ListaResultados()
+
+
+@dataclass
+class MatchFontes:
+    """Informa em que tipo de fonte o match do envolvido ou advogado buscado aconteceu.
+
+    Tipo de fonte: tribunal ou diário oficial.
+    """
+
+    tribunal: bool
+    diario_oficial: bool
 
 
 @dataclass
