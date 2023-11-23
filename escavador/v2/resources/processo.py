@@ -9,7 +9,7 @@ from escavador.resources.helpers.enums_v2 import Ordem, CriterioOrdenacao, Sigla
 from escavador.resources.helpers.consume_cursor import json_to_class, consumir_cursor
 from escavador.v2.resources.movimentacao import Movimentacao
 from escavador.v2.resources.tribunal import Tribunal
-from escavador.v2.resources.envolvido import Envolvido, EnvolvidoEncontrado
+from escavador.v2.resources.envolvido import Envolvido, EnvolvidoEncontrado, TipoEnvolvidoPesquisado
 
 
 @dataclass
@@ -383,6 +383,8 @@ class FonteProcesso:
     :attr fisico: indica se o processo é físico ou eletrônico
     :attr segredo_justica: indica se o processo está sob segredo de justiça
     :attr arquivado: indica se o processo está arquivado
+    :attr status_predito: provável status do processo predito através de inteligência artificial
+    :attr tipos_envolvido_pesquisado: lista de tipos que o envolvido buscado assume nesta fonte específica
     :attr url: url do processo na fonte
     :attr caderno: indica o caderno do diário oficial em que o processo foi publicado
     :attr tribunal: informações do tribunal de origem do processo
@@ -406,6 +408,9 @@ class FonteProcesso:
     segredo_justica: Optional[bool] = field(default=None, hash=False, compare=False)
     arquivado: Optional[bool] = field(default=None, hash=False, compare=False)
     status_predito: Optional[str] = field(default=None, hash=False, compare=False)
+    tipos_envolvido_pesquisado: List[TipoEnvolvidoPesquisado] = field(
+        default_factory=list, hash=False, compare=False
+    )
     url: Optional[str] = None
     caderno: Optional[str] = None
     data_ultima_verificacao: Optional[str] = field(default=None, hash=False, compare=False)
@@ -444,6 +449,11 @@ class FonteProcesso:
 
         instance.envolvidos += [
             Envolvido.from_json(env) for env in json_dict.get("envolvidos") or [] if env
+        ]
+        instance.tipos_envolvido_pesquisado += [
+            TipoEnvolvidoPesquisado.from_json(tipo)
+            for tipo in json_dict.get("tipos_envolvido_pesquisado") or []
+            if tipo
         ]
 
         return instance

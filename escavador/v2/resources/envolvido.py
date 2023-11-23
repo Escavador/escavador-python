@@ -229,3 +229,31 @@ class Envolvido(DataEndpoint):
             return self.nome == other
 
         return False
+
+
+@dataclass
+class TipoEnvolvidoPesquisado:
+    """Representação padronizada do tipo que o envolvido pesquisado assumiu na fonte específica daquele processo
+
+    :attr id: identificador único do tipo
+    :attr tipo: tipo do envolvido como aparece na fonte
+    :attr tipo_normalizado: tipo do envolvido padronizado pelo Escavador
+    :attr polo: polo do envolvido nesse processo (ex: "ATIVO", "PASSIVO", "ADVOGADO")
+    """
+
+    id: int
+    tipo: str
+    tipo_normalizado: str
+    polo: str
+
+    @classmethod
+    def from_json(cls, json_dict: Optional[Dict]) -> Optional["TipoEnvolvidoPesquisado"]:
+        if json_dict is None:
+            return None
+
+        return cls(
+            id=json_dict["id"],
+            tipo=json_dict["tipo"],
+            tipo_normalizado=json_dict["tipo_normalizado"],
+            polo=json_dict["polo"],
+        )
