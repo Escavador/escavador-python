@@ -51,6 +51,21 @@ class FonteMovimentacao:
         )
 
 
+@dataclass(frozen=True)
+class ClassificacaoMovimentacao:
+    """Classificação de uma movimentação.
+
+    :attr nome: título da classificação
+    :attr descricao: descrição detalhada do significado daquele tipo de movimentação
+    :attr hierarquia: hierarquia que a classificação ocupa na árvore de classificações
+        Ex: "Documentos Externos > Elementos De Prova > Parecer > Parecer (Outros)"
+    """
+
+    nome: str
+    descricao: str
+    hierarquia: str
+
+
 @dataclass
 class Movimentacao(DataEndpoint):
     """Uma movimentação em um processo.
@@ -66,6 +81,9 @@ class Movimentacao(DataEndpoint):
     id: int
     data: str
     tipo: Optional[str] = None
+    classificacao_predita: ClassificacaoMovimentacao = field(
+        default=None, hash=False, compare=False
+    )
     conteudo: str = ""
     fonte: FonteMovimentacao = field(default=None, hash=False, compare=False)
     last_valid_cursor: str = field(default="", repr=False, hash=False)
@@ -82,6 +100,13 @@ class Movimentacao(DataEndpoint):
             fonte=FonteMovimentacao.from_json(json_dict.get("fonte", None)),
             tipo=json_dict.get("tipo"),
             conteudo=json_dict.get("conteudo"),
+            classificacao_predita=ClassificacaoMovimentacao(
+                nome=json_dict["classificacao_predita"].get("nome"),
+                descricao=json_dict["classificacao_predita"].get("descricao"),
+                hierarquia=json_dict["classificacao_predita"].get("hierarquia"),
+            )
+            if json_dict.get("classificacao_predita")
+            else None,
             data=json_dict["data"],
             last_valid_cursor=ultimo_cursor,
         )
