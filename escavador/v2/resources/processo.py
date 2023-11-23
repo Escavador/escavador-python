@@ -44,6 +44,7 @@ class Processo(DataEndpoint):
     titulo_polo_ativo: Optional[str] = None
     titulo_polo_passivo: Optional[str] = None
     data_inicio: Optional[str] = None
+    tipo_match: Optional[str] = None
     fontes: List["FonteProcesso"] = field(default_factory=list)
     last_valid_cursor: str = field(default="", repr=False, hash=False)
 
@@ -63,6 +64,7 @@ class Processo(DataEndpoint):
             data_ultima_movimentacao=json_dict.get("data_ultima_movimentacao", None),
             data_ultima_verificacao=json_dict.get("data_ultima_verificacao", None),
             tempo_desde_ultima_verificacao=json_dict.get("tempo_desde_ultima_verificacao", None),
+            tipo_match=json_dict.get("tipo_match", None),
             last_valid_cursor=ultimo_cursor,
         )
         instance.fontes += [
