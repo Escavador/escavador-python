@@ -382,6 +382,7 @@ class FonteProcesso:
     :attr data_ultima_movimentacao: data da última movimentação registrada do processo nessa fonte
     :attr data_ultima_verificacao: data da última verificação feita no sistema de origem pelo Escavador
     :attr quantidade_movimentacoes: quantidade de movimentações do processo nessa fonte
+    :attr quantidade_envolvidos: quantidade de envolvidos e advogados do processo nessa fonte
     :attr fisico: indica se o processo é físico ou eletrônico
     :attr segredo_justica: indica se o processo está sob segredo de justiça
     :attr arquivado: indica se o processo está arquivado
@@ -408,6 +409,7 @@ class FonteProcesso:
     fisico: bool
     sistema: str
     quantidade_movimentacoes: int = field(hash=False, compare=False)
+    quantidade_envolvidos: int = field(hash=False, compare=False)
     segredo_justica: Optional[bool] = field(default=None, hash=False, compare=False)
     arquivado: Optional[bool] = field(default=None, hash=False, compare=False)
     status_predito: Optional[str] = field(default=None, hash=False, compare=False)
@@ -441,6 +443,7 @@ class FonteProcesso:
             fisico=json_dict["fisico"],
             sistema=json_dict["sistema"],
             quantidade_movimentacoes=json_dict["quantidade_movimentacoes"],
+            quantidade_envolvidos=json_dict["quantidade_envolvidos"],
             segredo_justica=json_dict.get("segredo_justica"),
             arquivado=json_dict.get("arquivado"),
             status_predito=json_dict.get("status_predito"),
