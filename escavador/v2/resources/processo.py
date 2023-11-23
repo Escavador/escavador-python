@@ -503,7 +503,7 @@ class FonteProcesso:
     :attr arquivado: indica se o processo está arquivado
     :attr status_predito: provável status do processo predito através de inteligência artificial
     :attr tipos_envolvido_pesquisado: lista de tipos que o envolvido buscado assume nesta fonte específica
-    :attr match_documento_por: indica que fator possibilitou o match com o envolvido buscado
+    :attr match_documento_por: indica a regra que possibilitou a identificação do envolvido buscado
     :attr url: url do processo na fonte
     :attr caderno: indica o caderno do diário oficial em que o processo foi publicado
     :attr tribunal: informações do tribunal de origem do processo

@@ -74,12 +74,12 @@ class Movimentacao(DataEndpoint):
     :attr fonte: fonte de onde a movimentação foi extraída
     :attr tipo: tipo de movimentação
     :attr tipo_publicacao: tipo da movimentação, quando especificado no diário oficial
-    :attr classificacao_predita: classificação do tipo de movimentação.
+    :attr classificacao_predita: classificação do tipo de movimentação estimada pelo Escavador
     :attr conteudo: conteúdo da movimentação
     :attr texto_categoria: quando a movimentação faz parte de um grupo no diário oficial,
-                           é o texto que se refere a todo o grupo.
+                           é a parte do texto que se refere a todo o grupo
     :attr data: data em que ocorreu
-    :attr last_valid_cursor: link do cursor caso queira mais resultados. Não é um atributo da movimentação.
+    :attr last_valid_cursor: link do cursor caso queira mais resultados. Não é um atributo da movimentação
     """
 
     id: int
