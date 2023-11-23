@@ -76,6 +76,8 @@ class Movimentacao(DataEndpoint):
     :attr tipo_publicacao: tipo da movimentação, quando especificado no diário oficial
     :attr classificacao_predita: classificação do tipo de movimentação.
     :attr conteudo: conteúdo da movimentação
+    :attr texto_categoria: quando a movimentação faz parte de um grupo no diário oficial,
+                           é o texto que se refere a todo o grupo.
     :attr data: data em que ocorreu
     :attr last_valid_cursor: link do cursor caso queira mais resultados. Não é um atributo da movimentação.
     """
@@ -88,6 +90,7 @@ class Movimentacao(DataEndpoint):
         default=None, hash=False, compare=False
     )
     conteudo: str = ""
+    texto_categoria: Optional[str] = None
     fonte: FonteMovimentacao = field(default=None, hash=False, compare=False)
     last_valid_cursor: str = field(default="", repr=False, hash=False)
 
@@ -111,6 +114,7 @@ class Movimentacao(DataEndpoint):
             if json_dict.get("classificacao_predita")
             else None,
             conteudo=json_dict.get("conteudo"),
+            texto_categoria=json_dict.get("texto_categoria"),
             data=json_dict["data"],
             last_valid_cursor=ultimo_cursor,
         )
