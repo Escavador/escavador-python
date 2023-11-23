@@ -12,6 +12,93 @@ from escavador.v2.resources.tribunal import Tribunal
 from escavador.v2.resources.envolvido import Envolvido, EnvolvidoEncontrado, TipoEnvolvidoPesquisado
 
 
+@dataclass(frozen=True)
+class SolicitacaoAtualizacao:
+    """Informações sobre a solicitação de atualização de um processo.
+
+    :attr id: id da solicitação de atualização
+    :attr status: status da solicitação de atualização
+    :attr criado_em: data de criação da solicitação de atualização
+    :attr numero_cnj: número do CNJ do processo
+    :attr concluido_em: data de conclusão da solicitação de atualização
+    """
+
+    id: int
+    status: str
+    criado_em: str
+    numero_cnj: str
+    concluido_em: Optional[str] = None
+
+    @classmethod
+    def from_json(cls, json_dict: Optional[Dict]) -> Optional["SolicitacaoAtualizacao"]:
+        if json_dict is None:
+            return None
+
+        return cls(
+            id=json_dict["id"],
+            status=json_dict["status"],
+            criado_em=json_dict["criado_em"],
+            numero_cnj=json_dict["numero_cnj"],
+            concluido_em=json_dict.get("concluido_em"),
+        )
+
+    def consultar_status(self) -> "StatusAtualizacao":
+        """Consulta o status do pedido de atualização.
+
+        :return: informações sobre o status do pedido de atualização
+        """
+        resposta = Processo.methods.get(
+            f"processos/numero_cnj/{self.numero_cnj}/status-atualizacao"
+        )
+
+        if not resposta["sucesso"]:
+            conteudo = resposta.get("resposta", {})
+            raise FailedRequest(status=resposta["http_status"], **conteudo)
+
+        return StatusAtualizacao.from_json(resposta["resposta"])
+
+
+@dataclass
+class StatusAtualizacao:
+    """Informações sobre o status do último pedido de atualização de um processo."""
+
+    numero_cnj: str
+    data_ultima_verificacao: str
+    tempo_desde_ultima_verificacao: str
+    ultima_verificacao: Optional[SolicitacaoAtualizacao]
+
+    @classmethod
+    def from_json(cls, json_dict: Optional[Dict]) -> Optional["StatusAtualizacao"]:
+        if json_dict is None:
+            return None
+
+        return cls(
+            numero_cnj=json_dict["numero_cnj"],
+            data_ultima_verificacao=json_dict["data_ultima_verificacao"],
+            tempo_desde_ultima_verificacao=json_dict["tempo_desde_ultima_verificacao"],
+            ultima_verificacao=SolicitacaoAtualizacao.from_json(json_dict["ultima_verificacao"]),
+        )
+
+    def atualizar_status(self) -> "StatusAtualizacao":
+        """Solicita o status atualizado do último pedido de atualização do processo a que esse status se refere.
+
+        :return: informações sobre o status do pedido de atualização
+        """
+        resposta = Processo.methods.get(
+            f"processos/numero_cnj/{self.numero_cnj}/status-atualizacao"
+        )
+
+        if not resposta["sucesso"]:
+            conteudo = resposta.get("resposta", {})
+            raise FailedRequest(status=resposta["http_status"], **conteudo)
+        status_atualizado = StatusAtualizacao.from_json(resposta["resposta"])
+
+        self.data_ultima_verificacao = status_atualizado.data_ultima_verificacao
+        self.tempo_desde_ultima_verificacao = status_atualizado.tempo_desde_ultima_verificacao
+        self.ultima_verificacao = status_atualizado.ultima_verificacao
+        return self
+
+
 @dataclass
 class Processo(DataEndpoint):
     """
@@ -81,7 +168,7 @@ class Processo(DataEndpoint):
         return instance
 
     @staticmethod
-    def por_numero(numero_cnj: str, **kwargs) -> Union["Processo", FailedRequest]:
+    def por_numero(numero_cnj: str, **kwargs) -> "Processo":
         """
         Busca os dados de um processo pelo seu número único do CNJ.
 
@@ -100,9 +187,7 @@ class Processo(DataEndpoint):
         return Processo.from_json(resposta["resposta"], resposta.get("links", {}).get("next", ""))
 
     @staticmethod
-    def movimentacoes(
-        numero_cnj: str, **kwargs
-    ) -> Union[ListaResultados[Movimentacao], FailedRequest]:
+    def movimentacoes(numero_cnj: str, **kwargs) -> ListaResultados[Movimentacao]:
         """
         Busca as movimentações de um processo pelo seu número único do CNJ.
 
@@ -130,7 +215,7 @@ class Processo(DataEndpoint):
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
         **kwargs,
-    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
+    ) -> Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]]:
         """
         Busca os processos envolvendo uma pessoa ou empresa a partir do seu nome.
 
@@ -164,7 +249,7 @@ class Processo(DataEndpoint):
         tribunais: Optional[List[SiglaTribunal]] = None,
         incluir_homonimos: Optional[bool] = None,
         **kwargs,
-    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
+    ) -> Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]]:
         """
         Busca os processos envolvendo uma pessoa a partir de seu CPF.
 
@@ -204,7 +289,7 @@ class Processo(DataEndpoint):
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
         **kwargs,
-    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
+    ) -> Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]]:
         """
         Busca os processos envolvendo uma instituição a partir de seu CNPJ.
 
@@ -241,7 +326,7 @@ class Processo(DataEndpoint):
         tribunais: Optional[List[SiglaTribunal]] = None,
         incluir_homonimos: Optional[bool] = None,
         **kwargs,
-    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
+    ) -> Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]]:
         """
         Busca os processos envolvendo uma pessoa ou instituição a partir de seu nome e/ou CPF/CNPJ.
 
@@ -298,7 +383,7 @@ class Processo(DataEndpoint):
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
         **kwargs,
-    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
+    ) -> Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]]:
         """
         Busca os processos de um advogado a partir de sua carteira da OAB.
 
@@ -338,7 +423,7 @@ class Processo(DataEndpoint):
             first_response, Processo.from_json, add_cursor=True
         )
 
-    def continuar_busca(self) -> Union[ListaResultados["Processo"], FailedRequest]:
+    def continuar_busca(self) -> ListaResultados["Processo"]:
         """Retorna mais resultados para a busca que gerou o processo atual.
 
         :return: lista de processos ou FailedRequest
@@ -353,6 +438,36 @@ class Processo(DataEndpoint):
             return json_to_class(resposta, self.from_json, add_cursor=True)
 
         return ListaResultados()
+
+    @classmethod
+    def solicitar_atualizacao(cls, numero_cnj: str) -> SolicitacaoAtualizacao:
+        """Solicita a atualização de um processo.
+
+        :param numero_cnj: o processo a ser atualizado
+        :return: informações sobre a solicitação de atualização
+        """
+        resposta = Processo.methods.post(f"processos/numero_cnj/{numero_cnj}/solicitar-atualizacao")
+
+        if not resposta["sucesso"]:
+            conteudo = resposta.get("resposta", {})
+            raise FailedRequest(status=resposta["http_status"], **conteudo)
+
+        return SolicitacaoAtualizacao.from_json(resposta["resposta"])
+
+    @classmethod
+    def status_atualizacao(cls, numero_cnj: str) -> StatusAtualizacao:
+        """Consulta o status do pedido de atualização.
+
+        :param numero_cnj: o processo a ser atualizado
+        :return: informações sobre o status do pedido de atualização
+        """
+        resposta = Processo.methods.get(f"processos/numero_cnj/{numero_cnj}/status-atualizacao")
+
+        if not resposta["sucesso"]:
+            conteudo = resposta.get("resposta", {})
+            raise FailedRequest(status=resposta["http_status"], **conteudo)
+
+        return StatusAtualizacao.from_json(resposta["resposta"])
 
 
 @dataclass
