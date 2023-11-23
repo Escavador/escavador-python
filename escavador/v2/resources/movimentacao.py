@@ -73,6 +73,8 @@ class Movimentacao(DataEndpoint):
     :attr id: id da movimentação no sistema do Escavador
     :attr fonte: fonte de onde a movimentação foi extraída
     :attr tipo: tipo de movimentação
+    :attr tipo_publicacao: tipo da movimentação, quando especificado no diário oficial
+    :attr classificacao_predita: classificação do tipo de movimentação.
     :attr conteudo: conteúdo da movimentação
     :attr data: data em que ocorreu
     :attr last_valid_cursor: link do cursor caso queira mais resultados. Não é um atributo da movimentação.
@@ -81,6 +83,7 @@ class Movimentacao(DataEndpoint):
     id: int
     data: str
     tipo: Optional[str] = None
+    tipo_publicacao: Optional[str] = None
     classificacao_predita: ClassificacaoMovimentacao = field(
         default=None, hash=False, compare=False
     )
@@ -99,7 +102,7 @@ class Movimentacao(DataEndpoint):
             id=json_dict["id"],
             fonte=FonteMovimentacao.from_json(json_dict.get("fonte", None)),
             tipo=json_dict.get("tipo"),
-            conteudo=json_dict.get("conteudo"),
+            tipo_publicacao=json_dict.get("tipo_publicacao"),
             classificacao_predita=ClassificacaoMovimentacao(
                 nome=json_dict["classificacao_predita"].get("nome"),
                 descricao=json_dict["classificacao_predita"].get("descricao"),
@@ -107,6 +110,7 @@ class Movimentacao(DataEndpoint):
             )
             if json_dict.get("classificacao_predita")
             else None,
+            conteudo=json_dict.get("conteudo"),
             data=json_dict["data"],
             last_valid_cursor=ultimo_cursor,
         )
