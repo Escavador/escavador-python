@@ -399,12 +399,13 @@ class FonteProcesso:
     grau: int
     grau_formatado: str
     data_inicio: str
-    data_ultima_movimentacao: str
+    data_ultima_movimentacao: str = field(hash=False, compare=False)
     fisico: bool
     sistema: str
-    quantidade_movimentacoes: int
-    segredo_justica: Optional[bool] = None
-    arquivado: Optional[bool] = None
+    quantidade_movimentacoes: int = field(hash=False, compare=False)
+    segredo_justica: Optional[bool] = field(default=None, hash=False, compare=False)
+    arquivado: Optional[bool] = field(default=None, hash=False, compare=False)
+    status_predito: Optional[str] = field(default=None, hash=False, compare=False)
     url: Optional[str] = None
     caderno: Optional[str] = None
     data_ultima_verificacao: Optional[str] = field(default=None, hash=False, compare=False)
@@ -433,6 +434,7 @@ class FonteProcesso:
             quantidade_movimentacoes=json_dict["quantidade_movimentacoes"],
             segredo_justica=json_dict.get("segredo_justica"),
             arquivado=json_dict.get("arquivado"),
+            status_predito=json_dict.get("status_predito"),
             url=json_dict["url"],
             caderno=json_dict.get("caderno"),
             data_ultima_verificacao=json_dict.get("data_ultima_verificacao"),
