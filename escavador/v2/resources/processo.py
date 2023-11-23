@@ -30,6 +30,8 @@ class Processo(DataEndpoint):
     :attr data_ultima_movimentacao: data da última movimentação registrada no processo
     :attr data_ultima_verificacao: data da última verificação do processo no sistema de origem
     :attr tempo_desde_ultima_verificacao: tempo desde a última verificação do processo no sistema de origem.
+    :attr tipo_match: tipo de match ocorrido para a inclusão do processo como resultado da busca
+    :attr match_fontes: indica em que tipos de fontes o match do envolvido ou advogado buscado aconteceu
     :attr fontes: lista de fontes do processo
     :attr last_valid_cursor: link do cursor caso queira mais resultados. Não é um atributo do processo.
     """

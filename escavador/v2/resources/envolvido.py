@@ -233,7 +233,7 @@ class Envolvido(DataEndpoint):
 
 @dataclass
 class TipoEnvolvidoPesquisado:
-    """Representação padronizada do tipo que o envolvido pesquisado assumiu na fonte específica daquele processo
+    """Representação padronizada do tipo que o envolvido pesquisado assumiu na fonte específica
 
     :attr id: identificador único do tipo
     :attr tipo: tipo do envolvido como aparece na fonte
