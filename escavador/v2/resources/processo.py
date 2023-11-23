@@ -387,6 +387,7 @@ class FonteProcesso:
     :attr arquivado: indica se o processo está arquivado
     :attr status_predito: provável status do processo predito através de inteligência artificial
     :attr tipos_envolvido_pesquisado: lista de tipos que o envolvido buscado assume nesta fonte específica
+    :attr match_documento_por: indica que fator possibilitou o match com o envolvido buscado
     :attr url: url do processo na fonte
     :attr caderno: indica o caderno do diário oficial em que o processo foi publicado
     :attr tribunal: informações do tribunal de origem do processo
@@ -413,6 +414,7 @@ class FonteProcesso:
     tipos_envolvido_pesquisado: List[TipoEnvolvidoPesquisado] = field(
         default_factory=list, hash=False, compare=False
     )
+    match_documento_por: Optional[str] = field(default=None, hash=False, compare=False)
     url: Optional[str] = None
     caderno: Optional[str] = None
     data_ultima_verificacao: Optional[str] = field(default=None, hash=False, compare=False)
@@ -442,6 +444,7 @@ class FonteProcesso:
             segredo_justica=json_dict.get("segredo_justica"),
             arquivado=json_dict.get("arquivado"),
             status_predito=json_dict.get("status_predito"),
+            match_documento_por=json_dict.get("match_documento_por"),
             url=json_dict["url"],
             caderno=json_dict.get("caderno"),
             data_ultima_verificacao=json_dict.get("data_ultima_verificacao"),
