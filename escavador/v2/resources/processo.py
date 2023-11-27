@@ -9,7 +9,94 @@ from escavador.resources.helpers.enums_v2 import Ordem, CriterioOrdenacao, Sigla
 from escavador.resources.helpers.consume_cursor import json_to_class, consumir_cursor
 from escavador.v2.resources.movimentacao import Movimentacao
 from escavador.v2.resources.tribunal import Tribunal
-from escavador.v2.resources.envolvido import Envolvido, EnvolvidoEncontrado
+from escavador.v2.resources.envolvido import Envolvido, EnvolvidoEncontrado, TipoEnvolvidoPesquisado
+
+
+@dataclass(frozen=True)
+class SolicitacaoAtualizacao:
+    """Informações sobre a solicitação de atualização de um processo.
+
+    :attr id: id da solicitação de atualização
+    :attr status: status da solicitação de atualização
+    :attr criado_em: data de criação da solicitação de atualização
+    :attr numero_cnj: número do CNJ do processo
+    :attr concluido_em: data de conclusão da solicitação de atualização
+    """
+
+    id: int
+    status: str
+    criado_em: str
+    numero_cnj: str
+    concluido_em: Optional[str] = None
+
+    @classmethod
+    def from_json(cls, json_dict: Optional[Dict]) -> Optional["SolicitacaoAtualizacao"]:
+        if json_dict is None:
+            return None
+
+        return cls(
+            id=json_dict["id"],
+            status=json_dict["status"],
+            criado_em=json_dict["criado_em"],
+            numero_cnj=json_dict["numero_cnj"],
+            concluido_em=json_dict.get("concluido_em"),
+        )
+
+    def consultar_status(self) -> "StatusAtualizacao":
+        """Consulta o status do pedido de atualização.
+
+        :return: informações sobre o status do pedido de atualização
+        """
+        resposta = Processo.methods.get(
+            f"processos/numero_cnj/{self.numero_cnj}/status-atualizacao"
+        )
+
+        if not resposta["sucesso"]:
+            conteudo = resposta.get("resposta", {})
+            raise FailedRequest(status=resposta["http_status"], **conteudo)
+
+        return StatusAtualizacao.from_json(resposta["resposta"])
+
+
+@dataclass
+class StatusAtualizacao:
+    """Informações sobre o status do último pedido de atualização de um processo."""
+
+    numero_cnj: str
+    data_ultima_verificacao: str
+    tempo_desde_ultima_verificacao: str
+    ultima_verificacao: Optional[SolicitacaoAtualizacao]
+
+    @classmethod
+    def from_json(cls, json_dict: Optional[Dict]) -> Optional["StatusAtualizacao"]:
+        if json_dict is None:
+            return None
+
+        return cls(
+            numero_cnj=json_dict["numero_cnj"],
+            data_ultima_verificacao=json_dict["data_ultima_verificacao"],
+            tempo_desde_ultima_verificacao=json_dict["tempo_desde_ultima_verificacao"],
+            ultima_verificacao=SolicitacaoAtualizacao.from_json(json_dict["ultima_verificacao"]),
+        )
+
+    def atualizar_status(self) -> "StatusAtualizacao":
+        """Solicita o status atualizado do último pedido de atualização do processo a que esse status se refere.
+
+        :return: informações sobre o status do pedido de atualização
+        """
+        resposta = Processo.methods.get(
+            f"processos/numero_cnj/{self.numero_cnj}/status-atualizacao"
+        )
+
+        if not resposta["sucesso"]:
+            conteudo = resposta.get("resposta", {})
+            raise FailedRequest(status=resposta["http_status"], **conteudo)
+        status_atualizado = StatusAtualizacao.from_json(resposta["resposta"])
+
+        self.data_ultima_verificacao = status_atualizado.data_ultima_verificacao
+        self.tempo_desde_ultima_verificacao = status_atualizado.tempo_desde_ultima_verificacao
+        self.ultima_verificacao = status_atualizado.ultima_verificacao
+        return self
 
 
 @dataclass
@@ -30,6 +117,8 @@ class Processo(DataEndpoint):
     :attr data_ultima_movimentacao: data da última movimentação registrada no processo
     :attr data_ultima_verificacao: data da última verificação do processo no sistema de origem
     :attr tempo_desde_ultima_verificacao: tempo desde a última verificação do processo no sistema de origem.
+    :attr tipo_match: tipo de match ocorrido para a inclusão do processo como resultado da busca
+    :attr match_fontes: indica em que tipos de fontes o match do envolvido ou advogado buscado aconteceu
     :attr fontes: lista de fontes do processo
     :attr last_valid_cursor: link do cursor caso queira mais resultados. Não é um atributo do processo.
     """
@@ -41,9 +130,11 @@ class Processo(DataEndpoint):
     data_ultima_verificacao: str = field(hash=False, compare=False)
     tempo_desde_ultima_verificacao: str = field(hash=False, compare=False)
     data_ultima_movimentacao: str
+    match_fontes: "MatchFontes" = field(hash=False, compare=False)
     titulo_polo_ativo: Optional[str] = None
     titulo_polo_passivo: Optional[str] = None
     data_inicio: Optional[str] = None
+    tipo_match: Optional[str] = None
     fontes: List["FonteProcesso"] = field(default_factory=list)
     last_valid_cursor: str = field(default="", repr=False, hash=False)
 
@@ -63,6 +154,11 @@ class Processo(DataEndpoint):
             data_ultima_movimentacao=json_dict.get("data_ultima_movimentacao", None),
             data_ultima_verificacao=json_dict.get("data_ultima_verificacao", None),
             tempo_desde_ultima_verificacao=json_dict.get("tempo_desde_ultima_verificacao", None),
+            tipo_match=json_dict.get("tipo_match", None),
+            match_fontes=MatchFontes(
+                tribunal=json_dict.get("match_fontes", {}).get("tribunal", False),
+                diario_oficial=json_dict.get("match_fontes", {}).get("diario_oficial", False),
+            ),
             last_valid_cursor=ultimo_cursor,
         )
         instance.fontes += [
@@ -72,7 +168,7 @@ class Processo(DataEndpoint):
         return instance
 
     @staticmethod
-    def por_numero(numero_cnj: str, **kwargs) -> Union["Processo", FailedRequest]:
+    def por_numero(numero_cnj: str, **kwargs) -> "Processo":
         """
         Busca os dados de um processo pelo seu número único do CNJ.
 
@@ -91,9 +187,7 @@ class Processo(DataEndpoint):
         return Processo.from_json(resposta["resposta"], resposta.get("links", {}).get("next", ""))
 
     @staticmethod
-    def movimentacoes(
-        numero_cnj: str, **kwargs
-    ) -> Union[ListaResultados[Movimentacao], FailedRequest]:
+    def movimentacoes(numero_cnj: str, **kwargs) -> ListaResultados[Movimentacao]:
         """
         Busca as movimentações de um processo pelo seu número único do CNJ.
 
@@ -121,7 +215,7 @@ class Processo(DataEndpoint):
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
         **kwargs,
-    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
+    ) -> Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]]:
         """
         Busca os processos envolvendo uma pessoa ou empresa a partir do seu nome.
 
@@ -155,7 +249,7 @@ class Processo(DataEndpoint):
         tribunais: Optional[List[SiglaTribunal]] = None,
         incluir_homonimos: Optional[bool] = None,
         **kwargs,
-    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
+    ) -> Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]]:
         """
         Busca os processos envolvendo uma pessoa a partir de seu CPF.
 
@@ -195,7 +289,7 @@ class Processo(DataEndpoint):
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
         **kwargs,
-    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
+    ) -> Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]]:
         """
         Busca os processos envolvendo uma instituição a partir de seu CNPJ.
 
@@ -232,7 +326,7 @@ class Processo(DataEndpoint):
         tribunais: Optional[List[SiglaTribunal]] = None,
         incluir_homonimos: Optional[bool] = None,
         **kwargs,
-    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
+    ) -> Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]]:
         """
         Busca os processos envolvendo uma pessoa ou instituição a partir de seu nome e/ou CPF/CNPJ.
 
@@ -289,7 +383,7 @@ class Processo(DataEndpoint):
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
         **kwargs,
-    ) -> Union[Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]], FailedRequest]:
+    ) -> Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]]:
         """
         Busca os processos de um advogado a partir de sua carteira da OAB.
 
@@ -329,7 +423,7 @@ class Processo(DataEndpoint):
             first_response, Processo.from_json, add_cursor=True
         )
 
-    def continuar_busca(self) -> Union[ListaResultados["Processo"], FailedRequest]:
+    def continuar_busca(self) -> ListaResultados["Processo"]:
         """Retorna mais resultados para a busca que gerou o processo atual.
 
         :return: lista de processos ou FailedRequest
@@ -344,6 +438,47 @@ class Processo(DataEndpoint):
             return json_to_class(resposta, self.from_json, add_cursor=True)
 
         return ListaResultados()
+
+    @classmethod
+    def solicitar_atualizacao(cls, numero_cnj: str) -> SolicitacaoAtualizacao:
+        """Solicita a atualização de um processo.
+
+        :param numero_cnj: o processo a ser atualizado
+        :return: informações sobre a solicitação de atualização
+        """
+        resposta = Processo.methods.post(f"processos/numero_cnj/{numero_cnj}/solicitar-atualizacao")
+
+        if not resposta["sucesso"]:
+            conteudo = resposta.get("resposta", {})
+            raise FailedRequest(status=resposta["http_status"], **conteudo)
+
+        return SolicitacaoAtualizacao.from_json(resposta["resposta"])
+
+    @classmethod
+    def status_atualizacao(cls, numero_cnj: str) -> StatusAtualizacao:
+        """Consulta o status do pedido de atualização.
+
+        :param numero_cnj: o processo a ser atualizado
+        :return: informações sobre o status do pedido de atualização
+        """
+        resposta = Processo.methods.get(f"processos/numero_cnj/{numero_cnj}/status-atualizacao")
+
+        if not resposta["sucesso"]:
+            conteudo = resposta.get("resposta", {})
+            raise FailedRequest(status=resposta["http_status"], **conteudo)
+
+        return StatusAtualizacao.from_json(resposta["resposta"])
+
+
+@dataclass
+class MatchFontes:
+    """Informa em que tipo de fonte o match do envolvido ou advogado buscado aconteceu.
+
+    Tipo de fonte: tribunal ou diário oficial.
+    """
+
+    tribunal: bool
+    diario_oficial: bool
 
 
 @dataclass
@@ -362,9 +497,13 @@ class FonteProcesso:
     :attr data_ultima_movimentacao: data da última movimentação registrada do processo nessa fonte
     :attr data_ultima_verificacao: data da última verificação feita no sistema de origem pelo Escavador
     :attr quantidade_movimentacoes: quantidade de movimentações do processo nessa fonte
+    :attr quantidade_envolvidos: quantidade de envolvidos e advogados do processo nessa fonte
     :attr fisico: indica se o processo é físico ou eletrônico
     :attr segredo_justica: indica se o processo está sob segredo de justiça
     :attr arquivado: indica se o processo está arquivado
+    :attr status_predito: provável status do processo predito através de inteligência artificial
+    :attr tipos_envolvido_pesquisado: lista de tipos que o envolvido buscado assume nesta fonte específica
+    :attr match_documento_por: indica a regra que possibilitou a identificação do envolvido buscado
     :attr url: url do processo na fonte
     :attr caderno: indica o caderno do diário oficial em que o processo foi publicado
     :attr tribunal: informações do tribunal de origem do processo
@@ -381,12 +520,18 @@ class FonteProcesso:
     grau: int
     grau_formatado: str
     data_inicio: str
-    data_ultima_movimentacao: str
+    data_ultima_movimentacao: str = field(hash=False, compare=False)
     fisico: bool
     sistema: str
-    quantidade_movimentacoes: int
-    segredo_justica: Optional[bool] = None
-    arquivado: Optional[bool] = None
+    quantidade_movimentacoes: int = field(hash=False, compare=False)
+    quantidade_envolvidos: int = field(hash=False, compare=False)
+    segredo_justica: Optional[bool] = field(default=None, hash=False, compare=False)
+    arquivado: Optional[bool] = field(default=None, hash=False, compare=False)
+    status_predito: Optional[str] = field(default=None, hash=False, compare=False)
+    tipos_envolvido_pesquisado: List[TipoEnvolvidoPesquisado] = field(
+        default_factory=list, hash=False, compare=False
+    )
+    match_documento_por: Optional[str] = field(default=None, hash=False, compare=False)
     url: Optional[str] = None
     caderno: Optional[str] = None
     data_ultima_verificacao: Optional[str] = field(default=None, hash=False, compare=False)
@@ -413,8 +558,11 @@ class FonteProcesso:
             fisico=json_dict["fisico"],
             sistema=json_dict["sistema"],
             quantidade_movimentacoes=json_dict["quantidade_movimentacoes"],
+            quantidade_envolvidos=json_dict["quantidade_envolvidos"],
             segredo_justica=json_dict.get("segredo_justica"),
             arquivado=json_dict.get("arquivado"),
+            status_predito=json_dict.get("status_predito"),
+            match_documento_por=json_dict.get("match_documento_por"),
             url=json_dict["url"],
             caderno=json_dict.get("caderno"),
             data_ultima_verificacao=json_dict.get("data_ultima_verificacao"),
@@ -424,6 +572,11 @@ class FonteProcesso:
 
         instance.envolvidos += [
             Envolvido.from_json(env) for env in json_dict.get("envolvidos") or [] if env
+        ]
+        instance.tipos_envolvido_pesquisado += [
+            TipoEnvolvidoPesquisado.from_json(tipo)
+            for tipo in json_dict.get("tipos_envolvido_pesquisado") or []
+            if tipo
         ]
 
         return instance

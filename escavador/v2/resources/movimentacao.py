@@ -51,6 +51,21 @@ class FonteMovimentacao:
         )
 
 
+@dataclass(frozen=True)
+class ClassificacaoMovimentacao:
+    """Classificação de uma movimentação.
+
+    :attr nome: título da classificação
+    :attr descricao: descrição detalhada do significado daquele tipo de movimentação
+    :attr hierarquia: hierarquia que a classificação ocupa na árvore de classificações
+        Ex: "Documentos Externos > Elementos De Prova > Parecer > Parecer (Outros)"
+    """
+
+    nome: str
+    descricao: str
+    hierarquia: str
+
+
 @dataclass
 class Movimentacao(DataEndpoint):
     """Uma movimentação em um processo.
@@ -58,15 +73,24 @@ class Movimentacao(DataEndpoint):
     :attr id: id da movimentação no sistema do Escavador
     :attr fonte: fonte de onde a movimentação foi extraída
     :attr tipo: tipo de movimentação
+    :attr tipo_publicacao: tipo da movimentação, quando especificado no diário oficial
+    :attr classificacao_predita: classificação do tipo de movimentação estimada pelo Escavador
     :attr conteudo: conteúdo da movimentação
+    :attr texto_categoria: quando a movimentação faz parte de um grupo no diário oficial,
+                           é a parte do texto que se refere a todo o grupo
     :attr data: data em que ocorreu
-    :attr last_valid_cursor: link do cursor caso queira mais resultados. Não é um atributo da movimentação.
+    :attr last_valid_cursor: link do cursor caso queira mais resultados. Não é um atributo da movimentação
     """
 
     id: int
     data: str
     tipo: Optional[str] = None
+    tipo_publicacao: Optional[str] = None
+    classificacao_predita: ClassificacaoMovimentacao = field(
+        default=None, hash=False, compare=False
+    )
     conteudo: str = ""
+    texto_categoria: Optional[str] = None
     fonte: FonteMovimentacao = field(default=None, hash=False, compare=False)
     last_valid_cursor: str = field(default="", repr=False, hash=False)
 
@@ -81,7 +105,16 @@ class Movimentacao(DataEndpoint):
             id=json_dict["id"],
             fonte=FonteMovimentacao.from_json(json_dict.get("fonte", None)),
             tipo=json_dict.get("tipo"),
+            tipo_publicacao=json_dict.get("tipo_publicacao"),
+            classificacao_predita=ClassificacaoMovimentacao(
+                nome=json_dict["classificacao_predita"].get("nome"),
+                descricao=json_dict["classificacao_predita"].get("descricao"),
+                hierarquia=json_dict["classificacao_predita"].get("hierarquia"),
+            )
+            if json_dict.get("classificacao_predita")
+            else None,
             conteudo=json_dict.get("conteudo"),
+            texto_categoria=json_dict.get("texto_categoria"),
             data=json_dict["data"],
             last_valid_cursor=ultimo_cursor,
         )
