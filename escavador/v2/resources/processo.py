@@ -403,6 +403,7 @@ class Processo(DataEndpoint):
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
         limit: Optional[int] = None,
+        oab_tipo: Optional[str] = None,
         **kwargs,
     ) -> Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]]:
         """
@@ -414,6 +415,8 @@ class Processo(DataEndpoint):
         :param ordem: determina ordenação ascendente ou descendente
         :param limit: quantidade de resultados desejados por página. Se não estiver dentro dos
         valores permitidos, resultará em uma exceção.
+        :param oab_tipo: Tipo da OAB. Pode ser informado caso o mesmo número exista para diferentes tipos.
+        Pode ser 'ADVOGADO', 'SUPLEMENTAR', 'ESTAGIARIO' ou 'CONSULTOR_ESTRANGEIRO'.
         :return: uma lista de processos, ou FailedRequest caso ocorra algum erro
 
         >>> Processo.por_oab(1234, "AC") # doctest: +SKIP
@@ -422,7 +425,8 @@ class Processo(DataEndpoint):
         ...                  estado="SP",
         ...                  ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
         ...                  ordem=Ordem.DESC,
-        ...                  limit=100) # doctest: +SKIP
+        ...                  limit=100,
+        ...                  oab_tipo="ESTAGIARIO") # doctest: +SKIP
         """
         params = {
             "oab_numero": f"{numero}",
@@ -430,6 +434,7 @@ class Processo(DataEndpoint):
             "ordena_por": ordena_por.value if ordena_por else None,
             "ordem": ordem.value if ordem else None,
             "limit": limit,
+            "oab_tipo": oab_tipo,
         }
 
         first_response = Processo.methods.get("advogado/processos", params=params, **kwargs)
