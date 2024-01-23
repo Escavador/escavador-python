@@ -189,6 +189,7 @@ class Envolvido(DataEndpoint):
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
+        limit: Optional[int] = None,
         **kwargs,
     ) -> Union[Tuple[Optional[EnvolvidoEncontrado], List["Processo"]], FailedRequest]:
         """Busca os processos envolvendo uma pessoa ou instituição a partir de seu nome e/ou CPF/CNPJ.
@@ -198,6 +199,8 @@ class Envolvido(DataEndpoint):
         :param ordena_por: critério de ordenação dos resultados
         :param ordem: ordem de ordenação dos resultados
         :param tribunais: lista de tribunais para filtrar os resultados
+        :param limit: quantidade de resultados desejados por página. Se não estiver dentro dos
+        valores permitidos, resultará em uma exceção.
         :return tupla com os dados do envolvido encontrado e uma lista de processos,
         ou FailedRequest caso ocorra algum erro
         """
@@ -209,6 +212,7 @@ class Envolvido(DataEndpoint):
             ordena_por=ordena_por,
             ordem=ordem,
             tribunais=tribunais,
+            limit=limit,
             **kwargs,
         )
 

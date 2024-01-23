@@ -214,6 +214,7 @@ class Processo(DataEndpoint):
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
+        limit: Optional[int] = None,
         **kwargs,
     ) -> Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]]:
         """
@@ -223,6 +224,8 @@ class Processo(DataEndpoint):
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
+        :param limit: quantidade de resultados desejados por página. Se não estiver dentro dos
+        valores permitidos, resultará em uma exceção.
         :return: tupla com os dados do envolvido encontrado e uma lista de processos,
         ou FailedRequest caso ocorra algum erro
 
@@ -231,13 +234,15 @@ class Processo(DataEndpoint):
         >>> Processo.por_nome("Escavador Engenharia e Construcoes Ltda",
         ...                   ordena_por=CriterioOrdenacao.INICIO,
         ...                   ordem=Ordem.DESC,
-        ...                   tribunais=[SiglaTribunal.CNJ, SiglaTribunal.TRT10]) # doctest: +SKIP
+        ...                   tribunais=[SiglaTribunal.CNJ, SiglaTribunal.TRT10],
+        ...                   limit=100) # doctest: +SKIP
         """
         return Processo.por_envolvido(
             nome=nome,
             ordena_por=ordena_por,
             ordem=ordem,
             tribunais=tribunais,
+            limit=limit,
             **kwargs,
         )
 
@@ -248,6 +253,7 @@ class Processo(DataEndpoint):
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
         incluir_homonimos: Optional[bool] = None,
+        limit: Optional[int] = None,
         **kwargs,
     ) -> Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]]:
         """
@@ -262,6 +268,8 @@ class Processo(DataEndpoint):
         :param incluir_homonimos: especifica se a busca por CPF deve incluir processos onde o CPF
         especificado não está associado, mas há envolvido com o nome igual e não associado a um CPF
         diferente. Só é permitido se cpf_cnpj for informado.
+        :param limit: quantidade de resultados desejados por página. Se não estiver dentro dos
+        valores permitidos, resultará em uma exceção.
         :return: tupla com os dados do envolvido encontrado e uma lista de processos,
         ou FailedRequest caso ocorra algum erro
 
@@ -271,7 +279,8 @@ class Processo(DataEndpoint):
         ...                  ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
         ...                  ordem=Ordem.ASC,
         ...                  tribunais=[SiglaTribunal.STF],
-        ...                  incluir_homonimos=True) # doctest: +SKIP
+        ...                  incluir_homonimos=True,
+        ...                  limit=100) # doctest: +SKIP
         """
         return Processo.por_envolvido(
             cpf_cnpj=cpf,
@@ -279,6 +288,7 @@ class Processo(DataEndpoint):
             ordem=ordem,
             tribunais=tribunais,
             incluir_homonimos=incluir_homonimos,
+            limit=limit,
             **kwargs,
         )
 
@@ -288,6 +298,7 @@ class Processo(DataEndpoint):
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
+        limit: Optional[int] = None,
         **kwargs,
     ) -> Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]]:
         """
@@ -299,6 +310,8 @@ class Processo(DataEndpoint):
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
+        :param limit: quantidade de resultados desejados por página. Se não estiver dentro dos
+        valores permitidos, resultará em uma exceção.
         :return: tupla com os dados do envolvido encontrado e uma lista de processos,
         ou FailedRequest caso ocorra algum erro
 
@@ -307,13 +320,15 @@ class Processo(DataEndpoint):
         >>> Processo.por_cnpj("07.838.351/0021.60",
         ...                        ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
         ...                        ordem=Ordem.ASC,
-        ...                        tribunais=[SiglaTribunal.TJBA, SiglaTribunal.TRF1]) # doctest: +SKIP
+        ...                        tribunais=[SiglaTribunal.TJBA, SiglaTribunal.TRF1],
+        ...                        limit=100) # doctest: +SKIP
         """
         return Processo.por_envolvido(
             cpf_cnpj=cnpj,
             ordena_por=ordena_por,
             ordem=ordem,
             tribunais=tribunais,
+            limit=limit,
             **kwargs,
         )
 
@@ -325,6 +340,7 @@ class Processo(DataEndpoint):
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
         incluir_homonimos: Optional[bool] = None,
+        limit: Optional[int] = None,
         **kwargs,
     ) -> Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]]:
         """
@@ -340,6 +356,8 @@ class Processo(DataEndpoint):
         :param incluir_homonimos: especifica se a busca por CPF deve incluir processos onde o CPF
         especificado não está associado, mas há envolvido com o nome igual e não associado a um CPF
         diferente. Só é permitido se cpf_cnpj for informado.
+        :param limit: quantidade de resultados desejados por página. Se não estiver dentro dos
+        valores permitidos, resultará em uma exceção.
         :return: tupla com os dados do envolvido encontrado e uma lista de processos,
         ou FailedRequest caso ocorra algum erro
 
@@ -348,7 +366,8 @@ class Processo(DataEndpoint):
         >>> Processo.por_envolvido(nome='Escavador Engenharia e Construcoes Ltda',
         ...                             ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
         ...                             ordem=Ordem.ASC,
-        ...                             tribunais=[SiglaTribunal.TJBA]) # doctest: +SKIP
+        ...                             tribunais=[SiglaTribunal.TJBA],
+        ...                             limit=100) # doctest: +SKIP
         """
 
         params = {
@@ -357,6 +376,7 @@ class Processo(DataEndpoint):
             "ordena_por": ordena_por.value if ordena_por else None,
             "ordem": ordem.value if ordem else None,
             "tribunais[]": tribunais,
+            "limit": limit,
             "incluir_homonimos": int(incluir_homonimos) if incluir_homonimos is not None else None,
         }
 
@@ -382,6 +402,7 @@ class Processo(DataEndpoint):
         estado: str,
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
+        limit: Optional[int] = None,
         **kwargs,
     ) -> Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]]:
         """
@@ -391,6 +412,8 @@ class Processo(DataEndpoint):
         :param estado: o estado de origem da OAB
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
+        :param limit: quantidade de resultados desejados por página. Se não estiver dentro dos
+        valores permitidos, resultará em uma exceção.
         :return: uma lista de processos, ou FailedRequest caso ocorra algum erro
 
         >>> Processo.por_oab(1234, "AC") # doctest: +SKIP
@@ -398,13 +421,15 @@ class Processo(DataEndpoint):
         >>> Processo.por_oab(numero="12345",
         ...                  estado="SP",
         ...                  ordena_por=CriterioOrdenacao.ULTIMA_MOVIMENTACAO,
-        ...                  ordem=Ordem.DESC) # doctest: +SKIP
+        ...                  ordem=Ordem.DESC,
+        ...                  limit=100) # doctest: +SKIP
         """
         params = {
             "oab_numero": f"{numero}",
             "oab_estado": estado,
             "ordena_por": ordena_por.value if ordena_por else None,
             "ordem": ordem.value if ordem else None,
+            "limit": limit,
         }
 
         first_response = Processo.methods.get("advogado/processos", params=params, **kwargs)
