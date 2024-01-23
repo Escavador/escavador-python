@@ -514,6 +514,29 @@ class Processo(DataEndpoint):
             first_response, Processo.from_json, add_cursor=True
         )
 
+    @staticmethod
+    def resumo_envolvido(
+        cpf_cnpj: Optional[str] = None, nome: Optional[str] = None, **kwargs
+    ) -> EnvolvidoEncontrado:
+        """Retorna um resumo do envolvido buscado.
+
+        :param cpf_cnpj: o CPF/CNPJ do envolvido. Obrigatório se não for informado o nome.
+        :param nome: o nome do envolvido. Obrigatório se não for informado o CPF/CNPJ.
+        :return: um objeto `EnvolvidoEncontrado` contendo a quantidade de processos do envolvido encontrado
+        """
+        params = {
+            "cpf_cnpj": cpf_cnpj,
+            "nome": nome,
+        }
+
+        resposta = Processo.methods.get(f"envolvido/resumo", params=params, **kwargs)
+
+        if not resposta["sucesso"]:
+            conteudo = resposta.get("resposta", {})
+            raise FailedRequest(status=resposta["http_status"], **conteudo)
+
+        return EnvolvidoEncontrado.from_json(resposta["resposta"])
+
     def continuar_busca(self) -> ListaResultados["Processo"]:
         """Retorna mais resultados para a busca que gerou o processo atual.
 

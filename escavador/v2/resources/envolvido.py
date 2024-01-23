@@ -74,9 +74,7 @@ class EnvolvidoEncontrado:
             nome=json_dict["nome"],
             tipo_pessoa=tipo_pessoa,
             quantidade_processos=json_dict["quantidade_processos"],
-            cpfs_com_esse_nome=json_dict.get(
-                "cpfs_com_esse_nome", 1 if tipo_pessoa == "FISICA" else 0
-            ),
+            cpfs_com_esse_nome=json_dict.get("cpfs_com_esse_nome", None),
             last_valid_cursor=last_cursor,
             _classe_buscada=classe_buscada,
         )
@@ -181,9 +179,8 @@ class Envolvido(DataEndpoint):
     def documento(self) -> Optional[str]:
         return self.cpf or self.cnpj
 
-    @classmethod
+    @staticmethod
     def processos(
-        cls,
         cpf_cnpj: Optional[str] = None,
         nome: Optional[str] = None,
         ordena_por: Optional[CriterioOrdenacao] = None,
@@ -227,6 +224,20 @@ class Envolvido(DataEndpoint):
             limit=limit,
             **kwargs,
         )
+
+    @staticmethod
+    def resumo(
+        cpf_cnpj: Optional[str] = None, nome: Optional[str] = None, **kwargs
+    ) -> EnvolvidoEncontrado:
+        """Busca um envolvido a partir de seu nome e/ou CPF/CNPJ.
+
+        :param cpf_cnpj: CPF ou CNPJ do envolvido
+        :param nome: nome do envolvido
+        :return: envolvido encontrado
+        """
+        from escavador.v2 import Processo
+
+        return Processo.resumo_envolvido(cpf_cnpj=cpf_cnpj, nome=nome, **kwargs)
 
     def __eq__(self, other):
         if isinstance(other, EnvolvidoEncontrado):
