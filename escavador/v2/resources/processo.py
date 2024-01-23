@@ -192,7 +192,7 @@ class Processo(DataEndpoint):
         Busca as movimentações de um processo pelo seu número único do CNJ.
 
         :param numero_cnj: o número único do CNJ do processo
-        :return: uma lista de movimentacoes, ou FailedRequest caso ocorra algum erro
+        :return: uma lista de movimentacoes
 
         >>> Processo.movimentacoes("0000000-00.0000.0.00.0000") # doctest: +SKIP
         """
@@ -214,6 +214,9 @@ class Processo(DataEndpoint):
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
+        status: Optional[str] = None,
+        data_minima: Optional[str] = None,
+        data_maxima: Optional[str] = None,
         limit: Optional[int] = None,
         **kwargs,
     ) -> Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]]:
@@ -224,10 +227,16 @@ class Processo(DataEndpoint):
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
+        :param status: filtra processos a partir do status do processo. Pode ser 'ATIVO' ou 'INATIVO'.
+        Obs. A classificação do status é feito por IA e vai considerar a última atualização que possuímos
+        do processo na nossa base.
+        :param data_minima: filtra processos que iniciaram após a data informada.
+        A data deve ser estar no formato AAAA-MM-DD.
+        :param data_maxima: filtra processos que iniciaram antes da data informada.
+        A data deve ser estar no formato AAAA-MM-DD, e caso a data mínima seja informada, deve ser maior que ela.
         :param limit: quantidade de resultados desejados por página. Se não estiver dentro dos
         valores permitidos, resultará em uma exceção.
-        :return: tupla com os dados do envolvido encontrado e uma lista de processos,
-        ou FailedRequest caso ocorra algum erro
+        :return: tupla com os dados do envolvido encontrado e uma lista de processos
 
         >>> Processo.por_nome("Escavador Engenharia e Construcoes Ltda") # doctest: +SKIP
 
@@ -242,6 +251,9 @@ class Processo(DataEndpoint):
             ordena_por=ordena_por,
             ordem=ordem,
             tribunais=tribunais,
+            status=status,
+            data_minima=data_minima,
+            data_maxima=data_maxima,
             limit=limit,
             **kwargs,
         )
@@ -253,6 +265,9 @@ class Processo(DataEndpoint):
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
         incluir_homonimos: Optional[bool] = None,
+        status: Optional[str] = None,
+        data_minima: Optional[str] = None,
+        data_maxima: Optional[str] = None,
         limit: Optional[int] = None,
         **kwargs,
     ) -> Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]]:
@@ -268,10 +283,16 @@ class Processo(DataEndpoint):
         :param incluir_homonimos: especifica se a busca por CPF deve incluir processos onde o CPF
         especificado não está associado, mas há envolvido com o nome igual e não associado a um CPF
         diferente. Só é permitido se cpf_cnpj for informado.
+        :param status: filtra processos a partir do status do processo. Pode ser 'ATIVO' ou 'INATIVO'.
+        Obs. A classificação do status é feito por IA e vai considerar a última atualização que possuímos
+        do processo na nossa base.
+        :param data_minima: filtra processos que iniciaram após a data informada.
+        A data deve ser estar no formato AAAA-MM-DD.
+        :param data_maxima: filtra processos que iniciaram antes da data informada.
+        A data deve ser estar no formato AAAA-MM-DD, e caso a data mínima seja informada, deve ser maior que ela.
         :param limit: quantidade de resultados desejados por página. Se não estiver dentro dos
         valores permitidos, resultará em uma exceção.
-        :return: tupla com os dados do envolvido encontrado e uma lista de processos,
-        ou FailedRequest caso ocorra algum erro
+        :return: tupla com os dados do envolvido encontrado e uma lista de processos
 
         >>> Processo.por_cpf("123.456.789-99") # doctest: +SKIP
 
@@ -288,6 +309,9 @@ class Processo(DataEndpoint):
             ordem=ordem,
             tribunais=tribunais,
             incluir_homonimos=incluir_homonimos,
+            status=status,
+            data_minima=data_minima,
+            data_maxima=data_maxima,
             limit=limit,
             **kwargs,
         )
@@ -298,6 +322,9 @@ class Processo(DataEndpoint):
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
+        status: Optional[str] = None,
+        data_minima: Optional[str] = None,
+        data_maxima: Optional[str] = None,
         limit: Optional[int] = None,
         **kwargs,
     ) -> Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]]:
@@ -310,10 +337,16 @@ class Processo(DataEndpoint):
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
         :param tribunais: lista de siglas de tribunais para filtrar a busca
+        :param status: filtra processos a partir do status do processo. Pode ser 'ATIVO' ou 'INATIVO'.
+        Obs. A classificação do status é feito por IA e vai considerar a última atualização que possuímos
+        do processo na nossa base.
+        :param data_minima: filtra processos que iniciaram após a data informada.
+        A data deve ser estar no formato AAAA-MM-DD.
+        :param data_maxima: filtra processos que iniciaram antes da data informada.
+        A data deve ser estar no formato AAAA-MM-DD, e caso a data mínima seja informada, deve ser maior que ela.
         :param limit: quantidade de resultados desejados por página. Se não estiver dentro dos
         valores permitidos, resultará em uma exceção.
-        :return: tupla com os dados do envolvido encontrado e uma lista de processos,
-        ou FailedRequest caso ocorra algum erro
+        :return: tupla com os dados do envolvido encontrado e uma lista de processos
 
         >>> Processo.por_cnpj("07838351002160") # doctest: +SKIP
 
@@ -328,6 +361,9 @@ class Processo(DataEndpoint):
             ordena_por=ordena_por,
             ordem=ordem,
             tribunais=tribunais,
+            status=status,
+            data_minima=data_minima,
+            data_maxima=data_maxima,
             limit=limit,
             **kwargs,
         )
@@ -340,6 +376,9 @@ class Processo(DataEndpoint):
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
         incluir_homonimos: Optional[bool] = None,
+        status: Optional[str] = None,
+        data_minima: Optional[str] = None,
+        data_maxima: Optional[str] = None,
         limit: Optional[int] = None,
         **kwargs,
     ) -> Tuple[Optional[EnvolvidoEncontrado], ListaResultados["Processo"]]:
@@ -356,10 +395,16 @@ class Processo(DataEndpoint):
         :param incluir_homonimos: especifica se a busca por CPF deve incluir processos onde o CPF
         especificado não está associado, mas há envolvido com o nome igual e não associado a um CPF
         diferente. Só é permitido se cpf_cnpj for informado.
+        :param status: filtra processos a partir do status do processo. Pode ser 'ATIVO' ou 'INATIVO'.
+        Obs. A classificação do status é feito por IA e vai considerar a última atualização que possuímos
+        do processo na nossa base.
+        :param data_minima: filtra processos que iniciaram após a data informada.
+        A data deve ser estar no formato AAAA-MM-DD.
+        :param data_maxima: filtra processos que iniciaram antes da data informada.
+        A data deve ser estar no formato AAAA-MM-DD, e caso a data mínima seja informada, deve ser maior que ela.
         :param limit: quantidade de resultados desejados por página. Se não estiver dentro dos
         valores permitidos, resultará em uma exceção.
-        :return: tupla com os dados do envolvido encontrado e uma lista de processos,
-        ou FailedRequest caso ocorra algum erro
+        :return: tupla com os dados do envolvido encontrado e uma lista de processos
 
         >>> Processo.por_envolvido(cpf_cnpj="07.838.351/0021.60") # doctest: +SKIP
 
@@ -376,6 +421,9 @@ class Processo(DataEndpoint):
             "ordena_por": ordena_por.value if ordena_por else None,
             "ordem": ordem.value if ordem else None,
             "tribunais[]": tribunais,
+            "status": status,
+            "data_minima": data_minima,
+            "data_maxima": data_maxima,
             "limit": limit,
             "incluir_homonimos": int(incluir_homonimos) if incluir_homonimos is not None else None,
         }
@@ -402,6 +450,9 @@ class Processo(DataEndpoint):
         estado: str,
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
+        status: Optional[str] = None,
+        data_minima: Optional[str] = None,
+        data_maxima: Optional[str] = None,
         limit: Optional[int] = None,
         oab_tipo: Optional[str] = None,
         **kwargs,
@@ -413,11 +464,18 @@ class Processo(DataEndpoint):
         :param estado: o estado de origem da OAB
         :param ordena_por: critério de ordenação
         :param ordem: determina ordenação ascendente ou descendente
+        :param status: filtra processos a partir do status do processo. Pode ser 'ATIVO' ou 'INATIVO'.
+        Obs. A classificação do status é feito por IA e vai considerar a última atualização que possuímos
+        do processo na nossa base.
+        :param data_minima: filtra processos que iniciaram após a data informada.
+        A data deve ser estar no formato AAAA-MM-DD.
+        :param data_maxima: filtra processos que iniciaram antes da data informada.
+        A data deve ser estar no formato AAAA-MM-DD, e caso a data mínima seja informada, deve ser maior que ela.
         :param limit: quantidade de resultados desejados por página. Se não estiver dentro dos
         valores permitidos, resultará em uma exceção.
         :param oab_tipo: Tipo da OAB. Pode ser informado caso o mesmo número exista para diferentes tipos.
         Pode ser 'ADVOGADO', 'SUPLEMENTAR', 'ESTAGIARIO' ou 'CONSULTOR_ESTRANGEIRO'.
-        :return: uma lista de processos, ou FailedRequest caso ocorra algum erro
+        :return: uma tupla contendo um objeto representando o advogado encontrado e a lista de processos
 
         >>> Processo.por_oab(1234, "AC") # doctest: +SKIP
 
@@ -433,6 +491,9 @@ class Processo(DataEndpoint):
             "oab_estado": estado,
             "ordena_por": ordena_por.value if ordena_por else None,
             "ordem": ordem.value if ordem else None,
+            "status": status,
+            "data_minima": data_minima,
+            "data_maxima": data_maxima,
             "limit": limit,
             "oab_tipo": oab_tipo,
         }

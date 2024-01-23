@@ -189,6 +189,9 @@ class Envolvido(DataEndpoint):
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
+        status: Optional[str] = None,
+        data_minima: Optional[str] = None,
+        data_maxima: Optional[str] = None,
         limit: Optional[int] = None,
         **kwargs,
     ) -> Union[Tuple[Optional[EnvolvidoEncontrado], List["Processo"]], FailedRequest]:
@@ -199,10 +202,16 @@ class Envolvido(DataEndpoint):
         :param ordena_por: critério de ordenação dos resultados
         :param ordem: ordem de ordenação dos resultados
         :param tribunais: lista de tribunais para filtrar os resultados
+        :param status: filtra processos a partir do status do processo. Pode ser 'ATIVO' ou 'INATIVO'.
+        Obs. A classificação do status é feito por IA e vai considerar a última atualização que possuímos
+        do processo na nossa base.
+        :param data_minima: filtra processos que iniciaram após a data informada.
+        A data deve ser estar no formato AAAA-MM-DD.
+        :param data_maxima: filtra processos que iniciaram antes da data informada.
+        A data deve ser estar no formato AAAA-MM-DD, e caso a data mínima seja informada, deve ser maior que ela.
         :param limit: quantidade de resultados desejados por página. Se não estiver dentro dos
         valores permitidos, resultará em uma exceção.
-        :return tupla com os dados do envolvido encontrado e uma lista de processos,
-        ou FailedRequest caso ocorra algum erro
+        :return tupla com os dados do envolvido encontrado e uma lista de processos
         """
         from escavador.v2 import Processo
 
@@ -212,6 +221,9 @@ class Envolvido(DataEndpoint):
             ordena_por=ordena_por,
             ordem=ordem,
             tribunais=tribunais,
+            status=status,
+            data_minima=data_minima,
+            data_maxima=data_maxima,
             limit=limit,
             **kwargs,
         )
