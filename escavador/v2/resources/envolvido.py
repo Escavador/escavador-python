@@ -68,7 +68,7 @@ class EnvolvidoEncontrado:
             return None
 
         tipo_pessoa = json_dict.get(
-            "tipo_pessoa", "FISICA"
+            "tipo_pessoa", json_dict.get("tipo", "FISICA")
         )  # Se não houver tipo_pessoa, assume-se que é advogado, isto é, pessoa física.
         return cls(
             nome=json_dict["nome"],
@@ -238,6 +238,21 @@ class Envolvido(DataEndpoint):
         from escavador.v2 import Processo
 
         return Processo.resumo_envolvido(cpf_cnpj=cpf_cnpj, nome=nome, **kwargs)
+
+    @staticmethod
+    def resumo_oab(
+        numero: int, estado: str, tipo: Optional[str] = None, **kwargs
+    ) -> EnvolvidoEncontrado:
+        """Busca um envolvido a partir de seu número de OAB.
+
+        :param numero: número da OAB do envolvido
+        :param estado: estado da OAB do envolvido
+        :param tipo: tipo da OAB do envolvido
+        :return: envolvido encontrado
+        """
+        from escavador.v2 import Processo
+
+        return Processo.resumo_oab(numero=numero, estado=estado, tipo=tipo, **kwargs)
 
     def __eq__(self, other):
         if isinstance(other, EnvolvidoEncontrado):

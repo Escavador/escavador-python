@@ -537,6 +537,34 @@ class Processo(DataEndpoint):
 
         return EnvolvidoEncontrado.from_json(resposta["resposta"])
 
+    @staticmethod
+    def resumo_oab(
+        numero: Union[str, int], estado: str, tipo: Optional[str] = None, **kwargs
+    ) -> EnvolvidoEncontrado:
+        """Retorna um resumo do advogado buscado.
+
+        :param numero: o número da OAB do advogado
+        :param estado: o estado de origem da OAB do advogado
+        :param tipo: o tipo da OAB do advogado. Pode ser 'ADVOGADO', 'SUPLEMENTAR',
+        'ESTAGIARIO' ou 'CONSULTOR_ESTRANGEIRO'.
+
+        :return: um objeto `EnvolvidoEncontrado` contendo a quantidade de processos do advogado encontrado
+        """
+
+        params = {
+            "oab_numero": f"{numero}",
+            "oab_estado": estado,
+            "oab_tipo": tipo,
+        }
+
+        resposta = Processo.methods.get(f"advogado/resumo", params=params, **kwargs)
+
+        if not resposta["sucesso"]:
+            conteudo = resposta.get("resposta", {})
+            raise FailedRequest(status=resposta["http_status"], **conteudo)
+
+        return EnvolvidoEncontrado.from_json(resposta["resposta"])
+
     def continuar_busca(self) -> ListaResultados["Processo"]:
         """Retorna mais resultados para a busca que gerou o processo atual.
 
