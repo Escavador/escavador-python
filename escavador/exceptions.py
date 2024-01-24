@@ -40,9 +40,10 @@ class FailedRequest(Exception):
             raise self
 
     def __str__(self):
-        return f"Erro {self.code} ({self.status}): {self.message}\n" + "\n".join(
-            f"{k}: {v}" for k, v in self.errors.items()
+        error_details = (
+            ("\n" + "\n".join(f"{k}: {v}" for k, v in self.errors.items())) if self.errors else ""
         )
+        return f"Erro {self.code} ({self.status}): {self.message}{error_details}"
 
     def __repr__(self):
         return f"{self.__str__()}\n{self.errors}"
