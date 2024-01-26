@@ -15,26 +15,35 @@ class FailedRequest(Exception):
     :attr mensagem: mensagem de erro
     :attr erros: detalhamento dos erros encontrados
     """
+
     status: int
     code: str
     message: str
     errors: Dict
 
-    def __init__(self, status: int,
-                 code: str = "",
-                 message: str = "",
-                 errors: Dict = {},
-                 error: str = "",
-                 **kwargs):
+    def __init__(
+        self,
+        status: int,
+        code: str = "",
+        message: str = "",
+        errors: Dict = {},
+        error: str = "",
+        **kwargs,
+    ):
         self.status = status
         self.code = code
-        self.message = message or error  # unauthenticated e "créditos insuficientes" tem estrutura diferente
+        self.message = (
+            message or error
+        )  # unauthenticated e "créditos insuficientes" têm estrutura diferente
         self.errors = errors
         if self.status == 401:
             raise self
 
     def __str__(self):
-        return f"Erro {self.code} ({self.status}): {self.message}"
+        error_details = (
+            ("\n" + "\n".join(f"{k}: {v}" for k, v in self.errors.items())) if self.errors else ""
+        )
+        return f"Erro {self.code} ({self.status}): {self.message}{error_details}"
 
     def __repr__(self):
         return f"{self.__str__()}\n{self.errors}"

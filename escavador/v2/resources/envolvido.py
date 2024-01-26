@@ -68,15 +68,13 @@ class EnvolvidoEncontrado:
             return None
 
         tipo_pessoa = json_dict.get(
-            "tipo_pessoa", "FISICA"
+            "tipo_pessoa", json_dict.get("tipo", "FISICA")
         )  # Se não houver tipo_pessoa, assume-se que é advogado, isto é, pessoa física.
         return cls(
             nome=json_dict["nome"],
             tipo_pessoa=tipo_pessoa,
             quantidade_processos=json_dict["quantidade_processos"],
-            cpfs_com_esse_nome=json_dict.get(
-                "cpfs_com_esse_nome", 1 if tipo_pessoa == "FISICA" else 0
-            ),
+            cpfs_com_esse_nome=json_dict.get("cpfs_com_esse_nome", None),
             last_valid_cursor=last_cursor,
             _classe_buscada=classe_buscada,
         )
@@ -181,14 +179,17 @@ class Envolvido(DataEndpoint):
     def documento(self) -> Optional[str]:
         return self.cpf or self.cnpj
 
-    @classmethod
+    @staticmethod
     def processos(
-        cls,
         cpf_cnpj: Optional[str] = None,
         nome: Optional[str] = None,
         ordena_por: Optional[CriterioOrdenacao] = None,
         ordem: Optional[Ordem] = None,
         tribunais: Optional[List[SiglaTribunal]] = None,
+        status: Optional[str] = None,
+        data_minima: Optional[str] = None,
+        data_maxima: Optional[str] = None,
+        limit: Optional[int] = None,
         **kwargs,
     ) -> Union[Tuple[Optional[EnvolvidoEncontrado], List["Processo"]], FailedRequest]:
         """Busca os processos envolvendo uma pessoa ou instituição a partir de seu nome e/ou CPF/CNPJ.
@@ -198,8 +199,16 @@ class Envolvido(DataEndpoint):
         :param ordena_por: critério de ordenação dos resultados
         :param ordem: ordem de ordenação dos resultados
         :param tribunais: lista de tribunais para filtrar os resultados
-        :return tupla com os dados do envolvido encontrado e uma lista de processos,
-        ou FailedRequest caso ocorra algum erro
+        :param status: filtra processos a partir do status do processo. Pode ser 'ATIVO' ou 'INATIVO'.
+        Obs. A classificação do status é feito por IA e vai considerar a última atualização que possuímos
+        do processo na nossa base.
+        :param data_minima: filtra processos que iniciaram após a data informada.
+        A data deve ser estar no formato AAAA-MM-DD.
+        :param data_maxima: filtra processos que iniciaram antes da data informada.
+        A data deve ser estar no formato AAAA-MM-DD, e caso a data mínima seja informada, deve ser maior que ela.
+        :param limit: quantidade de resultados desejados por página. Se não estiver dentro dos
+        valores permitidos, resultará em uma exceção.
+        :return tupla com os dados do envolvido encontrado e uma lista de processos
         """
         from escavador.v2 import Processo
 
@@ -209,8 +218,41 @@ class Envolvido(DataEndpoint):
             ordena_por=ordena_por,
             ordem=ordem,
             tribunais=tribunais,
+            status=status,
+            data_minima=data_minima,
+            data_maxima=data_maxima,
+            limit=limit,
             **kwargs,
         )
+
+    @staticmethod
+    def resumo(
+        cpf_cnpj: Optional[str] = None, nome: Optional[str] = None, **kwargs
+    ) -> EnvolvidoEncontrado:
+        """Busca um envolvido a partir de seu nome e/ou CPF/CNPJ.
+
+        :param cpf_cnpj: CPF ou CNPJ do envolvido
+        :param nome: nome do envolvido
+        :return: envolvido encontrado
+        """
+        from escavador.v2 import Processo
+
+        return Processo.resumo_envolvido(cpf_cnpj=cpf_cnpj, nome=nome, **kwargs)
+
+    @staticmethod
+    def resumo_oab(
+        numero: int, estado: str, tipo: Optional[str] = None, **kwargs
+    ) -> EnvolvidoEncontrado:
+        """Busca um envolvido a partir de seu número de OAB.
+
+        :param numero: número da OAB do envolvido
+        :param estado: estado da OAB do envolvido
+        :param tipo: tipo da OAB do envolvido
+        :return: envolvido encontrado
+        """
+        from escavador.v2 import Processo
+
+        return Processo.resumo_oab(numero=numero, estado=estado, tipo=tipo, **kwargs)
 
     def __eq__(self, other):
         if isinstance(other, EnvolvidoEncontrado):
