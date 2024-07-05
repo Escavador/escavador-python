@@ -13,7 +13,7 @@ jobs:
     secrets: inherit
 
   build-and-publish:
-    runs-on: ubuntu-20.04 # Python 3.6 is not supported by ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: [ run-tests ]
 
     steps:
@@ -23,7 +23,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.6"
+          python-version: "3.7"
 
       - name: Install poetry and dependencies
         run: |

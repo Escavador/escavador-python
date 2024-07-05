@@ -7,11 +7,11 @@ on:
         description: "Python version to use"
         type: string
         required: false
-        default: "3.6"
+        default: "3.7"
 
 jobs:
   build-and-run-tests:
-    runs-on: ubuntu-20.04 # Python 3.6 is not supported by ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout sources
