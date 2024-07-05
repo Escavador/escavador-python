@@ -2,11 +2,7 @@
 name = "escavador"
 version = "0.8.0"
 description = "A library to interact with Escavador API"
-authors = [
-    "Rafael <rafaelcampos@escavador.com>",
-    "Gabriel <gabriel@escavador.com>",
-    "Luiz <luizcdc@escavador.com>"
-]
+authors = ["Gabriel <gabriel@escavador.com>"]
 readme = "README.md"
 homepage = "https://www.escavador.com"
 repository = "https://github.com/Escavador/escavador-python"
