@@ -14,7 +14,7 @@ python -m pip install escavador
 
 ##  Requisitos
 
-- Python 3.6+
+- Python 3.7+
 
 ## Como Configurar
 

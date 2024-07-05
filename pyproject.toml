@@ -1,12 +1,8 @@
 [tool.poetry]
 name = "escavador"
-version = "0.8.0"
+version = "0.9.0"
 description = "A library to interact with Escavador API"
-authors = [
-    "Rafael <rafaelcampos@escavador.com>",
-    "Gabriel <gabriel@escavador.com>",
-    "Luiz <luizcdc@escavador.com>"
-]
+authors = ["Gabriel <gabriel@escavador.com>"]
 readme = "README.md"
 homepage = "https://www.escavador.com"
 repository = "https://github.com/Escavador/escavador-python"
@@ -15,11 +11,10 @@ license = "MIT"
 keywords = ["escavador", "api", "python"]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
 requests = ">= 2.27.1"
 python-dotenv = ">= 0.19.2"
 ratelimit = "*"
-dataclasses = "*"
 importlib_metadata = "*"
 
 [tool.black]

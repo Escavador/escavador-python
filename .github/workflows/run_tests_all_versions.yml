@@ -8,12 +8,6 @@ on:
 
 jobs:
 
-  call-tests-3-6:
-    uses: ./.github/workflows/tests.yml
-    with:
-      version: "3.6"
-    secrets: inherit
-
   call-tests-3-7:
     uses: ./.github/workflows/tests.yml
     with:
