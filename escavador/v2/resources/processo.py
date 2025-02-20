@@ -593,9 +593,10 @@ class Processo(DataEndpoint):
         :param documentos_publicos: Se documentos_publicos=1 será baixado os documentos públicos do processo.
         :return: informações sobre a solicitação de atualização
         """
-        data = {"documentos_publicos": documentos_publicos}
-        if enviar_callback:
-            data["enviar_callback"] = enviar_callback
+        data = {
+            "documentos_publicos": documentos_publicos,
+            "enviar_callback": enviar_callback,
+        }
 
         resposta = Processo.methods.post(
             f"processos/numero_cnj/{numero_cnj}/solicitar-atualizacao",
