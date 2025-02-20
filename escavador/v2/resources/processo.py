@@ -595,9 +595,11 @@ class Processo(DataEndpoint):
         """
         data = {"documentos_publicos": documentos_publicos}
         if enviar_callback:
-            data["enviar_callback"] = 1
+            data["enviar_callback"] = enviar_callback
+
         resposta = Processo.methods.post(
             f"processos/numero_cnj/{numero_cnj}/solicitar-atualizacao",
+            data=data,
         )
 
         if not resposta["sucesso"]:
