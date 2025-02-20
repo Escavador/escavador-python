@@ -582,13 +582,26 @@ class Processo(DataEndpoint):
         return ListaResultados()
 
     @classmethod
-    def solicitar_atualizacao(cls, numero_cnj: str) -> SolicitacaoAtualizacao:
+    def solicitar_atualizacao(
+        cls, numero_cnj: str, *, enviar_callback: int = 0, documentos_publicos: int = 0
+    ) -> SolicitacaoAtualizacao:
         """Solicita a atualização de um processo.
 
         :param numero_cnj: o processo a ser atualizado
+        :param enviar_callback: Se enviar_callback=1 será enviado um callback quando o processo for atualizado.
+        Obrigatório ter uma url de callback.
+        :param documentos_publicos: Se documentos_publicos=1 será baixado os documentos públicos do processo.
         :return: informações sobre a solicitação de atualização
         """
-        resposta = Processo.methods.post(f"processos/numero_cnj/{numero_cnj}/solicitar-atualizacao")
+        data = {
+            "documentos_publicos": documentos_publicos,
+            "enviar_callback": enviar_callback,
+        }
+
+        resposta = Processo.methods.post(
+            f"processos/numero_cnj/{numero_cnj}/solicitar-atualizacao",
+            data=data,
+        )
 
         if not resposta["sucesso"]:
             conteudo = resposta.get("resposta", {})
