@@ -12,7 +12,9 @@ class Processo(EndpointV1):
     @classmethod
     def informacoes_no_tribunal(cls, numero_unico: str, *, send_callback: Optional[bool] = None,
                            wait: Optional[bool] = None,
-                           autos: Optional[bool] = None, documentos_publicos:  Optional[bool] = None,
+                           autos: Optional[bool] = None, 
+                           utilizar_certificado: Optional[bool] = None, certificado_id: Optional[int] = None,
+                           documentos_publicos:  Optional[bool] = None,
                            usuario: Optional[str] = None, senha: Optional[str] = None,
                            origem: Optional[str] = None, tipo_numero: Optional[str] = None,
                            tentativas:Optional[int] = None) -> Dict:
