@@ -20,14 +20,16 @@ class FailedRequest(Exception):
     code: str
     message: str
     errors: Dict
+    appends: Dict
 
     def __init__(
         self,
         status: int,
         code: str = "",
         message: str = "",
-        errors: Dict = {},
+        errors: Dict = None,
         error: str = "",
+        appends: Dict = None,
         **kwargs,
     ):
         self.status = status
@@ -35,7 +37,8 @@ class FailedRequest(Exception):
         self.message = (
             message or error
         )  # unauthenticated e "créditos insuficientes" têm estrutura diferente
-        self.errors = errors
+        self.errors = errors or {}
+        self.appends = appends or {}
         if self.status == 401:
             raise self
 
