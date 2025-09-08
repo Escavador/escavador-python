@@ -13,7 +13,7 @@ jobs:
     secrets: inherit
 
   build-and-publish:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: [ run-tests ]
 
     steps:

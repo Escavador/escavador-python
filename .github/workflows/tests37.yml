@@ -1,25 +1,17 @@
-name: Tests
+name: Tests 3.7
 
 on:
   workflow_call:
-    inputs:
-      python-version:
-        description: "Python version to use"
-        type: string
-        required: true
 
 jobs:
-  build-and-run-tests:
+  tests37:
     runs-on: ubuntu-latest
+    container:
+      image: python:3.7
 
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
-
-      - name: Set up Python ${{ inputs.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ inputs.python-version }}
 
       - name: Install poetry and dependencies
         run: |
@@ -32,4 +24,4 @@ jobs:
       - name: Run unit tests
         env:
           ESCAVADOR_API_KEY: ${{ secrets.ESCAVADOR_API_KEY }}
-        run: poetry run python -m unittest discover -s tests
+        run: poetry run python -m unittest discover -v
