@@ -7,6 +7,11 @@ on:
   workflow_call:
 
 jobs:
+  # Python 3.7 job
+  tests37:
+    uses: ./.github/workflows/tests37.yml
+    secrets: inherit
+
   # Modern versions job (matrix)
   tests-modern:
     strategy:
