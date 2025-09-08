@@ -2,7 +2,6 @@ name: Tests 3.7
 
 on:
   workflow_call:
-    secrets: inherit
 
 jobs:
   tests37:
