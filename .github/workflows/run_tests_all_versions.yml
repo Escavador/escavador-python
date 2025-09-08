@@ -31,3 +31,15 @@ jobs:
     with:
       version: "3.10"
     secrets: inherit
+
+  call-tests-3-11:
+    uses: ./.github/workflows/tests.yml
+    with:
+      version: "3.11"
+    secrets: inherit
+
+  call-tests-3-12:
+    uses: ./.github/workflows/tests.yml
+    with:
+      version: "3.12"
+    secrets: inherit
