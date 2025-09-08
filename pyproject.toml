@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "escavador"
-version = "0.9.2"
+version = "0.10.1"
 description = "A library to interact with Escavador API"
 authors = ["Gabriel <gabriel@escavador.com>"]
 readme = "README.md"
