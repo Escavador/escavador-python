@@ -7,7 +7,6 @@ on:
         description: "Python version to use"
         type: string
         required: true
-    secrets: inherit
 
 jobs:
   build-and-run-tests:
