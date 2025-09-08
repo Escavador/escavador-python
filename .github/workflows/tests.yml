@@ -32,5 +32,4 @@ jobs:
       - name: Run unit tests
         env:
           ESCAVADOR_API_KEY: ${{ secrets.ESCAVADOR_API_KEY }}
-        run: |
-          poetry run python -m unittest discover -s tests
+        run: poetry run python -m unittest discover -s tests
