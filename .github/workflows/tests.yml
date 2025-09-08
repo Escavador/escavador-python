@@ -3,11 +3,11 @@ name: Tests
 on:
   workflow_call:
     inputs:
-      version:
+      python-version:
         description: "Python version to use"
         type: string
-        required: false
-        default: "3.7"
+        required: true
+    secrets: inherit
 
 jobs:
   build-and-run-tests:
@@ -15,20 +15,22 @@ jobs:
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v2
+      - name: Set up Python ${{ inputs.python-version }}
+        uses: actions/setup-python@v5
         with:
-          python-version: ${{ inputs.version }}
+          python-version: ${{ inputs.python-version }}
 
       - name: Install poetry and dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install poetry
-          poetry install
 
-      - name: Run tests
+      - name: Install dependencies
+        run: poetry install --no-interaction --no-ansi
+
+      - name: Run unit tests
         env:
           ESCAVADOR_API_KEY: ${{ secrets.ESCAVADOR_API_KEY }}
         run: |
