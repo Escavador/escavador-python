@@ -1,0 +1,28 @@
+name: Tests 3.7
+
+on:
+  workflow_call:
+    secrets: inherit
+
+jobs:
+  tests37:
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.7
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Install poetry and dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install poetry
+
+      - name: Install dependencies
+        run: poetry install --no-interaction --no-ansi
+
+      - name: Run unit tests
+        env:
+          ESCAVADOR_API_KEY: ${{ secrets.ESCAVADOR_API_KEY }}
+        run: poetry run python -m unittest discover -v
