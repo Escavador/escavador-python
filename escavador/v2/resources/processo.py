@@ -99,6 +99,63 @@ class StatusAtualizacao:
         return self
 
 
+
+@dataclass
+class EstadoOrigem:
+    """Estado de origem de um processo.
+
+    :attr nome: nome do estado
+    :attr sigla: sigla do estado
+    """
+
+    nome: str
+    sigla: str
+
+    @classmethod
+    def from_json(cls, json_dict: Optional[Dict]) -> Optional["EstadoOrigem"]:
+        if json_dict is None:
+            return None
+
+        return cls(
+            nome=json_dict["nome"],
+            sigla=json_dict["sigla"],
+        )
+
+
+@dataclass
+class UnidadeOrigem:
+    """Unidade de origem de um processo.
+
+    :attr nome: nome da unidade
+    :attr cidade: cidade da unidade
+    :attr estado: estado da unidade
+    :attr tribunal_sigla: sigla do tribunal da unidade
+    :attr endereco: endereço da unidade
+    :attr classificacao: classificação da unidade
+    """
+
+    nome: str
+    cidade: str
+    estado: EstadoOrigem
+    tribunal_sigla: str
+    endereco: Optional[str] = None
+    classificacao: Optional[str] = None
+
+    @classmethod
+    def from_json(cls, json_dict: Optional[Dict]) -> Optional["UnidadeOrigem"]:
+        if json_dict is None:
+            return None
+
+        return cls(
+            nome=json_dict["nome"],
+            cidade=json_dict["cidade"],
+            estado=EstadoOrigem.from_json(json_dict["estado"]),
+            tribunal_sigla=json_dict["tribunal_sigla"],
+            endereco=json_dict.get("endereco"),
+            classificacao=json_dict.get("classificacao"),
+        )
+
+
 @dataclass
 class Processo(DataEndpoint):
     """
@@ -119,6 +176,8 @@ class Processo(DataEndpoint):
     :attr tempo_desde_ultima_verificacao: tempo desde a última verificação do processo no sistema de origem.
     :attr tipo_match: tipo de match ocorrido para a inclusão do processo como resultado da busca
     :attr match_fontes: indica em que tipos de fontes o match do envolvido ou advogado buscado aconteceu
+    :attr estado_origem: estado de origem do processo
+    :attr unidade_origem: unidade de origem do processo
     :attr fontes: lista de fontes do processo
     :attr last_valid_cursor: link do cursor caso queira mais resultados. Não é um atributo do processo.
     """
@@ -135,6 +194,8 @@ class Processo(DataEndpoint):
     titulo_polo_passivo: Optional[str] = None
     data_inicio: Optional[str] = None
     tipo_match: Optional[str] = None
+    estado_origem: Optional[EstadoOrigem] = field(default=None, hash=False, compare=False)
+    unidade_origem: Optional[UnidadeOrigem] = field(default=None, hash=False, compare=False)
     fontes: List["FonteProcesso"] = field(default_factory=list)
     last_valid_cursor: str = field(default="", repr=False, hash=False)
 
@@ -159,6 +220,8 @@ class Processo(DataEndpoint):
                 tribunal=json_dict.get("match_fontes", {}).get("tribunal", False),
                 diario_oficial=json_dict.get("match_fontes", {}).get("diario_oficial", False),
             ),
+            estado_origem=EstadoOrigem.from_json(json_dict.get("estado_origem")),
+            unidade_origem=UnidadeOrigem.from_json(json_dict.get("unidade_origem")),
             last_valid_cursor=ultimo_cursor,
         )
         instance.fontes += [
