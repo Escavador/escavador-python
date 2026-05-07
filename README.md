@@ -35,7 +35,7 @@ Para obter seu token da API, acesse o [painel de tokens](https://api.escavador.c
 
 ### Consultando os processos de uma empresa pelo CNPJ usando a API V2
 
-[Processos de um envolvido pelo seu nome ou documento](https://api.escavador.com/v2/docs/#processos-de-envolvidos-por-nome-ou-cpfcnpj)
+[Processos de um envolvido pelo seu nome ou documento](https://api.escavador.com/v2/docs/consulta-de-processos#processos-do-envolvido-por-nome-ou-cpfcnpj)
 
 ```py
 from escavador.v2 import Processo
@@ -58,7 +58,7 @@ while processos:
 
 ### Consultando o processo mais recente de um advogado usando a API V2
 
-[Consultando processos de um advogado usando sua OAB](https://api.escavador.com/v2/docs/#processos-de-um-advogado-por-oab)
+[Consultando processos de um advogado usando sua OAB](https://api.escavador.com/v2/docs/consulta-de-processos#processos-de-um-advogado-por-oab)
 
 ```py
 from escavador import CriterioOrdenacao, Ordem
@@ -76,7 +76,7 @@ print(f"{processo.numero_cnj}: {processo.titulo_polo_ativo} X {processo.titulo_p
 
 ### Buscando as movimentações de um processo usando a API V2
 
-[Consultando movimentações de um processo](https://api.escavador.com/v2/docs/#movimentaes-de-um-processo)
+[Consultando movimentações de um processo](https://api.escavador.com/v2/docs/consulta-de-processos#movimentaes-de-um-processo)
 
 ```py
 from escavador.v2 import Processo
@@ -93,7 +93,7 @@ while resultado:
 
 ### Consultando a última movimentação dos processos mais recentes de uma pessoa pelo nome usando a API V2
 
-[Processos de um envolvido pelo seu nome ou documento](https://api.escavador.com/v2/docs/#processos-de-envolvidos-por-nome-ou-cpfcnpj)
+[Processos de um envolvido pelo seu nome ou documento](https://api.escavador.com/v2/docs/consulta-de-processos#processos-do-envolvido-por-nome-ou-cpfcnpj)
 
 ```py
 from escavador import CriterioOrdenacao, Ordem
@@ -113,7 +113,7 @@ for processo in processos:
 ```
 
 ### Solicitar busca assíncrona de processo usando a API V1
-[Buscando informações do processo no sistema do Tribunal](https://api.escavador.com/v1/docs/#pesquisar-processo-no-site-do-tribunal-assncrono) (Assíncrono)
+[Buscando informações do processo no sistema do Tribunal](https://api.escavador.com/v1/docs/processos.html#pesquisar-processo-no-site-do-tribunal-assncrono) (Assíncrono)
 ```py
 from escavador import Processo
 
@@ -131,7 +131,7 @@ elif resultado_busca['resposta']['status'] == 'PENDENTE':
 
 É recomendado que se utilize o callback ao invés de continuamente consultar o resultado. Entretanto, é possível consultar em massa os seus callbacks cadastrados utilizando a classe `Callback`.
 
-O módulo `server` da biblioteca `http` oferece uma interface simples para receber callbacks. Basta definir o recebimento de requests `POST` conformando com [a documentação do conteúdo dos callbacks](https://api.escavador.com/v1/docs/#detalhes-dos-callbacks).
+O módulo `server` da biblioteca `http` oferece uma interface simples para receber callbacks. Basta definir o recebimento de requests `POST` conformando com [a documentação do conteúdo dos callbacks](https://api.escavador.com/v1/docs/callbacks#introducao).
 
 ### Consultar manualmente o status de uma busca assíncrona previamente solicitada
 
@@ -182,24 +182,24 @@ tribunais_disponiveis = Tribunal.sistemas_disponiveis()
 #### V1:
 | Módulo                | Link API                                                             |
 |-----------------------|----------------------------------------------------------------------|
-| Busca                 | https://api.escavador.com/v1/docs/#busca                             |
-| Processo              | https://api.escavador.com/v1/docs/#processos                         |
-| Callback              | https://api.escavador.com/v1/docs/#callback                          |
-| DiarioOficial         | https://api.escavador.com/v1/docs/#dirios-oficiais                   |
-| Instituicao           | https://api.escavador.com/v1/docs/#instituies                        |
-| Legislacao            | https://api.escavador.com/v1/docs/#legislao                          |
-| Jurisprudencia        | https://api.escavador.com/v1/docs/#jurisprudncias                    |
-| MonitoramentoDiario   | https://api.escavador.com/v1/docs/#monitoramento-de-dirios-oficiais  |
-| MonitoramentoTribunal | https://api.escavador.com/v1/docs/#monitoramento-no-site-do-tribunal |
-| Movimentacao          | https://api.escavador.com/v1/docs/#movimentaes                       |
-| Pessoa                | https://api.escavador.com/v1/docs/#pessoas                           |
-| Tribunal              | https://api.escavador.com/v1/docs/#tribunais                         |
-| Saldo                 | https://api.escavador.com/v1/docs/#saldo-da-api                      |
+| Busca                 | https://api.escavador.com/v1/docs/busca                             |
+| Processo              | https://api.escavador.com/v1/docs/processos                         |
+| Callback              | https://api.escavador.com/v1/docs/callback                          |
+| DiarioOficial         | https://api.escavador.com/v1/docs/dirios-oficiais                   |
+| Instituicao           | https://api.escavador.com/v1/docs/instituies                        |
+| Legislacao            | https://api.escavador.com/v1/docs/legislao                          |
+| Jurisprudencia        | https://api.escavador.com/v1/docs/jurisprudncias                    |
+| MonitoramentoDiario   | https://api.escavador.com/v1/docs/monitoramento-de-dirios-oficiais  |
+| MonitoramentoTribunal | https://api.escavador.com/v1/docs/monitoramento-no-site-do-tribunal |
+| Movimentacao          | https://api.escavador.com/v1/docs/movimentaes                       |
+| Pessoa                | https://api.escavador.com/v1/docs/pessoas                           |
+| Tribunal              | https://api.escavador.com/v1/docs/tribunais                         |
+| Saldo                 | https://api.escavador.com/v1/docs/saldo-da-api                      |
 
 
 #### V2:
 
 | Módulo      | Link API                                     |
 |-------------|----------------------------------------------|
-| v2.Processo | https://api.escavador.com/v2/docs/#processos |
-| v2.Tribunal | https://api.escavador.com/v2/docs/#tribunais |
+| v2.Processo | https://api.escavador.com/v2/docs/consulta-de-processos |
+| v2.Tribunal | https://api.escavador.com/v2/docs/tribunais |
